@@ -1,4 +1,4 @@
-﻿<Window x:Class="WpfExample.MainWindow"
+﻿<Window x:Class="WpfExample.ExWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:c="clr-namespace:CalcBinding;assembly=CalcBinding"
@@ -26,6 +26,6 @@
 
             </Grid>
         </GroupBox>
-        <TextBox HorizontalAlignment="Left" Height="23" Margin="107,171,0,0" TextWrapping="Wrap" Text="{c:Binding Path=(IsMan?'Mr':'Ms') + Surname + ' ' + Name}" VerticalAlignment="Top" Width="120"/>
+        <!--<TextBox HorizontalAlignment="Left" Height="23" Margin="107,171,0,0" TextWrapping="Wrap" Text="{c:Binding Path='(IsMan?''Mr'':''Ms'') + Surname + '' '' + Name}'" VerticalAlignment="Top" Width="120"/>-->
     </Grid>
 </Window>

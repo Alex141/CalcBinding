@@ -32,8 +32,17 @@ namespace CalcBinding
             // это просто проверка регулярки
             //var matches = Regex.Matches(Path.Replace(" ", ""), String.Format(@"{0}*?(?<path>\w+){0}*?", znak));
 
+            var replaceDict = new Dictionary<String, String>();
+            replaceDict.Add("and", "&&");
+            replaceDict.Add("or", "||");
+            replaceDict.Add("less=", "<=");
+
+            var normPath = Path;
+            foreach (var pair in replaceDict)
+                normPath = normPath.Replace(pair.Key, pair.Value);
+
             // это уже получить данные
-            var matches = Regex.Matches(Path.Replace(" ", ""), @"[a-zA-Z]+(\.[a-zA-Z]+)*");
+            var matches = Regex.Matches(normPath.Replace(" ", ""), @"[a-zA-Z]+(\.[a-zA-Z]+)*");
             var pathsList = new List<String>();
             foreach (var match in matches.OfType<Match>())
             {
@@ -41,7 +50,7 @@ namespace CalcBinding
             }
             pathsList = pathsList.Distinct().ToList();
 
-            var mathPath = Path; 
+            var mathPath = normPath; 
             
             foreach (var p in pathsList)
                 mathPath = mathPath.Replace(p, pathsList.IndexOf(p).ToString("{0}"));
