@@ -29,20 +29,20 @@
                 <StackPanel Orientation="Vertical">
                     <StackPanel Orientation="Horizontal">
                         <Label Content="A="/>
-                        <TextBox Text="{c:Binding Path=A}" Width="56"/>
+                        <TextBox Text="{c:Binding A, UpdateSourceTrigger=PropertyChanged}" Width="56"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <Label Content="B="/>
-                        <TextBox Text="{c:Binding Path=B}" Width="56"/>
+                        <TextBox Text="{c:Binding B, UpdateSourceTrigger=PropertyChanged}" Width="56"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <Label Content="C="/>
-                        <TextBox Text="{c:Binding Path=C}" Width="56"/>
+                        <TextBox Text="{c:Binding C, UpdateSourceTrigger=PropertyChanged}" Width="56"/>
                     </StackPanel>                    
                 </StackPanel>
                 <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Vertical">
-                    <CheckBox Content="IsChecked" IsChecked="{Binding IsChecked}"/>
-                    <CheckBox Content="IsFull" IsChecked="{Binding IsFull}"/>
+                    <CheckBox Content="IsChecked" IsChecked="{c:Binding IsChecked}"/>
+                    <CheckBox Content="IsFull" IsChecked="{c:Binding IsFull}"/>
                 </StackPanel>
             </Grid> 
         </GroupBox>
@@ -50,55 +50,54 @@
             <StackPanel>
                 <DockPanel>                    
                     <Label Content="A+B+C="/>
-                    <TextBox Text="{c:Binding Path=A+B+C}"/>
+                    <TextBox Text="{c:Binding A+B+C}"/>
                 </DockPanel>
                 <DockPanel>
                     <Label Content="A-B-C="/>
-                    <TextBox Text="{c:Binding Path=A-B-C}"/>
+                    <TextBox Text="{c:Binding A-B-C}"/>
                 </DockPanel>
                 <DockPanel>
                     <Label Content="A*(B+C)="/>
-                    <TextBox Text="{c:Binding Path=A*(B+C)}"/>
+                    <TextBox Text="{c:Binding A*(B+C)}"/>
                 </DockPanel>
                 <DockPanel>
                     <Label Content="2*A-B*0.5="/>
-                    <TextBox Text="{c:Binding Path=2*A-B*0.5}"/>
+                    <TextBox Text="{c:Binding 2*A-B*0.5}"/>
                 </DockPanel>
                 <DockPanel>
                     <Label Content="A/B="/>
-                    <TextBox Text="{c:Binding Path=A/B}"/>
+                    <TextBox Text="{c:Binding A/B, StringFormat=\{0:n2\}}"/>
                 </DockPanel>
                 <DockPanel>
                     <Label Content="A%B="/>
-                    <TextBox Text="{c:Binding Path=A%B}"/>
+                    <TextBox Text="{c:Binding A%B}"/>
                 </DockPanel>
                 <DockPanel>
                     <Label Content="(A == 1) ? 10 : 20="/>
-                    <TextBox Text="{c:Binding Path='(A == 1) ? 10 : 20'}"/>
+                    <TextBox Text="{c:Binding '(A == 1) ? 10 : 20'}"/>
                 </DockPanel>
             </StackPanel>
         </GroupBox>
         <GroupBox Header="Logic" Grid.Row="1" Grid.Column="1">
             <StackPanel Orientation="Vertical">
                 <DockPanel>
-                    <Label Content="!IsChecked="/>
-                    <TextBox Text="{c:Binding Path=!IsChecked}"/>
+                    <CheckBox Content="!IsChecked" IsChecked="{c:Binding !IsChecked}"/>
                 </DockPanel>
                 <DockPanel>
                     <Label Content="!IsChecked and IsFull="/>
-                    <TextBox Text="{c:Binding Path='IsChecked and IsFull'}"/>
+                    <TextBox Text="{c:Binding 'IsChecked and IsFull'}"/>
                 </DockPanel>
                 <DockPanel>
                     <Label Content="!IsChecked or (A > B)="/>
-                    <TextBox Text="{c:Binding Path='IsChecked or (A > B)'}"/>
+                    <TextBox Text="{c:Binding '!IsChecked or (A > B)'}"/>
                 </DockPanel>
                 <DockPanel>
                     <Label Content="(A == 1) and (B less= 5)="/>
-                    <TextBox Text="{c:Binding Path='(A == 1) and (B less= 5)'}"/>
+                    <TextBox Text="{c:Binding '(A == 1) and (B less= 5)'}"/>
                 </DockPanel>
                 <DockPanel>
                     <Label Content="(IsChecked || !IsFull)="/>
-                    <TextBox Text="{c:Binding Path=(IsChecked || !IsFull)}"/>
+                    <TextBox Text="{c:Binding '(IsChecked || !IsFull)'}"/>
                 </DockPanel>
             </StackPanel>
         </GroupBox>
