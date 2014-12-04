@@ -1,5 +1,4 @@
-﻿using NCalc;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -7,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
+using System.Linq.Expressions;
+using DynamicExpresso;
 
 namespace CalcBinding
 {
@@ -44,14 +45,27 @@ namespace CalcBinding
         
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            var expressionStr = (String)parameter;
-            for (var i = 0; i < values.Count(); i++)
+            if (compiledExpression == null)
             {
-                expressionStr = expressionStr.Replace("{" + i.ToString() + "}", values[i].ToString().ToLower());
+                var expressionStr = (String)parameter;
+
+                for (int i = 0; i < values.Count(); i++)
+                {
+                    expressionStr = expressionStr.Replace("{" + i.ToString() + "}", new string(new[] { (Char)(i + (int)'a') }));
+                }
+
+                var parametersDefinition = new List<Parameter>();
+
+                for (var i = 0; i < values.Count(); i++)
+                {
+                    parametersDefinition.Add(
+                        new Parameter(new string(new[] { (Char)(i + (int)'a') }), values[i].GetType()));
+                }
+
+                compiledExpression = new Interpreter().Parse(expressionStr, parametersDefinition.ToArray());
             }
 
-            var expression = new NCalc.Expression(expressionStr);
-            object result = expression.Evaluate();
+            var result = compiledExpression.Invoke(values);
 
             if (targetType == typeof(Visibility))
             {
@@ -73,6 +87,8 @@ namespace CalcBinding
         #endregion
 
         public FalseToVisibility FalseToVisibility { get; set; }
+
+        Lambda compiledExpression;
 
         #region Init
         

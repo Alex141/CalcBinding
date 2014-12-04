@@ -1,22 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace WpfExample
 {
-    public class ExampleViewModel:INotifyPropertyChanged
+    public class ExampleViewModel:object, INotifyPropertyChanged
     {
-        private int a = 10;
-        public int A
+        private float a = 10;
+        public float A
         {
             get { return a; }
             set
             {
                 a = value;
-                PropertyChanged(this, new PropertyChangedEventArgs("A"));
+
+                new object().TraceTime(
+                    () => PropertyChanged(this, new PropertyChangedEventArgs("A"))
+                );
             }
         }
 
@@ -27,7 +31,9 @@ namespace WpfExample
             set
             {
                 b = value;
-                PropertyChanged(this, new PropertyChangedEventArgs("B"));
+                new object().TraceTime(
+                    () => PropertyChanged(this, new PropertyChangedEventArgs("B"))
+                );
             }
         }
 
@@ -38,7 +44,9 @@ namespace WpfExample
             set
             {
                 c = value;
-                PropertyChanged(this, new PropertyChangedEventArgs("C"));
+                new object().TraceTime(
+                    () => PropertyChanged(this, new PropertyChangedEventArgs("C"))
+                );
             }
         }
 
@@ -49,7 +57,9 @@ namespace WpfExample
             set
             {
                 isChecked = value;
-                PropertyChanged(this, new PropertyChangedEventArgs("IsChecked"));
+                new object().TraceTime(
+                    () => PropertyChanged(this, new PropertyChangedEventArgs("IsChecked"))
+                );
             }
         }
 
@@ -60,10 +70,23 @@ namespace WpfExample
             set
             {
                 isFull = value;
-                PropertyChanged(this, new PropertyChangedEventArgs("IsFull"));
+                new object().TraceTime(
+                    () => PropertyChanged(this, new PropertyChangedEventArgs("IsFull"))
+                );
             }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+    }
+
+    public static class TimeExtension
+    {
+        public static void TraceTime(this object obj, Action proc)
+        {
+            var startTime = DateTime.Now;
+            proc();
+            var time = DateTime.Now - startTime;
+            Trace.WriteLine(String.Format("timeSpan: {0}", time));
+        }
     }
 }
