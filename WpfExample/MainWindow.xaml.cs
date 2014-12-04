@@ -29,9 +29,5 @@ namespace WpfExample
         {
             DataContext = new ExampleViewModel();
         }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-        }
     }
 }

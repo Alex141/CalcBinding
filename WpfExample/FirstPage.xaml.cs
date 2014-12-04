@@ -16,22 +16,13 @@ using System.Windows.Shapes;
 namespace WpfExample
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for FirstPage.xaml
     /// </summary>
-    public partial class ExWindow : Window
+    public partial class FirstPage : UserControl
     {
-        public ExWindow()
+        public FirstPage()
         {
             InitializeComponent();
-        }
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            DataContext = new ExampleViewModel();
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
         }
     }
 }

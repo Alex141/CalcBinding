@@ -76,6 +76,57 @@ namespace WpfExample
             }
         }
 
+        private String name;
+        public String Name
+        {
+            get { return name; }
+            set
+            {
+                name = value;
+                new object().TraceTime(
+                    () => PropertyChanged(this, new PropertyChangedEventArgs("Name"))
+                );
+            }
+        }
+
+        private String surname;
+        public String Surname
+        {
+            get { return surname; }
+            set
+            {
+                surname = value;
+                new object().TraceTime(
+                    () => PropertyChanged(this, new PropertyChangedEventArgs("Surname"))
+                );
+            }
+        }
+
+        private bool isMan;
+        public bool IsMan
+        {
+            get { return isMan; }
+            set
+            {
+                isMan = value;
+                new object().TraceTime(
+                    () => PropertyChanged(this, new PropertyChangedEventArgs("IsMan"))
+                );
+            }
+        }
+
+        private bool hasPrivileges;
+        public bool HasPrivileges
+        {
+            get { return hasPrivileges; }
+            set
+            {
+                hasPrivileges = value;
+                new object().TraceTime(
+                    () => PropertyChanged(this, new PropertyChangedEventArgs("HasPrivileges"))
+                );
+            }
+        }
         public event PropertyChangedEventHandler PropertyChanged;
     }
 

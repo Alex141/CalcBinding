@@ -18,8 +18,10 @@ namespace CalcBinding
 {
     public class Binding : MarkupExtension
     {
-        //[ConstructorArgument]
         public String Path { get; set; }
+
+        [DefaultValue(FalseToVisibility.Collapsed)]
+        public FalseToVisibility FalseToVisibility { get; set; }
 
         public Binding()
         {
@@ -30,8 +32,19 @@ namespace CalcBinding
         {
             Path = path;
         }
+
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
+            //Получим провайдер, с информацией об объекте и привязках
+            var providerValuetarget = (IProvideValueTarget)serviceProvider
+              .GetService(typeof(IProvideValueTarget));
+
+            //Получим объект, вызвавший привязку
+            FrameworkElement _targetObject = (FrameworkElement)providerValuetarget.TargetObject;
+
+            //Получим свойство для привязки
+            DependencyProperty _targetProperty = (DependencyProperty)providerValuetarget.TargetProperty; 
+            
             // 1.) Разберем выражение, нужно создать multiBinding по всем свойствам (для примера - искать будем
             // только в dataContext
 
@@ -45,6 +58,7 @@ namespace CalcBinding
             replaceDict.Add("or", "||");
             replaceDict.Add("less=", "<=");
             replaceDict.Add(" ", "");
+            replaceDict.Add("\'", "\"");
 
             var normPath = Path;
             foreach (var pair in replaceDict)
@@ -64,7 +78,10 @@ namespace CalcBinding
             foreach (var p in pathsList)
                 exprTemplate = exprTemplate.Replace(p, pathsList.IndexOf(p).ToString("{0}"));
 
-            var mathConverter = new CalcConverter();
+            var mathConverter = new CalcConverter
+            {
+                FalseToVisibility = FalseToVisibility
+            };
 
             BindingBase resBinding;
             //определяем возможность mode=twoway. Из коробки это только 1 переменная и 
@@ -97,12 +114,11 @@ namespace CalcBinding
                 if (StringFormat != null)
                     binding.StringFormat = StringFormat;
 
-                if (exprTemplate != "{0}")
+                if (exprTemplate == "!{0}" || (exprTemplate == "{0}" && _targetProperty.PropertyType == typeof(Visibility)))
                 {
                     binding.Converter = mathConverter;
                     binding.ConverterParameter = exprTemplate;
                     binding.ConverterCulture = ConverterCulture;
-
                 }
                 resBinding = binding;
             }
@@ -144,23 +160,14 @@ namespace CalcBinding
 
                 resBinding = mBinding;
             }
-
-            //Получим провайдер, с информацией об объекте и привязках
-            var providerValuetarget = (IProvideValueTarget)serviceProvider
-              .GetService(typeof(IProvideValueTarget));
-
-            //Получим объект, вызвавший привязку
-            FrameworkElement _targetObject = (FrameworkElement)providerValuetarget.TargetObject;
-
-            //Получим свойство для привязки
-            DependencyProperty _targetProperty = (DependencyProperty)providerValuetarget.TargetProperty; 
             
             return resBinding.ProvideValue(serviceProvider);
         }
 
 
         #region Binding Properties
-		        //
+
+        //
         // Summary:
         //     Gets or sets the converter to use to convert the source values to or from
         //     the target value.

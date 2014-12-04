@@ -22,9 +22,9 @@ namespace CalcBinding
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var exprTemplate = (String)parameter; 
+            var exprTemplate = (String)parameter;
 
-            if (exprTemplate == "!{0}" && targetType == typeof(bool))
+            if (exprTemplate == "!{0}" || exprTemplate == "{0}" && targetType == typeof(bool))
             {
                 if (value.GetType() == typeof(Visibility))
                 {
@@ -33,7 +33,10 @@ namespace CalcBinding
                 }
 
                 if (value.GetType() == typeof(bool))
-                    return !(bool)value;
+                    if (exprTemplate == "!{0}")
+                        return !(bool)value;
+                    else
+                        return (bool)value;
             }
 
             throw new NotSupportedException();
@@ -55,6 +58,10 @@ namespace CalcBinding
                 }
 
                 var parametersDefinition = new List<Parameter>();
+
+                // we can't determine value type if value is null
+                if (values.Any(v => v == null))
+                    return null;
 
                 for (var i = 0; i < values.Count(); i++)
                 {
@@ -92,6 +99,9 @@ namespace CalcBinding
         public FalseToVisibility FalseToVisibility { get; set; }
         private Lambda compiledExpression;
         public bool StringFormatDefined { get; set; }
+
+        // we must define values types, because in Convert method we can't understand value type if value is null
+        //public Type[] ValuesTypes { get; set; }
 
         #region Init
         
