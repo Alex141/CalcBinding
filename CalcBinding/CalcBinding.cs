@@ -9,9 +9,6 @@ using System.Windows.Data;
 using System.Windows.Markup;
 using System.Linq.Expressions;
 using System.Globalization;
-
-using OldBinding = System.Windows.Data.Binding;
-
 using System.ComponentModel;
 
 namespace CalcBinding
@@ -48,7 +45,8 @@ namespace CalcBinding
             // 1.) Разберем выражение, нужно создать multiBinding по всем свойствам (для примера - искать будем
             // только в dataContext
 
-            //var znak = @"(  \( | \) | \+ | \- | \* | \/ | \% | \^ | \! | \&\& | \|\| | \d)";
+            var operatorSymbol = @"(  \( | \) | \+ | \- | \* | \/ | \% | \^ | \! | \&\& | \|\|)";
+            var operatorSymbols = new List<String>(){"(", ")", "+", "-", "*", "/", "%", "^", "!", "&&","||", "&", "|", "?", ":", "<", ">", "<=", ">=", "==", "!="};
             
             // это просто проверка регулярки
             //var matches = Regex.Matches(Path.Replace(" ", ""), String.Format(@"{0}*?(?<path>\w+){0}*?", znak));
@@ -57,20 +55,44 @@ namespace CalcBinding
             replaceDict.Add("and", "&&");
             replaceDict.Add("or", "||");
             replaceDict.Add("less=", "<=");
-            replaceDict.Add(" ", "");
             replaceDict.Add("\'", "\"");
 
             var normPath = Path;
             foreach (var pair in replaceDict)
                 normPath = normPath.Replace(pair.Key, pair.Value);
 
-            // это уже получить данные
-            var matches = Regex.Matches(normPath, @"[a-zA-Z]+(\.[a-zA-Z]+)*");
-            var pathsList = new List<String>();
-            foreach (var match in matches.OfType<Match>())
+            // delete all spaces out of user string
+            var i = 0;
+            var canDelete = true;
+            var res = "";
+            do
             {
-                pathsList.Add(match.Value);
+                if (normPath[i] == '\"')
+                    canDelete = !canDelete;
+
+                if (normPath[i] != ' ' || !canDelete)
+                    res += normPath[i];
             }
+            while (++i < normPath.Length);
+
+            normPath = res;
+            // это уже получить данные
+
+            //var matches = Regex.Matches(normPath, @"[a-zA-Z]+(\.[a-zA-Z]+)*");
+            var matches = normPath.Split(operatorSymbols.ToArray(), StringSplitOptions.RemoveEmptyEntries);
+            
+            var pathsList = new List<String>();
+            //foreach (var match in matches.OfType<Match>())
+            //{
+            //    pathsList.Add(match.Value);
+            //}
+
+            foreach (var match in matches)
+            {
+                if (!Regex.IsMatch(match, @"\d") && !match.Contains("\""))
+                    pathsList.Add(match);
+            }
+
             pathsList = pathsList.Distinct().ToList();
 
             var exprTemplate = normPath; 
@@ -89,7 +111,7 @@ namespace CalcBinding
 
             if (pathsList.Count == 1)
             {
-                var binding = new OldBinding(pathsList.First())
+                var binding = new System.Windows.Data.Binding(pathsList.First())
                 {
                     Mode = Mode,
                     NotifyOnSourceUpdated = NotifyOnSourceUpdated,
@@ -146,7 +168,7 @@ namespace CalcBinding
                 mathConverter.StringFormatDefined = StringFormat != null;
                 foreach (var path in pathsList)
                 {
-                    var binding = new OldBinding(path);
+                    var binding = new System.Windows.Data.Binding(path);
 
                     if (Source != null)
                         binding.Source = Source;
@@ -155,7 +177,6 @@ namespace CalcBinding
                         binding.ElementName = ElementName;
 
                     mBinding.Bindings.Add(binding);
-
                 }
 
                 resBinding = mBinding;

@@ -76,7 +76,7 @@ namespace WpfExample
             }
         }
 
-        private String name;
+        private String name = "Willy";
         public String Name
         {
             get { return name; }
@@ -89,7 +89,7 @@ namespace WpfExample
             }
         }
 
-        private String surname;
+        private String surname = "Williams";
         public String Surname
         {
             get { return surname; }
@@ -102,7 +102,7 @@ namespace WpfExample
             }
         }
 
-        private bool isMan;
+        private bool isMan = true;
         public bool IsMan
         {
             get { return isMan; }

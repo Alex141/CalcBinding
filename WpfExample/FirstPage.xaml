@@ -67,7 +67,7 @@
                 </DockPanel>
                 <DockPanel>
                     <Label Content="A/B="/>
-                    <TextBox Text="{c:Binding A/B, StringFormat={}{0:n2}llll}"/>
+                    <TextBox Text="{c:Binding A/B, StringFormat={}{0:n2} --StringFormat is used}"/>
                 </DockPanel>
                 <DockPanel>
                     <Label Content="A%B="/>

@@ -6,7 +6,7 @@
         Height="400" Width="425" 
         Loaded="Window_Loaded">
     <Grid>
-        <TabControl>
+        <TabControl SelectedIndex="1">
             <TabItem Header="Math and logic">
                 <local:FirstPage/>
             </TabItem>
