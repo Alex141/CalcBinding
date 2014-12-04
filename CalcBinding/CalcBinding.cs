@@ -83,7 +83,6 @@ namespace CalcBinding
                     ValidatesOnDataErrors = ValidatesOnDataErrors,
                     ValidatesOnExceptions = ValidatesOnExceptions,
                     ValidatesOnNotifyDataErrors = ValidatesOnNotifyDataErrors,
-                    RelativeSource = RelativeSource
                 };
 
                 if (Source != null)
@@ -91,6 +90,9 @@ namespace CalcBinding
 
                 if (ElementName != null)
                     binding.ElementName = ElementName;
+
+                if (RelativeSource != null)
+                    binding.RelativeSource = RelativeSource;
 
                 if (StringFormat != null)
                     binding.StringFormat = StringFormat;
@@ -125,6 +127,7 @@ namespace CalcBinding
                 if (StringFormat != null)
                     mBinding.StringFormat = StringFormat;
 
+                mathConverter.StringFormatDefined = StringFormat != null;
                 foreach (var path in pathsList)
                 {
                     var binding = new OldBinding(path);

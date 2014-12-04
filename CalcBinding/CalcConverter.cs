@@ -67,14 +67,17 @@ namespace CalcBinding
 
             var result = compiledExpression.Invoke(values);
 
-            if (targetType == typeof(Visibility))
+            if (!StringFormatDefined)
             {
-                result = new BoolToVisibilityConverter(FalseToVisibility)
-                                .Convert(result, targetType, null, culture);
-            }
+                if (targetType == typeof(Visibility))
+                {
+                    result = new BoolToVisibilityConverter(FalseToVisibility)
+                                    .Convert(result, targetType, null, culture);
+                }
 
-            if (targetType == typeof(String))
-                result = result.ToString();
+                if (targetType == typeof(String))
+                    result = result.ToString();
+            }
 
             return result;
         }
@@ -87,8 +90,8 @@ namespace CalcBinding
         #endregion
 
         public FalseToVisibility FalseToVisibility { get; set; }
-
-        Lambda compiledExpression;
+        private Lambda compiledExpression;
+        public bool StringFormatDefined { get; set; }
 
         #region Init
         

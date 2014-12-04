@@ -66,7 +66,7 @@
                 </DockPanel>
                 <DockPanel>
                     <Label Content="A/B="/>
-                    <TextBox Text="{c:Binding A/B, StringFormat=\{0:n2\}}"/>
+                    <TextBox Text="{c:Binding A/B, StringFormat={}{0:n2}llll}"/>
                 </DockPanel>
                 <DockPanel>
                     <Label Content="A%B="/>
@@ -97,7 +97,7 @@
                 </DockPanel>
                 <DockPanel>
                     <Label Content="(IsChecked || !IsFull)="/>
-                    <TextBox Text="{c:Binding '(IsChecked || !IsFull)'}"/>
+                    <TextBox Text="{c:Binding (IsChecked || !IsFull)}"/>
                 </DockPanel>
             </StackPanel>
         </GroupBox>

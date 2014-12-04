@@ -10,8 +10,8 @@ namespace WpfExample
 {
     public class ExampleViewModel:object, INotifyPropertyChanged
     {
-        private float a = 10;
-        public float A
+        private double a = 10;
+        public double A
         {
             get { return a; }
             set
