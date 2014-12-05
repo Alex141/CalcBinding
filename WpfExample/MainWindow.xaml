@@ -3,10 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:WpfExample"
         Title="CalcBindingExample" 
-        Height="400" Width="425" 
-        Loaded="Window_Loaded">
+        Height="400" Width="425">
     <Grid>
-        <TabControl SelectedIndex="1">
+        <TabControl>
             <TabItem Header="Math and logic">
                 <local:FirstPage/>
             </TabItem>

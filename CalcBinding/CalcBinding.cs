@@ -13,10 +13,16 @@ using System.ComponentModel;
 
 namespace CalcBinding
 {
+    /// <summary>
+    /// Binding with advantages
+    /// </summary>
     public class Binding : MarkupExtension
     {
         public String Path { get; set; }
 
+        /// <summary>
+        /// False to visibility. Default: False = Collapsed
+        /// </summary>
         [DefaultValue(FalseToVisibility.Collapsed)]
         public FalseToVisibility FalseToVisibility { get; set; }
 
@@ -32,68 +38,15 @@ namespace CalcBinding
 
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
-            //Получим провайдер, с информацией об объекте и привязках
+            //provider with reflection of binding and target object
             var providerValuetarget = (IProvideValueTarget)serviceProvider
               .GetService(typeof(IProvideValueTarget));
 
-            //Получим объект, вызвавший привязку
             FrameworkElement _targetObject = (FrameworkElement)providerValuetarget.TargetObject;
-
-            //Получим свойство для привязки
             DependencyProperty _targetProperty = (DependencyProperty)providerValuetarget.TargetProperty; 
-            
-            // 1.) Разберем выражение, нужно создать multiBinding по всем свойствам (для примера - искать будем
-            // только в dataContext
 
-            var operatorSymbol = @"(  \( | \) | \+ | \- | \* | \/ | \% | \^ | \! | \&\& | \|\|)";
-            var operatorSymbols = new List<String>(){"(", ")", "+", "-", "*", "/", "%", "^", "!", "&&","||", "&", "|", "?", ":", "<", ">", "<=", ">=", "==", "!="};
-            
-            // это просто проверка регулярки
-            //var matches = Regex.Matches(Path.Replace(" ", ""), String.Format(@"{0}*?(?<path>\w+){0}*?", znak));
-
-            var replaceDict = new Dictionary<String, String>();
-            replaceDict.Add("and", "&&");
-            replaceDict.Add("or", "||");
-            replaceDict.Add("less=", "<=");
-            replaceDict.Add("\'", "\"");
-
-            var normPath = Path;
-            foreach (var pair in replaceDict)
-                normPath = normPath.Replace(pair.Key, pair.Value);
-
-            // delete all spaces out of user string
-            var i = 0;
-            var canDelete = true;
-            var res = "";
-            do
-            {
-                if (normPath[i] == '\"')
-                    canDelete = !canDelete;
-
-                if (normPath[i] != ' ' || !canDelete)
-                    res += normPath[i];
-            }
-            while (++i < normPath.Length);
-
-            normPath = res;
-            // это уже получить данные
-
-            //var matches = Regex.Matches(normPath, @"[a-zA-Z]+(\.[a-zA-Z]+)*");
-            var matches = normPath.Split(operatorSymbols.ToArray(), StringSplitOptions.RemoveEmptyEntries);
-            
-            var pathsList = new List<String>();
-            //foreach (var match in matches.OfType<Match>())
-            //{
-            //    pathsList.Add(match.Value);
-            //}
-
-            foreach (var match in matches)
-            {
-                if (!Regex.IsMatch(match, @"\d") && !match.Contains("\""))
-                    pathsList.Add(match);
-            }
-
-            pathsList = pathsList.Distinct().ToList();
+            var normPath = normalizePath(Path);
+            var pathsList = getPathes(normPath);
 
             var exprTemplate = normPath; 
             
@@ -106,9 +59,9 @@ namespace CalcBinding
             };
 
             BindingBase resBinding;
-            //определяем возможность mode=twoway. Из коробки это только 1 переменная и 
-            // либо она сама либо отрицание от неё
 
+            // possibility of twoway mode. Out of the box it is only 
+            // one variable or negative from bool variable
             if (pathsList.Count == 1)
             {
                 var binding = new System.Windows.Data.Binding(pathsList.First())
@@ -183,6 +136,72 @@ namespace CalcBinding
             }
             
             return resBinding.ProvideValue(serviceProvider);
+        }
+
+        /// <summary>
+        /// Find and return all pathes in Path string
+        /// </summary>
+        /// <param name="normPath"></param>
+        /// <returns></returns>
+        private List<String> getPathes(string normPath)
+        {
+            var operators = new List<String>() 
+            { 
+                "(", ")", "+", "-", "*", "/", "%", "^", "!", "&&", "||", 
+                "&", "|", "?", ":", "<", ">", "<=", ">=", "==", "!=" 
+            };
+            
+            var matches = normPath.Split(operators.ToArray(), StringSplitOptions.RemoveEmptyEntries);
+
+            var pathsList = new List<String>();
+
+            foreach (var match in matches)
+            {
+                if (!Regex.IsMatch(match, @"\d") && !match.Contains("\""))
+                    pathsList.Add(match);
+            }
+
+            pathsList = pathsList.Distinct().ToList();
+
+            return pathsList;
+        }
+
+        /// <summary>
+        /// Replace operators labels to operators names (ex. and -> &&), remove excess spaces
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        private string normalizePath(string path)
+        {
+            var replaceDict = new Dictionary<String, String>
+            {
+                {"and",     "&&"},
+                {"or",      "||"},
+                {"less=",   "<="},
+                {"\'",      "\""}
+            };
+
+            var normPath = path;
+            foreach (var pair in replaceDict)
+                normPath = normPath.Replace(pair.Key, pair.Value);
+
+            // delete all spaces out of user string
+            var i = 0;
+            var canDelete = true;
+            var res = "";
+            do
+            {
+                if (normPath[i] == '\"')
+                    canDelete = !canDelete;
+
+                if (normPath[i] != ' ' || !canDelete)
+                    res += normPath[i];
+            }
+            while (++i < normPath.Length);
+
+            normPath = res;
+
+            return normPath;
         }
 
 

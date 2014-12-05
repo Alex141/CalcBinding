@@ -48,6 +48,8 @@
   <ItemGroup>
     <Compile Include="CalcBinding.cs" />
     <Compile Include="CalcConverter.cs" />
+    <Compile Include="BoolToVisibilityConverter.cs" />
+    <Compile Include="FalseToVisibility.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

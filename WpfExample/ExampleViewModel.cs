@@ -8,7 +8,10 @@ using System.Threading.Tasks;
 
 namespace WpfExample
 {
-    public class ExampleViewModel:object, INotifyPropertyChanged
+    /// <summary>
+    /// Example view model
+    /// </summary>
+    public class ExampleViewModel : INotifyPropertyChanged
     {
         private double a = 10;
         public double A

@@ -11,6 +11,9 @@ using DynamicExpresso;
 
 namespace CalcBinding
 {
+    /// <summary>
+    /// Converter that supports expression evaluate
+    /// </summary>
     public class CalcConverter : IValueConverter, IMultiValueConverter
     {
         #region IValueConverter
@@ -22,6 +25,7 @@ namespace CalcBinding
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            // parameter is expression template where variables replaced by {variable number}
             var exprTemplate = (String)parameter;
 
             if (exprTemplate == "!{0}" || exprTemplate == "{0}" && targetType == typeof(bool))
@@ -54,7 +58,7 @@ namespace CalcBinding
 
                 for (int i = 0; i < values.Count(); i++)
                 {
-                    expressionStr = expressionStr.Replace("{" + i.ToString() + "}", new string(new[] { (Char)(i + (int)'a') }));
+                    expressionStr = expressionStr.Replace("{" + i.ToString() + "}", getVariableName(i));
                 }
 
                 var parametersDefinition = new List<Parameter>();
@@ -66,7 +70,7 @@ namespace CalcBinding
                 for (var i = 0; i < values.Count(); i++)
                 {
                     parametersDefinition.Add(
-                        new Parameter(new string(new[] { (Char)(i + (int)'a') }), values[i].GetType()));
+                        new Parameter(getVariableName(i), values[i].GetType()));
                 }
 
                 compiledExpression = new Interpreter().Parse(expressionStr, parametersDefinition.ToArray());
@@ -89,6 +93,16 @@ namespace CalcBinding
             return result;
         }
 
+        /// <summary>
+        /// Returns string of one char, following from 'a' on i positions (1 -> b, 2 -> c)
+        /// </summary>
+        /// <param name="i"></param>
+        /// <returns></returns>
+        private string getVariableName(int i)
+        {
+            return new string( new[] { (Char)(i + (int)'a') });
+        }
+
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
             throw new NotSupportedException();
@@ -99,9 +113,6 @@ namespace CalcBinding
         public FalseToVisibility FalseToVisibility { get; set; }
         private Lambda compiledExpression;
         public bool StringFormatDefined { get; set; }
-
-        // we must define values types, because in Convert method we can't understand value type if value is null
-        //public Type[] ValuesTypes { get; set; }
 
         #region Init
         
@@ -116,46 +127,5 @@ namespace CalcBinding
         } 
 
         #endregion
-    }
-
-    public class BoolToVisibilityConverter : IValueConverter
-    {
-        public BoolToVisibilityConverter()
-        {
-            FalseToVisibility = FalseToVisibility.Collapsed;
-        }
-
-        public BoolToVisibilityConverter(FalseToVisibility falseToVisibility)
-        {
-            FalseToVisibility = falseToVisibility;
-        }
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            var b = (bool)value;
-
-            if (b)
-                return Visibility.Visible;
-
-            if (FalseToVisibility == FalseToVisibility.Collapsed)
-                return Visibility.Collapsed;
-
-            return Visibility.Hidden;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            var visible = (Visibility)value;
-
-            return visible == Visibility.Visible;
-        }
-
-        public FalseToVisibility FalseToVisibility { get; set; }
-
-    }
-
-    public enum FalseToVisibility
-    {
-        Hidden,
-        Collapsed
     }
 }
