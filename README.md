@@ -1,31 +1,4 @@
-CalcBinding is a library that contains advanced Binding markup extension that allows you to write binding expressions directly in xaml, without custom converters and stringFormats. CalcBinding make binding expressions shorter and user friendly. See:
-
-Before:
-
-<MultiBinding Conveter={x:StaticResource MyCustomConverter}>
-    <Binding A/>
-    <Binding B/>
-    <Binding C/>
-</MultiBinding>
-(without MyCustomConveter declaration and referencing to it in xaml)
- 
-After: 
-
-<c:Binding A+B+C />
-
-Before: 
-
-<Binding IsChecked Converter={x:StaticResource BoolToVisibilityConveter} />
-<Binding IsChecked Converter={x:StaticResource NegativeBoolToVisibilityConveter} />
-or
-<Binding IsChecked Converter={x:StaticResource HiddenBoolToVisibilityConveter} />
-
-After:
-<c:Binding IsChecked />
-<c:Binding !IsChecked />
-<c:Binding IsChecked, FalseToVisibility=Hidden />
-
-CalcBinding determines Visibility target type and converts bool to visibility automaticly for you
+CalcBinding is a library that contains advanced Binding markup extension that allows you to write binding expressions directly in xaml, without custom converters and stringFormats. CalcBinding make binding expressions shorter and user friendly. 
 
 #Overview#
 
