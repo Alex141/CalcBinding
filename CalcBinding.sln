@@ -7,6 +7,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfExample", "WpfExample\Wp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalcBinding", "CalcBinding\CalcBinding.csproj", "{54EAD481-B6FC-41BB-ABBE-F0B33E123C61}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nuget", "nuget", "{EE4AA438-5CDC-475C-96C8-75688E9EADE1}"
+	ProjectSection(SolutionItems) = preProject
+		CalcBinding\CreatePackage.bat = CalcBinding\CreatePackage.bat
+		CalcBinding\PublishPackage.bat = CalcBinding\PublishPackage.bat
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
