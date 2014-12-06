@@ -1,6 +1,16 @@
-# Overview
+# CalcBinding
 
-CalcBinding is a library that contains advanced Binding markup extension that allows you to write binding expressions directly in xaml, without custom converters and stringFormats. CalcBinding makes binding expressions shorter and user friendly. See:
+CalcBinding is a library that contains advanced Binding markup extension that allows you to write binding expressions directly in xaml, without custom converters and stringFormats. CalcBinding makes binding expressions shorter and user friendly. 
+
+## Install
+
+CalcBinding is available at [NuGet](https://www.nuget.org/packages/CalcBinding/). You can install package using:
+```
+PM> Install-Package CalcBinding 
+```
+
+## Overview
+Following examples show xaml snippets with standart Binding and with CalcBinding:
 
 ## Before:
 
