@@ -222,6 +222,6 @@ In markup extension we can't use double quotes, so we can you single quotes and 
 1. If at least one of the properties involved in expression is null while binding initialization, then expression will not be evaluated.
  (fix in the future)
 
-2. CalcBinding don't support your custom conveters at all now. I hope this will be fixed in nearly future.
+2. CalcBinding don't support your custom conveters at all now. I hope this will be fixed in nearly future. You can help to the project resolving this [issue](https://github.com/Alex141/CalcBinding/issues/1)
 
 3. In path expression you can't use .Net classes and methods such as Math or method ToString(). I hope this will be fixed in nearly future.
