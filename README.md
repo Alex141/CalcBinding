@@ -156,14 +156,14 @@ Stage 1: Initialization
 
 1. String expression pre-process: deleting spacebars, replacing operators second names to original names:
 
-```C
+```C#
 Input:  exprStr = (IsChecked and !(Settings.Count > 0)) ? 'example str 1' : 'example str 2 '
 Output: exprStr = (IsChecked&&!(Settings.Count>0))?"example str 1":"example str 2 "
 ```
 
 2. Expression templating: searching properties pathes and replacing pathes to appropriate variables numbers:
  
-```C
+```C#
 Input: exprStr = (IsChecked&&!(Settings.Count>0))?"example str 1":"example str 2 "
 Output: exprStr = ({0}&&!({1}>0))?"example str 1":"example str 2 "
         Pathes = IsChecked - 1, Settings.Count - 2
@@ -173,14 +173,14 @@ This expression template is transmitted to converter as Converter Parameter
 
 3. (In converter) Expression template parsing and creating of expression dependencing from the variables:
 
-```C
+```C#
 Input: exprStr = ({0}&&!({1}>0))?"example str 1":"example str 2 "
 Output: exprStr = (a&&!(b)>0))?"example str 1":"example str 2 "
          varList = a:Boolean, b:Integer
 ```
 
 4. (In conveter) Compiling result string expression to delegate:
-```C
+```C#
 Lambda compiledExpression = new Interpreter().Parse(exprStr, varList);
 ```
 
@@ -188,7 +188,7 @@ Stage 2: Fires when binding Binding fires:
 
 1. (In Converter) Run created delegate with current source values
 
-```C
+```C#
 var result = compiledExpression.Invoke(values); where values - new binding source values
 ```
 
