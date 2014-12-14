@@ -22,7 +22,7 @@ namespace CalcBinding.Inverse
             // res = c-a => a = c - res         
             {ExpressionType.Subtract, ConstantPlace.Left, constant => constant + "-" + RES},
             // res = a-c => a = res + c         
-            {ExpressionType.Subtract, ConstantPlace.Right, constant => RES + constant},
+            {ExpressionType.Subtract, ConstantPlace.Right, constant => RES + "+" + constant},
             // res = c*a or a*c => a = res / c  
             {ExpressionType.Multiply, ConstantPlace.Wherever, constant => RES + "/" + constant},
             // res = c/a => a = c / res         
@@ -87,6 +87,7 @@ namespace CalcBinding.Inverse
                         if (recInfo.FoundedParamName == null)
                         {
                             recInfo.FoundedParamName = parameter.Name;
+                            recInfo.InvertedExp = RES;
                             return NodeType.Variable;
                         }
 
