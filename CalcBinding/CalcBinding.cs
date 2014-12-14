@@ -10,6 +10,7 @@ using System.Windows.Markup;
 using System.Linq.Expressions;
 using System.Globalization;
 using System.ComponentModel;
+using DynamicExpresso;
 
 namespace CalcBinding
 {
@@ -47,11 +48,12 @@ namespace CalcBinding
 
             var normPath = normalizePath(Path);
             var pathsList = getPathes(normPath);
+            var uniquePathList = pathsList.Distinct().ToList();
 
-            var exprTemplate = normPath; 
-            
-            foreach (var p in pathsList)
-                exprTemplate = exprTemplate.Replace(p, pathsList.IndexOf(p).ToString("{0}"));
+            var exprTemplate = normPath;
+
+            foreach (var p in uniquePathList)
+                exprTemplate = exprTemplate.Replace(p, uniquePathList.IndexOf(p).ToString("{0}"));
 
             var mathConverter = new CalcConverter
             {
@@ -62,9 +64,9 @@ namespace CalcBinding
 
             // possibility of twoway mode. Out of the box it is only 
             // one variable or negative from bool variable
-            if (pathsList.Count == 1)
+            if (uniquePathList.Count == 1)
             {
-                var binding = new System.Windows.Data.Binding(pathsList.First())
+                var binding = new System.Windows.Data.Binding(uniquePathList.Single())
                 {
                     Mode = Mode,
                     NotifyOnSourceUpdated = NotifyOnSourceUpdated,
@@ -119,7 +121,7 @@ namespace CalcBinding
                     mBinding.StringFormat = StringFormat;
 
                 mathConverter.StringFormatDefined = StringFormat != null;
-                foreach (var path in pathsList)
+                foreach (var path in uniquePathList)
                 {
                     var binding = new System.Windows.Data.Binding(path);
 
@@ -150,7 +152,7 @@ namespace CalcBinding
                 "(", ")", "+", "-", "*", "/", "%", "^", "!", "&&", "||", 
                 "&", "|", "?", ":", "<", ">", "<=", ">=", "==", "!=" 
             };
-            
+
             var matches = normPath.Split(operators.ToArray(), StringSplitOptions.RemoveEmptyEntries);
 
             var pathsList = new List<String>();
@@ -158,10 +160,12 @@ namespace CalcBinding
             foreach (var match in matches)
             {
                 if (!Regex.IsMatch(match, @"\d") && !match.Contains("\""))
-                    pathsList.Add(match);
+                {
+                    // math detection
+                    if (!Regex.IsMatch(match, @"Math.\w+\(\w+\)") && !Regex.IsMatch(match, @"Math.\w+"))
+                        pathsList.Add(match);
+                }
             }
-
-            pathsList = pathsList.Distinct().ToList();
 
             return pathsList;
         }
@@ -203,7 +207,6 @@ namespace CalcBinding
 
             return normPath;
         }
-
 
         #region Binding Properties
 
