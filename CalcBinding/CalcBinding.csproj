@@ -50,7 +50,9 @@
     <Compile Include="CalcConverter.cs" />
     <Compile Include="BoolToVisibilityConverter.cs" />
     <Compile Include="FalseToVisibility.cs" />
+    <Compile Include="Inverse\Inverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Inverse\TwoKeysDictionary.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
