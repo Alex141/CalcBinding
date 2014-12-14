@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsoleApplication2
+namespace CalcBinding.Inverse
 {
     /// <summary>
     /// Validate and inverse expression of one parameter
@@ -37,7 +37,7 @@ namespace ConsoleApplication2
         /// <param name="expression">Expression Y=F(X)</param>
         /// <param name="parameter">Type and name of Y parameter</param>
         /// <returns>Inverted expression X = F_back(Y)</returns>
-        public static Expression InverseExpression(Expression expression, ParameterExpression parameter)
+        public Expression InverseExpression(Expression expression, ParameterExpression parameter)
         {
             var recInfo = new RecursiveInfo();
             InverseExpressionInternal(expression, recInfo);
@@ -53,7 +53,7 @@ namespace ConsoleApplication2
         /// <param name="expr">Original expression</param>
         /// <param name="recInfo">Out expression</param>
         /// <returns>NodeType - const or variable</returns>
-        private static NodeType InverseExpressionInternal(Expression expr, RecursiveInfo recInfo)
+        private NodeType InverseExpressionInternal(Expression expr, RecursiveInfo recInfo)
         {
             switch (expr.NodeType)
             {
@@ -91,9 +91,9 @@ namespace ConsoleApplication2
                         }
 
                         if (recInfo.FoundedParamName == parameter.Name)
-                            throw new Exception(String.Format("Variable {0} is defined more than one time!"));
+                            throw new InverseException(String.Format("Variable {0} is defined more than one time!"));
                         else
-                            throw new Exception(String.Format("More than one variables are defined in expression: {0} and {1}", recInfo.FoundedParamName, parameter.Name));
+                            throw new InverseException(String.Format("More than one variables are defined in expression: {0} and {1}", recInfo.FoundedParamName, parameter.Name));
                     }
 
                 case ExpressionType.Constant:
@@ -109,11 +109,11 @@ namespace ConsoleApplication2
                         return operandType;
                     }
                 default:
-                    throw new Exception(String.Format("Данное выражение не знаем как распарсить: {0}, ошибка", expr));
+                    throw new InverseException(String.Format("Unsupported expression: {0}", expr));
             }
         }
 
-        #region For recursion func work
+        #region Types for recursion func work
 		
         internal enum NodeType
         {
@@ -133,9 +133,9 @@ namespace ConsoleApplication2
             public string FoundedParamName;
             public string InvertedExp;
         }
-	    
-        #endregion    
 
+        private delegate String FuncExpressionDelegate(Expression constant);    
+        
         /// <summary>
         /// Dictionary for inversed funcs static initialize
         /// </summary>
@@ -157,5 +157,7 @@ namespace ConsoleApplication2
                 }
             }
         }
+        
+        #endregion    
     }
 }

@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsoleApplication2
+namespace CalcBinding.Inverse
 {
     /// <summary>
     /// Two keys dictionary
