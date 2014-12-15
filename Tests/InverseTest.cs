@@ -13,51 +13,68 @@ namespace Tests
         [TestMethod]
         public void BasicExpressionsTest()
         {
-            #region примеры
-            var exprList = new Dictionary<Expression<Func<int, double>>, Expression<Func<double, double>>>() 
-            {
-                //+
-                { (a) => a + 2, (Path) => Path - 2 },
-                { (a) => 4 + a, (Path) => Path - 4 },
-                { (a) => a + 2 + 3 + 5 + 2, (Path) => Path - 2 - 5 - 3 - 2 },
-                //-
-                { (a) => a - 5, (Path) => Path + 5 },
-                { (a) => 4 - a, (Path) => 4 - Path }
+            testInverse("a + 2", "((Path) - 2)");
+            testInverse("4 + a", "((Path) - 4)");
+            //+
+            testInverse("a + 2 + 3 + 5 + 2", "(((((Path) - 2) - 5) - 3) - 2)");
+            //-
+            testInverse("a - 5", "((Path) + 5)");
+            testInverse("4 - a", "(4 - (Path))");
                
-                ////*
-                //(a) => a * 3,
-                //(a) => 3 * a,
+            //*
+            testInverse("a * 3", "((Path) / 3)");
+            testInverse("3 * a", "((Path) / 3)");
 
-                //// /
-                //(a) => a / 7,
-                //(a) => 3 / a,
+            // /
+            testInverse("a / 7", "((Path) * 7)");
+            testInverse("3 / a", "(3 / (Path))"); 
 
-                ////complex
-                //(a) => ((a + 2 - 5 * 3) / (2 - 7) - 3) * 2 / 3,
+            //complex
+            testInverse("((a + 2 - 5 * 3) / (2 - 7) - 3) * 2 / 3", "(((((((Path)*3)/2)+3)*(2 - 7))+(5 * 3))-2)");
 
-                //(a) => (int)((double)5.0 / (17-a)),
- 
-                ////constant complex
-                //(a) => 2 / 5 * 4 + 5 - (6 + 3) * 2 / 4,
+            testInverse("(int)((double)5.0 / (17-a))", "(17-(5/(Path)))");
+        }
 
-                ////bad samples
-                //(a) => a % 2,
-                //(a) => (int)Math.Max(a, 4)
-            };
-            #endregion
+        [TestMethod]
+        [ExpectedException(typeof(InverseException))]
+        public void ConstantExpressionTest()
+        {
+            //constant complex
+            testInverse("2 / 5 * 4 + 5 - (6 + 3) * 2 / 4", "");
+        }
 
+        [TestMethod]
+        public void BadExpressionsTest()
+        {
+            AssertException<InverseException>(() => testInverse("a % 2", ""));
+            AssertException<InverseException>(() => testInverse("(int)Math.Max(a, 4)", ""));
+        }
 
+        private void AssertException<T>(Action action) where T: Exception
+        {
+            try
+            {
+                action();
+            }
+            catch (T)
+            {
+                return;
+            }
+            Assert.Fail();
+        }
+
+        private void testInverse(string expr, string exceptedResult)
+        {
             var inverse = new Inverter();
             var interpreter = new Interpreter();
 
+            var aParam = new Parameter("a", typeof(int));
             var resParam = Expression.Parameter(typeof(double), "Path");
             var resParam2 = new Parameter("Path", typeof(double));
 
-            foreach (var expr in exprList.Keys)
-            {
-                var expectedInverseExpr = interpreter.Parse(exprList[expr].Body.ToString(), resParam2).Expression.ToString();
-                Assert.AreEqual(expectedInverseExpr, inverse.InverseExpression(expr.Body, resParam).ToString());
-            }
+            var realInverseExpr = inverse.InverseExpression(interpreter.Parse(expr, aParam).Expression, resParam).ToString();
+            var expectedInverseExpr = interpreter.Parse(exceptedResult, resParam2).Expression.ToString();
+            Assert.AreEqual(expectedInverseExpr, realInverseExpr);
         }
     }
 }

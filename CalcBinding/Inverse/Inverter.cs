@@ -1,6 +1,7 @@
 ﻿using DynamicExpresso;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -13,7 +14,7 @@ namespace CalcBinding.Inverse
     /// </summary>
     public class Inverter
     {
-        private const string RES = "{0}";
+        private const string RES = "({0})";
 
         private static readonly ExpressionFuncsDictionary inversedFuncs = new ExpressionFuncsDictionary 
         {
@@ -42,9 +43,14 @@ namespace CalcBinding.Inverse
             var recInfo = new RecursiveInfo();
             InverseExpressionInternal(expression, recInfo);
 
+            if (recInfo.FoundedParamName == null)
+                throw new InverseException("Parameter was not found in expression!");
+
             recInfo.InvertedExp = String.Format(recInfo.InvertedExp, parameter.Name);
 
-            return new Interpreter().Parse(recInfo.InvertedExp, new Parameter(parameter.Name, parameter.Type)).Expression;
+            var res = new Interpreter().Parse(recInfo.InvertedExp, new Parameter(parameter.Name, parameter.Type));
+            Trace.WriteLine(res.ExpressionText);
+            return res.Expression;
         }
 
         /// <summary>
