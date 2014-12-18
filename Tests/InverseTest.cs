@@ -50,6 +50,12 @@ namespace Tests
             AssertException<InverseException>(() => testInverse("(int)Math.Max(a, 4)", ""));
         }
 
+        [TestMethod]
+        public void MathExpressionsTest()
+        {
+
+        }
+
         private void AssertException<T>(Action action) where T: Exception
         {
             try
