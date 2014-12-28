@@ -59,12 +59,6 @@ namespace Tests
             testInverse<double, double>("Math.Sin(a)", "Math.Asin(Path)");
         }
 
-        [TestMethod]
-        public void MathExpressionsTest()
-        {
-
-        }
-
         private void AssertException<T>(Action action) where T: Exception
         {
             try

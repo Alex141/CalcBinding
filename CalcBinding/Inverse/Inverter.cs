@@ -159,8 +159,9 @@ namespace CalcBinding.Inverse
                 case ExpressionType.Call:
                     {
                         var methodExpr = expr as MethodCallExpression;
-                        
-                        if (!inversedMathFuncs.ContainsKey(methodExpr.Method.ToString()))
+
+                        var methodName = methodExpr.Method.DeclaringType.Name + "." + methodExpr.Method.Name;
+                        if (!inversedMathFuncs.ContainsKey(methodName))
                         {
                             throw new InverseException(String.Format("Unsupported method call expression: {0}", expr));
                         }
@@ -179,10 +180,10 @@ namespace CalcBinding.Inverse
 
                         string inversedRes = null;
                         if (leftOperandType == NodeType.Variable)
-                            inversedRes = inversedMathFuncs[methodExpr.Method.ToString(), ConstantPlace.Left](rightOperand);
+                            inversedRes = inversedMathFuncs[methodName, ConstantPlace.Left](rightOperand);
                         else
                             if (rightOperandType.HasValue && rightOperandType.Value == NodeType.Variable)
-                                inversedRes = inversedMathFuncs[methodExpr.Method.ToString(), ConstantPlace.Right](leftOperand);
+                                inversedRes = inversedMathFuncs[methodName, ConstantPlace.Right](leftOperand);
 
                         if (inversedRes != null)
                             recInfo.InvertedExp = String.Format(recInfo.InvertedExp, inversedRes);
