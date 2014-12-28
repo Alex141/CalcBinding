@@ -13,26 +13,29 @@ namespace Tests
         [TestMethod]
         public void BasicExpressionsTest()
         {
-            testInverse("a + 2", "((Path) - 2)");
-            testInverse("4 + a", "((Path) - 4)");
+            Action<string, string> basicTestInverse = 
+                (expr, exceptedResult) => testInverse<int, double>(expr, exceptedResult);
+
+            basicTestInverse("a + 2", "((Path) - 2)");
+            basicTestInverse("4 + a", "((Path) - 4)");
             //+
-            testInverse("a + 2 + 3 + 5 + 2", "(((((Path) - 2) - 5) - 3) - 2)");
+            basicTestInverse("a + 2 + 3 + 5 + 2", "(((((Path) - 2) - 5) - 3) - 2)");
             //-
-            testInverse("a - 5", "((Path) + 5)");
-            testInverse("4 - a", "(4 - (Path))");
+            basicTestInverse("a - 5", "((Path) + 5)");
+            basicTestInverse("4 - a", "(4 - (Path))");
                
             //*
-            testInverse("a * 3", "((Path) / 3)");
-            testInverse("3 * a", "((Path) / 3)");
+            basicTestInverse("a * 3", "((Path) / 3)");
+            basicTestInverse("3 * a", "((Path) / 3)");
 
             // /
-            testInverse("a / 7", "((Path) * 7)");
-            testInverse("3 / a", "(3 / (Path))"); 
+            basicTestInverse("a / 7", "((Path) * 7)");
+            basicTestInverse("3 / a", "(3 / (Path))"); 
 
             //complex
-            testInverse("((a + 2 - 5 * 3) / (2 - 7) - 3) * 2 / 3", "(((((((Path)*3)/2)+3)*(2 - 7))+(5 * 3))-2)");
+            basicTestInverse("((a + 2 - 5 * 3) / (2 - 7) - 3) * 2 / 3", "(((((((Path)*3)/2)+3)*(2 - 7))+(5 * 3))-2)");
 
-            testInverse("(int)((double)5.0 / (17-a))", "(17-(5/(Path)))");
+            basicTestInverse("(int)((double)5.0 / (17-a))", "(17-(5/(Path)))");
         }
 
         [TestMethod]
@@ -40,14 +43,20 @@ namespace Tests
         public void ConstantExpressionTest()
         {
             //constant complex
-            testInverse("2 / 5 * 4 + 5 - (6 + 3) * 2 / 4", "");
+            testInverse<int, double>("2 / 5 * 4 + 5 - (6 + 3) * 2 / 4", "");
         }
 
         [TestMethod]
         public void BadExpressionsTest()
         {
-            AssertException<InverseException>(() => testInverse("a % 2", ""));
-            AssertException<InverseException>(() => testInverse("(int)Math.Max(a, 4)", ""));
+            AssertException<InverseException>(() => testInverse<int, double>("a % 2", ""));
+            AssertException<InverseException>(() => testInverse<int, double>("(int)Math.Max(a, 4)", ""));
+        }
+
+        [TestMethod]
+        public void MathExpressionsTest()
+        {
+            testInverse<double, double>("Math.Sin(a)", "Math.Asin(Path)");
         }
 
         private void AssertException<T>(Action action) where T: Exception
@@ -63,16 +72,16 @@ namespace Tests
             Assert.Fail();
         }
 
-        private void testInverse(string expr, string exceptedResult)
+        private void testInverse<aType, PathType>(string expr, string exceptedResult)
         {
             var inverse = new Inverter();
             var interpreter = new Interpreter();
 
-            var aParam = new Parameter("a", typeof(int));
-            var resParam = Expression.Parameter(typeof(double), "Path");
-            var resParam2 = new Parameter("Path", typeof(double));
+            var aParam = new Parameter("a", typeof(aType));
+            var resParam = Expression.Parameter(typeof(PathType), "Path");
+            var resParam2 = new Parameter("Path", typeof(PathType));
 
-            var realInverseExpr = inverse.InverseExpression(interpreter.Parse(expr, aParam).Expression, resParam).ToString();
+            var realInverseExpr = inverse.InverseExpression(interpreter.Parse(expr, aParam).Expression, resParam).Expression.ToString();
             var expectedInverseExpr = interpreter.Parse(exceptedResult, resParam2).Expression.ToString();
             Assert.AreEqual(expectedInverseExpr, realInverseExpr);
         }

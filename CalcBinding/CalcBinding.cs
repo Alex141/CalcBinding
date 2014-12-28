@@ -91,7 +91,8 @@ namespace CalcBinding
                 if (StringFormat != null)
                     binding.StringFormat = StringFormat;
 
-                if (exprTemplate == "!{0}" || (exprTemplate == "{0}" && _targetProperty.PropertyType == typeof(Visibility)))
+                // we don't use converter if binding is trivial - {0}, except type convertion from bool to visibility
+                if (exprTemplate != "{0}" || _targetProperty.PropertyType == typeof(Visibility))
                 {
                     binding.Converter = mathConverter;
                     binding.ConverterParameter = exprTemplate;

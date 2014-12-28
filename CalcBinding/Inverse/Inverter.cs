@@ -16,7 +16,7 @@ namespace CalcBinding.Inverse
     {
         private const string RES = "({0})";
 
-        private static readonly ExpressionFuncsDictionary inversedFuncs = new ExpressionFuncsDictionary 
+        private static readonly ExpressionFuncsDictionary<ExpressionType> inversedFuncs = new ExpressionFuncsDictionary<ExpressionType> 
         {
             // res = a+c or c+a => a = res - c
             {ExpressionType.Add, ConstantPlace.Wherever, constant => RES + "-" + constant},
@@ -32,13 +32,19 @@ namespace CalcBinding.Inverse
             {ExpressionType.Divide, ConstantPlace.Right, constant => RES + "*" + constant},
         };
 
+        private static readonly ExpressionFuncsDictionary<String> inversedMath = new ExpressionFuncsDictionary<String>
+        {
+            // res = Sin(a) => a = Asin(res)
+            {"Sin", ConstantPlace.Wherever, (dummy) => "Asin" + RES}
+        };
+
         /// <summary>
         /// Inverse expression of one parameter
         /// </summary>
         /// <param name="expression">Expression Y=F(X)</param>
         /// <param name="parameter">Type and name of Y parameter</param>
         /// <returns>Inverted expression X = F_back(Y)</returns>
-        public Expression InverseExpression(Expression expression, ParameterExpression parameter)
+        public Lambda InverseExpression(Expression expression, ParameterExpression parameter)
         {
             var recInfo = new RecursiveInfo();
             InverseExpressionInternal(expression, recInfo);
@@ -50,11 +56,17 @@ namespace CalcBinding.Inverse
 
             var res = new Interpreter().Parse(recInfo.InvertedExp, new Parameter(parameter.Name, parameter.Type));
             Trace.WriteLine(res.ExpressionText);
-            return res.Expression;
+            return res;
         }
 
+        //public Expression InverseExpression(Expression expression, ParameterExpression parameter)
+        //{
+        //    return InverseException()
+        //}
+
         /// <summary>
-        /// Generate inversed expression tree by original expression tree of one parameter using recursion
+        /// Generate inversed expression tree from original expression tree of one parameter 
+        /// using recursion
         /// </summary>
         /// <param name="expr">Original expression</param>
         /// <param name="recInfo">Out expression</param>
@@ -146,9 +158,9 @@ namespace CalcBinding.Inverse
         /// <summary>
         /// Dictionary for inversed funcs static initialize
         /// </summary>
-        private class ExpressionFuncsDictionary : Dictionary<ExpressionType, ConstantPlace, FuncExpressionDelegate>
+        private class ExpressionFuncsDictionary<T> : Dictionary<T, ConstantPlace, FuncExpressionDelegate>
         {
-            public override FuncExpressionDelegate this[ExpressionType key1, ConstantPlace key2]
+            public override FuncExpressionDelegate this[T key1, ConstantPlace key2]
             {
                 get
                 {
