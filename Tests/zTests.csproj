@@ -40,7 +40,11 @@
     <Reference Include="DynamicExpresso.Core">
       <HintPath>..\packages\DynamicExpresso.Core.1.1.0.0\lib\net40\DynamicExpresso.Core.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -55,13 +59,20 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="BoolToVisibilityConverterTests.cs" />
+    <Compile Include="CalcConverterTests.cs" />
     <Compile Include="InverseTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="CalcBindingTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CalcBinding\CalcBinding.csproj">
       <Project>{54ead481-b6fc-41bb-abbe-f0b33e123c61}</Project>
       <Name>CalcBinding</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WpfExample\WpfExample.csproj">
+      <Project>{705d5657-b94d-4a9c-9377-37454281357d}</Project>
+      <Name>WpfExample</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

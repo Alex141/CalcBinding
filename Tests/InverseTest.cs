@@ -56,7 +56,11 @@ namespace Tests
         [TestMethod]
         public void MathExpressionsTest()
         {
-            testInverse<double, double>("Math.Sin(a)", "Math.Asin(Path)");
+            testDoubleInverse<double, double>("Math.Sin(a)", "Math.Asin(Path)");
+            testDoubleInverse<double, double>("Math.Cos(a)", "Math.Acos(Path)");
+            testDoubleInverse<double, double>("Math.Pow(a, 2)", "Math.Pow(Path, 1/2)");
+            testInverse<double, double>("Math.Pow(4, a)", "Math.Log(Path, 4)");
+            testInverse<double, double>("Math.Log(a, 4)", "Math.Pow(4, Path)");
         }
 
         private void AssertException<T>(Action action) where T: Exception
@@ -72,18 +76,41 @@ namespace Tests
             Assert.Fail();
         }
 
-        private void testInverse<aType, PathType>(string expr, string exceptedResult)
+        private void testDoubleInverse<aType, PathType>(string expr, string exceptedResult)
+        {
+            testInverse<aType, PathType>(expr, exceptedResult);
+            testInverse<PathType, aType>(exceptedResult, expr, true);
+        }
+
+        private void testInverse<aType, PathType>(string expr, string exceptedResult, bool reverse = false)
         {
             var inverse = new Inverter();
             var interpreter = new Interpreter();
 
-            var aParam = new Parameter("a", typeof(aType));
-            var resParam = Expression.Parameter(typeof(PathType), "Path");
-            var resParam2 = new Parameter("Path", typeof(PathType));
+            String argName = "a", resName = "Path";
+
+            if (reverse)
+            {
+                swap(ref argName, ref resName);
+                //swap(ref expr, ref exceptedResult);
+            }
+
+            var aParam = new Parameter(argName, typeof(aType));
+            var resParam = Expression.Parameter(typeof(PathType), resName);
+            var resParam2 = new Parameter(resName, typeof(PathType));
 
             var realInverseExpr = inverse.InverseExpression(interpreter.Parse(expr, aParam).Expression, resParam).Expression.ToString();
             var expectedInverseExpr = interpreter.Parse(exceptedResult, resParam2).Expression.ToString();
             Assert.AreEqual(expectedInverseExpr, realInverseExpr);
+        }
+
+        private void swap<T>(ref T arg1, ref T arg2)
+        {
+            T temp = arg1;
+
+            arg1 = arg2;
+
+            arg2 = temp;
         }
     }
 }

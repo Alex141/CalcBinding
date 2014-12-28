@@ -16,21 +16,38 @@ namespace CalcBinding
     /// </summary>
     public class CalcConverter : IValueConverter, IMultiValueConverter
     {
+        private IExpressionParser parser = new InterpreterParser();
         private Lambda compiledExpression;
         private Lambda compiledInversedExpression;
         private bool inverseFaulted = false;
 
         public bool StringFormatDefined { get; set; }
-        public FalseToVisibility FalseToVisibility { get; set; }
+
+        private FalseToVisibility falseToVisibility = CalcBinding.FalseToVisibility.Collapsed;
+        public FalseToVisibility FalseToVisibility 
+        {
+            get { return falseToVisibility; }
+            set { falseToVisibility = value; }
+        }
 
         #region Init
 
-        public CalcConverter()
-            : this(CalcBinding.FalseToVisibility.Collapsed) {}
+        public CalcConverter() { }
+
+        public CalcConverter(IExpressionParser parser)
+        {
+            this.parser = parser;        
+        }
 
         public CalcConverter(FalseToVisibility falseToVisibility)
         {
             FalseToVisibility = falseToVisibility;
+        }
+
+        public CalcConverter(FalseToVisibility falseToVisibility, IExpressionParser parser)
+        {
+            FalseToVisibility = falseToVisibility;
+            this.parser = parser;
         } 
 
         #endregion
@@ -129,7 +146,7 @@ namespace CalcBinding
                 );
             }
 
-            var compiledExpression = new Interpreter().Parse(expressionTemplate, parametersDefinition.ToArray());
+            var compiledExpression = parser.Parse(expressionTemplate, parametersDefinition.ToArray());
 
             return compiledExpression;
         }

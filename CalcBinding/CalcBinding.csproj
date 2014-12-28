@@ -52,6 +52,7 @@
     <Compile Include="CalcConverter.cs" />
     <Compile Include="BoolToVisibilityConverter.cs" />
     <Compile Include="FalseToVisibility.cs" />
+    <Compile Include="IExpressionParser.cs" />
     <Compile Include="Inverse\InverseExceptions.cs" />
     <Compile Include="Inverse\Inverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -22,7 +23,7 @@ namespace WpfExample
                 a = value;
 
                 new object().TraceTime(
-                    () => PropertyChanged(this, new PropertyChangedEventArgs("A"))
+                    () => RaisePropertyChanged(() => A)
                 );
             }
         }
@@ -35,7 +36,7 @@ namespace WpfExample
             {
                 b = value;
                 new object().TraceTime(
-                    () => PropertyChanged(this, new PropertyChangedEventArgs("B"))
+                    () => RaisePropertyChanged(() => B)
                 );
             }
         }
@@ -48,7 +49,7 @@ namespace WpfExample
             {
                 c = value;
                 new object().TraceTime(
-                    () => PropertyChanged(this, new PropertyChangedEventArgs("C"))
+                    () => RaisePropertyChanged(() => C)
                 );
             }
         }
@@ -61,7 +62,7 @@ namespace WpfExample
             {
                 isChecked = value;
                 new object().TraceTime(
-                    () => PropertyChanged(this, new PropertyChangedEventArgs("IsChecked"))
+                    () => RaisePropertyChanged(() => IsChecked)
                 );
             }
         }
@@ -74,7 +75,7 @@ namespace WpfExample
             {
                 isFull = value;
                 new object().TraceTime(
-                    () => PropertyChanged(this, new PropertyChangedEventArgs("IsFull"))
+                    () => RaisePropertyChanged(() => IsFull)
                 );
             }
         }
@@ -87,7 +88,7 @@ namespace WpfExample
             {
                 name = value;
                 new object().TraceTime(
-                    () => PropertyChanged(this, new PropertyChangedEventArgs("Name"))
+                    () => RaisePropertyChanged(() => Name)
                 );
             }
         }
@@ -100,7 +101,7 @@ namespace WpfExample
             {
                 surname = value;
                 new object().TraceTime(
-                    () => PropertyChanged(this, new PropertyChangedEventArgs("Surname"))
+                    () => RaisePropertyChanged(() => Surname)
                 );
             }
         }
@@ -113,7 +114,7 @@ namespace WpfExample
             {
                 isMan = value;
                 new object().TraceTime(
-                    () => PropertyChanged(this, new PropertyChangedEventArgs("IsMan"))
+                    () => RaisePropertyChanged(() => IsMan)
                 );
             }
         }
@@ -126,8 +127,18 @@ namespace WpfExample
             {
                 hasPrivileges = value;
                 new object().TraceTime(
-                    () => PropertyChanged(this, new PropertyChangedEventArgs("HasPrivileges"))
+                    () => RaisePropertyChanged(() => HasPrivileges)
                 );
+            }
+        }
+
+        protected void RaisePropertyChanged<T>(Expression<Func<T>> propertyExpression)
+        {
+            if (PropertyChanged != null)
+            {
+                var propertyName = (propertyExpression.Body as MemberExpression).Member.Name;
+
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
         }
         public event PropertyChangedEventHandler PropertyChanged;
