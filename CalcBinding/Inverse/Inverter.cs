@@ -31,6 +31,35 @@ namespace CalcBinding.Inverse
             // res = a/c => a = res*c           
             {ExpressionType.Divide, ConstantPlace.Right, constant => RES + "*" + constant},
         };
+        
+        private static readonly ExpressionFuncsDictionary<String> inversedMathFuncs = new ExpressionFuncsDictionary<string>
+        {
+            // res = Math.Sin(a) => a = Math.Asin(res)
+            {"Math.Sin", ConstantPlace.Wherever, dummy => "Math.Asin" + RES},
+            // res = Math.Asin(a) => a = Math.Sin(res)
+            {"Math.Asin", ConstantPlace.Wherever, dummy => "Math.Sin" + RES},
+            
+            // res = Math.Cos(a) => a = Math.Acos(res)
+            {"Math.Cos", ConstantPlace.Wherever, dummy => "Math.Acos" + RES},
+            // res = Math.Acos(a) => a = Math.Cos(res)
+            {"Math.Acos", ConstantPlace.Wherever, dummy => "Math.Cos" + RES},
+            
+            // res = Math.Tan(a) => a = Math.atan(res)
+            {"Math.Tan", ConstantPlace.Wherever, dummy => "Math.Atan" + RES},
+            // res = Math.Atan(a) => a = Math.Tan(res)
+            {"Math.Atan", ConstantPlace.Wherever, dummy => "Math.Tan" + RES},
+
+            // res = Math.Pow(c, a) => a = Math.Pow(res, 1/c)
+            {"Math.Pow", ConstantPlace.Left, constant => "Math.Log(" + RES + ", " + constant + ")"},
+            // res = Math.Pow(a, c) => a = Math.Pow(res, 1/c)
+            {"Math.Pow", ConstantPlace.Right, constant => "Math.Pow(" + RES + ", 1.0/" + constant + ")"},
+
+            // res = Math.Log(c, a) => a = Math.Pow(c, 1/res)
+            {"Math.Log", ConstantPlace.Left, constant => "Math.Pow(" + constant + ", 1.0/" + RES + ")"},
+            // res = Math.Log(a, c) => a = Math.Pow(c, res)
+            {"Math.Log", ConstantPlace.Right, constant => "Math.Pow(" + constant + ", " + RES + ")"},
+
+        };
 
         private static readonly ExpressionFuncsDictionary<String> inversedMath = new ExpressionFuncsDictionary<String>
         {
@@ -126,6 +155,39 @@ namespace CalcBinding.Inverse
                         var convertExpr = expr as UnaryExpression;
                         var operandType = InverseExpressionInternal(convertExpr.Operand, recInfo);
                         return operandType;
+                    }
+                case ExpressionType.Call:
+                    {
+                        var methodExpr = expr as MethodCallExpression;
+                        
+                        if (!inversedMathFuncs.ContainsKey(methodExpr.Method.ToString()))
+                        {
+                            throw new InverseException(String.Format("Unsupported method call expression: {0}", expr));
+                        }
+
+                        var leftOperandType = InverseExpressionInternal(methodExpr.Arguments[0], recInfo);
+                        NodeType? rightOperandType = null;
+                        Expression leftOperand, rightOperand = null;
+
+                        leftOperand = methodExpr.Arguments[0];
+
+                        if (methodExpr.Arguments.Count == 2)
+                        {
+                            rightOperandType = InverseExpressionInternal(methodExpr.Arguments[1], recInfo);
+                            rightOperand = methodExpr.Arguments[1];
+                        }
+
+                        string inversedRes = null;
+                        if (leftOperandType == NodeType.Variable)
+                            inversedRes = inversedMathFuncs[methodExpr.Method.ToString(), ConstantPlace.Left](rightOperand);
+                        else
+                            if (rightOperandType.HasValue && rightOperandType.Value == NodeType.Variable)
+                                inversedRes = inversedMathFuncs[methodExpr.Method.ToString(), ConstantPlace.Right](leftOperand);
+
+                        if (inversedRes != null)
+                            recInfo.InvertedExp = String.Format(recInfo.InvertedExp, inversedRes);
+
+                        return inversedRes == null ? NodeType.Constant : NodeType.Variable;
                     }
                 default:
                     throw new InverseException(String.Format("Unsupported expression: {0}", expr));
