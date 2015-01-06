@@ -35,7 +35,10 @@ namespace Tests
             //complex
             basicTestInverse("((a + 2 - 5 * 3) / (2 - 7) - 3) * 2 / 3", "(((((((Path)*3)/2)+3)*(2 - 7))+(5 * 3))-2)");
 
-            basicTestInverse("(int)((double)5.0 / (17-a))", "(17-(5/(Path)))");
+            basicTestInverse("(int)((double)5.0 / (17-a))", "((17)-(((Int32)((5)/(((Double)(((Double)(Path)))))))))");
+
+            //yeeeeeeeeeeeah!! gggoodd!!))
+            basicTestInverse("(int)(5.31*a)", "(((Int32)((((Double)(Path)))/(5.31))))");
         }
 
         [TestMethod]
@@ -58,9 +61,11 @@ namespace Tests
         {
             testDoubleInverse<double, double>("Math.Sin(a)", "Math.Asin(Path)");
             testDoubleInverse<double, double>("Math.Cos(a)", "Math.Acos(Path)");
-            testDoubleInverse<double, double>("Math.Pow(a, 2)", "Math.Pow(Path, 1/2)");
-            testInverse<double, double>("Math.Pow(4, a)", "Math.Log(Path, 4)");
-            testInverse<double, double>("Math.Log(a, 4)", "Math.Pow(4, Path)");
+            testDoubleInverse<double, double>("Math.Pow(4, a)", "Math.Log(Path, 4)");
+            testInverse<double, double>("Math.Pow(a, 2)", "Math.Pow((Path), 1.0/((Double)(2)))");
+            testInverse<double, double>("Math.Pow((a), 1.0/((Double)(2)))", "(Math.Pow((Path), 1.0/((1)/((Double)(2)))))");
+        
+            //todo: Tan tests, Tests with PI
         }
 
         private void AssertException<T>(Action action) where T: Exception

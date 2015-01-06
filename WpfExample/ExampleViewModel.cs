@@ -9,10 +9,123 @@ using System.Threading.Tasks;
 
 namespace WpfExample
 {
+    public class BaseViewModel: INotifyPropertyChanged
+    {
+        protected void RaisePropertyChanged<T>(Expression<Func<T>> propertyExpression)
+        {
+            if (PropertyChanged != null)
+            {
+                var propertyName = (propertyExpression.Body as MemberExpression).Member.Name;
+
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+        public event PropertyChangedEventHandler PropertyChanged;
+    }
+
+    public class DoubleNestedViewModel : BaseViewModel
+    {
+        private double a = 300;
+        public double A
+        {
+            get { return a; }
+            set
+            {
+                a = value;
+
+                new object().TraceTime(
+                    () => RaisePropertyChanged(() => A)
+                );
+            }
+        }
+
+        private int b = 340;
+        public int B
+        {
+            get { return b; }
+            set
+            {
+                b = value;
+                new object().TraceTime(
+                    () => RaisePropertyChanged(() => B)
+                );
+            }
+        }
+    }
+
+    public class NestedViewModel : BaseViewModel
+    {
+        private double a = 100;
+        public double A
+        {
+            get { return a; }
+            set
+            {
+                a = value;
+
+                new object().TraceTime(
+                    () => RaisePropertyChanged(() => A)
+                );
+            }
+        }
+
+        private int b = 34;
+        public int B
+        {
+            get { return b; }
+            set
+            {
+                b = value;
+                new object().TraceTime(
+                    () => RaisePropertyChanged(() => B)
+                );
+            }
+        }
+
+        private int c = -4;
+        public int C
+        {
+            get { return c; }
+            set
+            {
+                c = value;
+                new object().TraceTime(
+                    () => RaisePropertyChanged(() => C)
+                );
+            }
+        }
+
+        private bool isChecked = false;
+        public bool IsChecked
+        {
+            get { return isChecked; }
+            set
+            {
+                isChecked = value;
+                new object().TraceTime(
+                    () => RaisePropertyChanged(() => IsChecked)
+                );
+            }
+        }
+
+        private DoubleNestedViewModel doubleNestedViewModel = new DoubleNestedViewModel();
+        public DoubleNestedViewModel DoubleNestedViewModel
+        {
+            get { return doubleNestedViewModel; }
+            set
+            {
+                doubleNestedViewModel = value;
+                new object().TraceTime(
+                    () => RaisePropertyChanged(() => DoubleNestedViewModel)
+                );
+            }
+        }    
+    }
+
     /// <summary>
     /// Example view model
     /// </summary>
-    public class ExampleViewModel : INotifyPropertyChanged
+    public class ExampleViewModel : BaseViewModel
     {
         private double a = 10;
         public double A
@@ -132,16 +245,18 @@ namespace WpfExample
             }
         }
 
-        protected void RaisePropertyChanged<T>(Expression<Func<T>> propertyExpression)
+        private NestedViewModel nestedViewModel = new NestedViewModel();
+        public NestedViewModel NestedViewModel
         {
-            if (PropertyChanged != null)
+            get { return nestedViewModel; }
+            set
             {
-                var propertyName = (propertyExpression.Body as MemberExpression).Member.Name;
-
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+                nestedViewModel = value;
+                new object().TraceTime(
+                    () => RaisePropertyChanged(() => NestedViewModel)
+                );
             }
         }
-        public event PropertyChangedEventHandler PropertyChanged;
     }
 
     public static class TimeExtension

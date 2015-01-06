@@ -2,9 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace CalcBinding.Inverse
@@ -76,17 +78,43 @@ namespace CalcBinding.Inverse
         public Lambda InverseExpression(Expression expression, ParameterExpression parameter)
         {
             var recInfo = new RecursiveInfo();
-            InverseExpressionInternal(expression, recInfo);
+            String dummy = null;
+            InverseExpressionInternal(expression, recInfo, ref dummy);
 
             if (recInfo.FoundedParamName == null)
                 throw new InverseException("Parameter was not found in expression!");
 
-            recInfo.InvertedExp = String.Format(recInfo.InvertedExp, parameter.Name);
+            // difficult with constant subtrees: we write to string all constant subtrees,
+            // but some of them can take Convert operator, which converted to string as Convert(arg).
+            // when we try to parse this string, an error occured, because "Convert(arg)" is not
+            // a valid expression
+            // Solution: remove all Convert(arg) substrings from result string using regex
+            // Big problem: we can't remove Convert because it play important role: 1/2 = 0, ((double)1)/2 = 0.5 !!
+            // Solution № 2: as Convert element looks bad in ToString() we need to generate substring by constant subtree manually,
+            // this is not very hard task. Good.
+            // Other solution: switch to Expression based inverse, where we no need to generate string by Expression,
+            // only expressions. But I don't wish to do this, because 
+            //var invertedExp = removeConvertSubStrings(recInfo.InvertedExp);
+            var invertedExp = String.Format(recInfo.InvertedExp, parameter.Name);
 
-            var res = new Interpreter().Parse(recInfo.InvertedExp, new Parameter(parameter.Name, parameter.Type));
+            //Trace.WriteLine(Expression.Convert(Expression.Constant(2), typeof(double)).ToMyString()); 
+            var res = new Interpreter().Parse(invertedExp, new Parameter(parameter.Name, parameter.Type));
             Trace.WriteLine(res.ExpressionText);
+           
             return res;
         }
+
+        //private string removeConvertSubStrings(string expression)
+        //{
+        //    const string groupName = "convert_arg_group";
+        //    const string pattern = @"Convert\((?<" + groupName + @">\w+)\)";
+        //    const string replacement = @"(${"+ groupName + @"})";
+        //    Match match;
+        //    while (Regex.IsMatch(expression, pattern))
+        //        expression = Regex.Replace(expression, pattern, replacement);
+
+        //    return expression;
+        //}
 
         //public Expression InverseExpression(Expression expression, ParameterExpression parameter)
         //{
@@ -100,7 +128,7 @@ namespace CalcBinding.Inverse
         /// <param name="expr">Original expression</param>
         /// <param name="recInfo">Out expression</param>
         /// <returns>NodeType - const or variable</returns>
-        private NodeType InverseExpressionInternal(Expression expr, RecursiveInfo recInfo)
+        private NodeType InverseExpressionInternal(Expression expr, RecursiveInfo recInfo, ref string constantExpression)
         {
             switch (expr.NodeType)
             {
@@ -111,8 +139,9 @@ namespace CalcBinding.Inverse
                     {
                         var binExp = expr as BinaryExpression;
 
-                        var leftOperandType = InverseExpressionInternal(binExp.Left, recInfo);
-                        var rightOperandType = InverseExpressionInternal(binExp.Right, recInfo);
+                        string leftConstant = null, rightConstant = null;
+                        var leftOperandType = InverseExpressionInternal(binExp.Left, recInfo, ref leftConstant);
+                        var rightOperandType = InverseExpressionInternal(binExp.Right, recInfo, ref rightConstant);
 
                         var nodeType = (leftOperandType == NodeType.Variable || rightOperandType == NodeType.Variable)
                                         ? NodeType.Variable
@@ -121,9 +150,11 @@ namespace CalcBinding.Inverse
                         if (nodeType == NodeType.Variable)
                         {
                             var constantPlace = leftOperandType == NodeType.Constant ? ConstantPlace.Left : ConstantPlace.Right;
-                            var constant = leftOperandType == NodeType.Constant ? binExp.Left : binExp.Right;
+                            var constant = leftOperandType == NodeType.Constant ? leftConstant :rightConstant;
                             recInfo.InvertedExp = String.Format(recInfo.InvertedExp, inversedFuncs[expr.NodeType, constantPlace](constant));
                         }
+                        else
+                            constantExpression = String.Format("({0}{1}{2})", leftConstant, BinNodeTypeToString(binExp.NodeType), rightConstant);
 
                         return nodeType;
                     }
@@ -147,13 +178,19 @@ namespace CalcBinding.Inverse
                 case ExpressionType.Constant:
                     {
                         var constant = expr as ConstantExpression;
-
+                        constantExpression = String.Format(CultureInfo.InvariantCulture, "({0})", constant.Value);
                         return NodeType.Constant;
                     }
                 case ExpressionType.Convert:
                     {
                         var convertExpr = expr as UnaryExpression;
-                        var operandType = InverseExpressionInternal(convertExpr.Operand, recInfo);
+                        string constant = null;
+                        var operandType = InverseExpressionInternal(convertExpr.Operand, recInfo, ref constant);
+
+                        if (operandType == NodeType.Constant)
+                            constantExpression = "((" + convertExpr.Type.Name + ")" + constant + ")";
+                        else
+                            recInfo.InvertedExp = String.Format(recInfo.InvertedExp, "((" + convertExpr.Operand.Type.Name + ")" + RES + ")");
                         return operandType;
                     }
                 case ExpressionType.Call:
@@ -166,7 +203,8 @@ namespace CalcBinding.Inverse
                             throw new InverseException(String.Format("Unsupported method call expression: {0}", expr));
                         }
 
-                        var leftOperandType = InverseExpressionInternal(methodExpr.Arguments[0], recInfo);
+                        string leftConstant = null, rightConstant = null;
+                        var leftOperandType = InverseExpressionInternal(methodExpr.Arguments[0], recInfo, ref leftConstant);
                         NodeType? rightOperandType = null;
                         Expression leftOperand, rightOperand = null;
 
@@ -174,16 +212,24 @@ namespace CalcBinding.Inverse
 
                         if (methodExpr.Arguments.Count == 2)
                         {
-                            rightOperandType = InverseExpressionInternal(methodExpr.Arguments[1], recInfo);
+                            rightOperandType = InverseExpressionInternal(methodExpr.Arguments[1], recInfo, ref rightConstant);
                             rightOperand = methodExpr.Arguments[1];
                         }
 
                         string inversedRes = null;
                         if (leftOperandType == NodeType.Variable)
-                            inversedRes = inversedMathFuncs[methodName, ConstantPlace.Left](rightOperand);
+                            inversedRes = inversedMathFuncs[methodName, ConstantPlace.Right](rightConstant);
                         else
                             if (rightOperandType.HasValue && rightOperandType.Value == NodeType.Variable)
-                                inversedRes = inversedMathFuncs[methodName, ConstantPlace.Right](leftOperand);
+                                inversedRes = inversedMathFuncs[methodName, ConstantPlace.Left](leftConstant);
+                            else
+                            {
+                                //constant
+                                constantExpression = methodName + "(" + leftConstant;
+                                if (rightOperandType != null)
+                                    constantExpression += ", " + rightConstant;
+                                constantExpression += ")";
+                            }
 
                         if (inversedRes != null)
                             recInfo.InvertedExp = String.Format(recInfo.InvertedExp, inversedRes);
@@ -192,6 +238,23 @@ namespace CalcBinding.Inverse
                     }
                 default:
                     throw new InverseException(String.Format("Unsupported expression: {0}", expr));
+            }
+        }
+
+        private string BinNodeTypeToString(ExpressionType nodeType)
+        {
+            switch (nodeType)
+            {
+                case ExpressionType.Divide:
+                    return "/";
+                case ExpressionType.Multiply:
+                    return "*";
+                case ExpressionType.Subtract:
+                    return "-";
+                case ExpressionType.Add:
+                    return "+";
+                default:
+                    throw new Exception("Unkwnown binary node Type: " + nodeType + "!");
             }
         }
 
@@ -216,7 +279,7 @@ namespace CalcBinding.Inverse
             public string InvertedExp;
         }
 
-        private delegate String FuncExpressionDelegate(Expression constant);    
+        private delegate String FuncExpressionDelegate(String constant);    
         
         /// <summary>
         /// Dictionary for inversed funcs static initialize
@@ -241,5 +304,13 @@ namespace CalcBinding.Inverse
         }
         
         #endregion    
+    }
+
+    public static class ConvertExtension
+    {
+        public static String ToMyString(this UnaryExpression unary)
+        {
+            return String.Format("({0}){1}", unary.Type, unary.Operand);
+        }
     }
 }

@@ -46,7 +46,7 @@ namespace Tests
     /// System tests
     /// </summary>
     [TestClass]
-    public class CalcBindingTests
+    public class CalcBindingSystemTests
     {
         // что нужно передать для тестирования:
         // биндинг к чему мы тестируем? (String, object, Visibility, bool)
@@ -57,7 +57,7 @@ namespace Tests
         // Меняем ли xaml? 
         // На что меняем? Что должны ожидать в source?
         [TestMethod]
-        public void MathPropertyBindingTest()
+        public void MathPropertyTest()
         {
             var test = new ExampleViewModel();
 
@@ -102,11 +102,26 @@ namespace Tests
                 () => { test.A = 10; test.B = 3; }, "3.33",
                 () => { test.A = 20; test.B = -30; }, "-0.67"
             );
-            // todo: test for string format. Need tuned CalcBinding
         }
 
+        [TestMethod] 
+        public void StringPropertyTest()
+        {
+            var test = new ExampleViewModel();
+
+            // blocked by bug #1
+            StringBindingAssert("Name + ' ' + Surname", test,
+                () => { test.Name = "Willy"; test.Surname = "White"; }, "Willy White",
+                () => { test.Name = ""; test.Surname = "Smith"; }, " Smith"
+            );
+
+            StringBindingAssert("(IsMan ? 'Mr' : 'Ms') + ' ' + Surname + ' ' + Name", test,
+                () => { test.Name = "Willy"; test.Surname = "White"; test.IsMan = true; }, "Mr Willy White",
+                () => { test.Name = "Jane"; test.Surname = "Brown"; test.IsMan = false; }, "Ms Jane Brown"
+            );
+        }
         [TestMethod]
-        public void LogicPropertyBindingTest()
+        public void LogicPropertyTest()
         {
             var test = new ExampleViewModel();
 
@@ -152,7 +167,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void VisibilityPropertyBindingTest()
+        public void VisibilityPropertyTest()
         {
             //-------------------------------------------------------------------//
             var test = new ExampleViewModel();
@@ -187,8 +202,38 @@ namespace Tests
             //-------------------------------------------------------------------//
         }
 
+        [TestMethod]
+        public void NestedViewModelTest()
+        {
+            var test = new ExampleViewModel();
+
+            // serious bug #1. not resolved
+            StringAndObjectBindingAssert("A+NestedViewModel.A*0.2+C", test,
+                () => { test.A = 10; test.NestedViewModel.A = 30; test.C = -2; }, "14", (double)14,
+                () => { test.A = 20.34; test.NestedViewModel.A = 15; test.C = 12; }, "35.34", 35.34
+            );
+
+            StringAndObjectBindingAssert("A+NestedViewModel.A*0.2+NestedViewModel.DoubleNestedViewModel.B/8", test,
+                () => { test.A = 10; test.NestedViewModel.A = 30; test.NestedViewModel.DoubleNestedViewModel.B = 32; }, "20", (double)20,
+                () => { test.A = 20.34; test.NestedViewModel.A = 15; test.C = 17; }, "25.34", 25.34
+            );
+        }
         //todo: сделать тесты на то, что вызывается компиляция 1 раз. Интерфейс для Interpreter.
         // как задать? В конструкторе. В его перегрузке задавать по умолчанию
+        
+        //todo: ещё тесты: когда A + B.C (nested view models)
+        //todo: тесты на inverse ( естественно с одной переменной )
+        //todo: тесты на inverse с множеством операций привидения типов.
+        //todo: вообще еще раз разобраться что там и как работает, именно на последнем и первом
+        // этапах, мне кажется что в текущем виде у нас не заработает
+        //todo: подумать насчёт обработки ошибок. Всё таки, что делать с ними?
+
+        //наверное надо рассуждать так: Если ошибка в Path, то сразу сигналим,
+        // т.к. это хер исправишь. А если в данных - то ничего, забить.
+        // с другой стороны стандартный биндинг не ругается даже когда в Path ошибка,
+        // он в этом плане вообще туповат. Я могу взять пример с него, писать
+        // такие же ошибки (от конвертера): Binding (CalcBinding): ssdfsf sdfsdf sdf.
+        // тогда мой биндинг будет не отличить от старого. Но добавлю своего немного)
         public void StringAndObjectBindingAssert(string path, INotifyPropertyChanged source,
             Action sourcePropertySetter1, string targetValue1, object objTargetValue1,
             Action sourcePropertySetter2, string targetValue2, object objTargetValue2)

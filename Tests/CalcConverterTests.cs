@@ -24,9 +24,12 @@ namespace Tests
         public void ConvertToObjectTest()
         {
             var converter = new CalcConverter();
-
             Assert.AreEqual(15, converter.Convert(10, typeof(object), "{0}+5", CultureInfo.CurrentCulture));
+            
+            converter = new CalcConverter();
             Assert.AreEqual(15.3, converter.Convert(10, typeof(object), "{0}+5.3", CultureInfo.CurrentCulture));
+            
+            converter = new CalcConverter();
             Assert.AreEqual(true, converter.Convert(true, typeof(object), "{0}&&true", CultureInfo.CurrentCulture));
         }
 
@@ -34,19 +37,25 @@ namespace Tests
         public void ConvertToStringTest()
         {
             var converter = new CalcConverter();
+            Assert.AreEqual("15", converter.Convert(10, typeof(string), "{0}+(double)5", CultureInfo.CurrentCulture));
 
-            Assert.AreEqual("15", converter.Convert(10, typeof(string), "{0}+5", CultureInfo.CurrentCulture));
+            converter = new CalcConverter();
             Assert.AreEqual("15.3", converter.Convert(10, typeof(string), "{0}+5.3", CultureInfo.CurrentCulture));
-            Assert.AreEqual("false", converter.Convert(false, typeof(string), "{0}&&true", CultureInfo.CurrentCulture));
+
+            converter = new CalcConverter();
+            Assert.AreEqual("False", converter.Convert(false, typeof(string), "{0}&&true", CultureInfo.CurrentCulture));
         }
 
         [TestMethod]
         public void ConvertFromObjectTest()
         {
             var converter = new CalcConverter();
-
             Assert.AreEqual(10, converter.ConvertBack((object)15, typeof(int), "{0}+5", CultureInfo.CurrentCulture));
+            
+            converter = new CalcConverter();
             Assert.AreEqual(10.4, converter.ConvertBack((object)15.0, typeof(double), "{0}+5.4", CultureInfo.CurrentCulture));
+            
+            converter = new CalcConverter();
             Assert.AreEqual(true, converter.ConvertBack((object)false, typeof(bool), "!{0}", CultureInfo.CurrentCulture));
         }
 
@@ -54,9 +63,12 @@ namespace Tests
         public void ConvertFromStringTest()
         {
             var converter = new CalcConverter();
-
             Assert.AreEqual(10, converter.Convert("15", typeof(int), "{0}+5", CultureInfo.CurrentCulture));
+
+            converter = new CalcConverter();            
             Assert.AreEqual(10.3, converter.Convert("15.7", typeof(double), "{0}+5.4", CultureInfo.CurrentCulture));
+
+            converter = new CalcConverter();
             Assert.AreEqual(false, converter.Convert("True", typeof(bool), "!{0}", CultureInfo.CurrentCulture));
         }
     }

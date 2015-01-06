@@ -53,7 +53,9 @@ namespace CalcBinding
 
             var normPath = normalizePath(Path);
             var pathsList = getPathes(normPath);
-            var uniquePathList = pathsList.Distinct().ToList();
+            var uniquePathList = pathsList.Distinct()
+                //.Select((path, index) => new Tuple<string, int>(path, index))
+                .OrderByDescending(path => path.Length).ToList();
 
             var exprTemplate = normPath;
 
