@@ -123,7 +123,7 @@ namespace CalcBinding
                 }
 
                 if (targetType == typeof(String))
-                    result = result.ToString();
+                    result = String.Format(CultureInfo.InvariantCulture, "{0}", result);
             }
 
             return result;

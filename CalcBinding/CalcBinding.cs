@@ -24,8 +24,13 @@ namespace CalcBinding
         /// <summary>
         /// False to visibility. Default: False = Collapsed
         /// </summary>
-        [DefaultValue(FalseToVisibility.Collapsed)]
-        public FalseToVisibility FalseToVisibility { get; set; }
+        //[DefaultValue(FalseToVisibility.Collapsed)]
+        public FalseToVisibility FalseToVisibility 
+        {
+            get { return falseToVisibility; }
+            set { falseToVisibility = value; }
+        }
+        private FalseToVisibility falseToVisibility = FalseToVisibility.Collapsed;
 
         public Binding()
         {

@@ -66,8 +66,8 @@
                     <TextBox Text="{c:Binding 2*A-B*0.5}"/>
                 </DockPanel>
                 <DockPanel>
-                    <Label Content="A/B="/>
-                    <TextBox Text="{c:Binding A/B, StringFormat={}{0:n2} --StringFormat is used}"/>
+                    <Label Content="A/B (StringFormat=n2)"/>
+                    <TextBox Text="{c:Binding A/B, StringFormat={}{0:n2}}"/>
                 </DockPanel>
                 <DockPanel>
                     <Label Content="A%B="/>
