@@ -132,11 +132,18 @@ namespace CalcBinding
         //todo: resultType is not used, delete?
         private Lambda compileExpression(List<Type> argumentsTypes, string expressionTemplate, Type resultType)
         {
+            //template = "{1} {2} {0}"
+            //argTypes = "BBB AA C"
+
             for (int i = 0; i < argumentsTypes.Count(); i++)
             {
                 expressionTemplate = expressionTemplate.Replace("{" + i.ToString() + "}", getVariableName(i));
             }
 
+            // exprTemplate = "{b c a}"
+            //replace: BBB -> a, AA -> b, C -> c
+            // input expected: "{a b c}"    | error detected
+            // real input: "BBB AA C"          | error detected
             var parametersDefinition = new List<Parameter>();
 
             for (var i = 0; i < argumentsTypes.Count(); i++)

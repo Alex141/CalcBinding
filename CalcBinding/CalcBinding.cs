@@ -53,15 +53,26 @@ namespace CalcBinding
 
             var normPath = normalizePath(Path);
             var pathsList = getPathes(normPath);
-            var uniquePathList = pathsList.Distinct()
-                //.Select((path, index) => new Tuple<string, int>(path, index))
-                .OrderByDescending(path => path.Length).ToList();
+            
+            //pathes = "AA BBB C"
+            //unique path list = "BBB AA C"
+            var uniquePathList = pathsList.Distinct();
+
+            // logic critical code: order of params must be only {0}..{1}..{2} etc, 
+            // and not another. We can't unsynchronize order of parameters[] and params occure
+            // in expression template (bug 3).
+            // There is an example in description of bug 3 in bug tracker
+            var orderedPathes = uniquePathList
+                .Select((path, index) => new Tuple<string, int>(path, index))
+                .OrderByDescending(path => path.Item1.Length).ToList();
 
             var exprTemplate = normPath;
 
-            foreach (var p in uniquePathList)
-                exprTemplate = exprTemplate.Replace(p, uniquePathList.IndexOf(p).ToString("{0}"));
+            foreach (var path in orderedPathes)
+                exprTemplate = exprTemplate.Replace(path.Item1, path.Item2.ToString("{0}"));
 
+            // end of critical code
+            //exprTemplate = "{1} {2} {0}" (AA C BBB)
             var mathConverter = new CalcConverter
             {
                 FalseToVisibility = FalseToVisibility
@@ -71,7 +82,7 @@ namespace CalcBinding
 
             // possibility of twoway mode. Out of the box it is only 
             // one variable or negative from bool variable
-            if (uniquePathList.Count == 1)
+            if (uniquePathList.Count() == 1)
             {
                 var binding = new System.Windows.Data.Binding(uniquePathList.Single())
                 {

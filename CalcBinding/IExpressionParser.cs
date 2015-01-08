@@ -21,7 +21,7 @@ namespace CalcBinding
             interpreter = new Interpreter();
         }
 
-        public Lambda Parse(string expressionText, params Parameter[] parameters)
+        public Lambda Parse(string expressionText, Parameter[] parameters)
         {
             return interpreter.Parse(expressionText, parameters);
         }

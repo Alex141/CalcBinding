@@ -107,15 +107,14 @@ namespace Tests
         [TestMethod] 
         public void StringPropertyTest()
         {
-            var test = new ExampleViewModel();
+            var test = new ExampleViewModel()
 
-            // blocked by bug #1
             StringBindingAssert("Name + ' ' + Surname", test,
                 () => { test.Name = "Willy"; test.Surname = "White"; }, "Willy White",
                 () => { test.Name = ""; test.Surname = "Smith"; }, " Smith"
             );
 
-            StringBindingAssert("(IsMan ? 'Mr' : 'Ms') + ' ' + Surname + ' ' + Name", test,
+            StringBindingAssert("(IsMan ? 'Mr' : 'Ms') + ' ' + Name + ' ' + Surname", test,
                 () => { test.Name = "Willy"; test.Surname = "White"; test.IsMan = true; }, "Mr Willy White",
                 () => { test.Name = "Jane"; test.Surname = "Brown"; test.IsMan = false; }, "Ms Jane Brown"
             );
@@ -207,7 +206,7 @@ namespace Tests
         {
             var test = new ExampleViewModel();
 
-            // serious bug #1. not resolved
+            // serious bug #1. Resolved
             StringAndObjectBindingAssert("A+NestedViewModel.A*0.2+C", test,
                 () => { test.A = 10; test.NestedViewModel.A = 30; test.C = -2; }, "14", (double)14,
                 () => { test.A = 20.34; test.NestedViewModel.A = 15; test.C = 12; }, "35.34", 35.34
@@ -215,7 +214,12 @@ namespace Tests
 
             StringAndObjectBindingAssert("A+NestedViewModel.A*0.2+NestedViewModel.DoubleNestedViewModel.B/8", test,
                 () => { test.A = 10; test.NestedViewModel.A = 30; test.NestedViewModel.DoubleNestedViewModel.B = 32; }, "20", (double)20,
-                () => { test.A = 20.34; test.NestedViewModel.A = 15; test.C = 17; }, "25.34", 25.34
+                () => { test.A = 20.34; test.NestedViewModel.A = 15; test.NestedViewModel.DoubleNestedViewModel.B = 17; }, "25.34", 25.34
+            );
+
+            StringAndObjectBindingAssert("A+NestedViewModel.A-0.4*A", test,
+                () => { test.A = 20; test.NestedViewModel.A = 30; }, "42", (double)42,
+                () => { test.A = 30; test.NestedViewModel.A = 10; }, "28", (double)28
             );
         }
         //todo: сделать тесты на то, что вызывается компиляция 1 раз. Интерфейс для Interpreter.
