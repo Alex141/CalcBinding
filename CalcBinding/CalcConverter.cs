@@ -67,12 +67,16 @@ namespace CalcBinding
             if (compiledExpression == null)
             {
                 compiledExpression = compileExpression(new List<Type>{targetType}, (string)parameter, value.GetType());
-            
+            }
+
+            if (compiledInversedExpression == null)
+            {
                 //try convert back expression
                 try
                 {
-                    var resType = value.GetType() == typeof(Visibility) ? typeof(bool) : value.GetType();
-                    var param = System.Linq.Expressions.Expression.Parameter(resType);
+                    var resType = compiledExpression.Expression.Type;
+                    //var resType = value.GetType() == typeof(Visibility) ? typeof(bool) : value.GetType();
+                    var param = System.Linq.Expressions.Expression.Parameter(resType, "Path");
                     compiledInversedExpression = new Inverse.Inverter().InverseExpression(compiledExpression.Expression, param);
                 }
                 catch (Exception e)

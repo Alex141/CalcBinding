@@ -56,7 +56,9 @@ namespace CalcBinding
             
             //pathes = "AA BBB C"
             //unique path list = "BBB AA C"
-            var uniquePathList = pathsList.Distinct();
+            var uniquePathList = pathsList
+                .Select(path => path.Item1)
+                .ToList();
 
             // logic critical code: order of params must be only {0}..{1}..{2} etc, 
             // and not another. We can't unsynchronize order of parameters[] and params occure
@@ -68,8 +70,13 @@ namespace CalcBinding
 
             var exprTemplate = normPath;
 
+            //bug detected: Math.Abs(A) => replace A -> a => Math.abs(A), 
+            // not resolved
             foreach (var path in orderedPathes)
-                exprTemplate = exprTemplate.Replace(path.Item1, path.Item2.ToString("{0}"));
+                foreach (var index in pathsList.First(p => p.Item1 == path.Item1).Item2)
+                    exprTemplate = exprTemplate.Substring(0, index) + 
+                        path.Item2.ToString("{0}") + 
+                        exprTemplate.Substring(index + path.Item1.Length, exprTemplate.Length - index - path.Item1.Length);
 
             // end of critical code
             //exprTemplate = "{1} {2} {0}" (AA C BBB)
@@ -163,18 +170,18 @@ namespace CalcBinding
         /// Find and return all pathes in Path string
         /// </summary>
         /// <param name="normPath"></param>
-        /// <returns></returns>
-        private List<String> getPathes(string normPath)
+        /// <returns>List of value and it start positions</returns>
+        private List<Tuple<String, List<int>>> getPathes(string normPath)
         {
             var operators = new List<String>() 
             { 
                 "(", ")", "+", "-", "*", "/", "%", "^", "!", "&&", "||", 
-                "&", "|", "?", ":", "<", ">", "<=", ">=", "==", "!=" 
+                "&", "|", "?", ":", "<", ">", "<=", ">=", "==", "!=", "," 
             };
 
             var matches = normPath.Split(operators.ToArray(), StringSplitOptions.RemoveEmptyEntries);
 
-            var pathsList = new List<String>();
+            var pathsList = new List<string>();
 
             foreach (var match in matches)
             {
@@ -186,7 +193,39 @@ namespace CalcBinding
                 }
             }
 
-            return pathsList;
+            var pathIndexList = pathsList
+                .Distinct()
+                .Select(path => new Tuple<string, List<int>>(path, new List<int>()))
+                .ToList();
+
+            foreach (var path in pathIndexList)
+            {
+                var indexes = Regex.Matches(normPath, path.Item1).Cast<Match>().Select(m => m.Index).ToList();
+
+                foreach (var index in indexes)
+                {
+                    var startPosIsOperator = false;
+                    if (index == 0)
+                        startPosIsOperator = true;
+
+                    foreach (var op in operators)
+                        if (index >= op.Length && normPath.Substring(index-op.Length, op.Length) == op)
+                            startPosIsOperator = true;
+
+                    var endPosIsOperator = false;
+
+                    if (index + path.Item1.Length == normPath.Length)
+                        endPosIsOperator = true;
+
+                    foreach (var op in operators)
+                        if (index + path.Item1.Length <= normPath.Length - op.Length && normPath.Substring(index + path.Item1.Length, op.Length) == op)
+                            endPosIsOperator = true;
+
+                    if (startPosIsOperator && endPosIsOperator)
+                        path.Item2.Add(index);
+                }
+            }
+            return pathIndexList;
         }
 
         /// <summary>

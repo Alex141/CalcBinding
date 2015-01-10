@@ -6,11 +6,14 @@
         Height="400" Width="425">
     <Grid>
         <TabControl>
-            <TabItem Header="Math and logic">
+            <TabItem Header="Algebra and logic">
                 <local:FirstPage/>
             </TabItem>
             <TabItem Header="String and Visibility">
                 <local:SecondPage/>
+            </TabItem>
+            <TabItem Header="Math (class) and inversed expressions">
+                <local:ThirdPage/>
             </TabItem>
         </TabControl>
     </Grid>

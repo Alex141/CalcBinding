@@ -154,7 +154,7 @@ namespace CalcBinding.Inverse
                             recInfo.InvertedExp = String.Format(recInfo.InvertedExp, inversedFuncs[expr.NodeType, constantPlace](constant));
                         }
                         else
-                            constantExpression = String.Format("({0}{1}{2})", leftConstant, BinNodeTypeToString(binExp.NodeType), rightConstant);
+                            constantExpression = String.Format("({0}{1}{2})", leftConstant, NodeTypeToString(binExp.NodeType), rightConstant);
 
                         return nodeType;
                     }
@@ -191,6 +191,19 @@ namespace CalcBinding.Inverse
                             constantExpression = "((" + convertExpr.Type.Name + ")" + constant + ")";
                         else
                             recInfo.InvertedExp = String.Format(recInfo.InvertedExp, "((" + convertExpr.Operand.Type.Name + ")" + RES + ")");
+                        return operandType;
+                    }
+                case ExpressionType.Not:
+                    {
+                        var convertExpr = expr as UnaryExpression;
+
+                        string constant = null;
+                        var operandType = InverseExpressionInternal(convertExpr.Operand, recInfo, ref constant);
+
+                        if (operandType == NodeType.Constant)
+                            constantExpression = "(" + NodeTypeToString(ExpressionType.Not) + constant + ")";
+                        else
+                            recInfo.InvertedExp = String.Format(recInfo.InvertedExp, "(" + NodeTypeToString(ExpressionType.Not) + RES + ")");
                         return operandType;
                     }
                 case ExpressionType.Call:
@@ -241,7 +254,7 @@ namespace CalcBinding.Inverse
             }
         }
 
-        private string BinNodeTypeToString(ExpressionType nodeType)
+        private string NodeTypeToString(ExpressionType nodeType)
         {
             switch (nodeType)
             {
@@ -253,6 +266,8 @@ namespace CalcBinding.Inverse
                     return "-";
                 case ExpressionType.Add:
                     return "+";
+                case ExpressionType.Not:
+                    return "!";
                 default:
                     throw new Exception("Unkwnown binary node Type: " + nodeType + "!");
             }

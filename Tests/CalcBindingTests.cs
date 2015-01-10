@@ -107,7 +107,7 @@ namespace Tests
         [TestMethod] 
         public void StringPropertyTest()
         {
-            var test = new ExampleViewModel()
+            var test = new ExampleViewModel();
 
             StringBindingAssert("Name + ' ' + Surname", test,
                 () => { test.Name = "Willy"; test.Surname = "White"; }, "Willy White",
@@ -238,6 +238,9 @@ namespace Tests
         // он в этом плане вообще туповат. Я могу взять пример с него, писать
         // такие же ошибки (от конвертера): Binding (CalcBinding): ssdfsf sdfsdf sdf.
         // тогда мой биндинг будет не отличить от старого. Но добавлю своего немного)
+
+        // todo: для тестов на инверсию ОБЯЗАТЕЛЬНЫ тесты на инверсии каждой операции, в том
+        // числе и Negate (унарный минус) и Not (логическое отрицание)
         public void StringAndObjectBindingAssert(string path, INotifyPropertyChanged source,
             Action sourcePropertySetter1, string targetValue1, object objTargetValue1,
             Action sourcePropertySetter2, string targetValue2, object objTargetValue2)
