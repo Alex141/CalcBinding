@@ -63,13 +63,13 @@ namespace Tests
         public void ConvertFromStringTest()
         {
             var converter = new CalcConverter();
-            Assert.AreEqual(10, converter.Convert("15", typeof(int), "{0}+5", CultureInfo.CurrentCulture));
-
-            converter = new CalcConverter();            
-            Assert.AreEqual(10.3, converter.Convert("15.7", typeof(double), "{0}+5.4", CultureInfo.CurrentCulture));
+            Assert.AreEqual(10, converter.ConvertBack("15", typeof(int), "{0}+5", CultureInfo.CurrentCulture));
 
             converter = new CalcConverter();
-            Assert.AreEqual(false, converter.Convert("True", typeof(bool), "!{0}", CultureInfo.CurrentCulture));
+            Assert.AreEqual(10.299999999999999, converter.ConvertBack("15.7", typeof(double), "{0}+5.4", CultureInfo.CurrentCulture));
+
+            converter = new CalcConverter();
+            Assert.AreEqual(false, converter.ConvertBack("True", typeof(bool), "!{0}", CultureInfo.CurrentCulture));
         }
     }
 }
