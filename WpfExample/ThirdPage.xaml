@@ -30,7 +30,7 @@
                 <StackPanel Orientation="Vertical">
                     <StackPanel Orientation="Horizontal">
                         <Label Content="A="/>
-                        <TextBox Text="{c:Binding A, UpdateSourceTrigger=PropertyChanged}" Width="56"/>
+                        <TextBox Text="{c:Binding A, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:n2}}" Width="56"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <Label Content="B="/>
@@ -38,7 +38,7 @@
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <Label Content="C="/>
-                        <TextBox Text="{c:Binding C, UpdateSourceTrigger=PropertyChanged}" Width="56"/>
+                        <TextBox Text="{c:Binding C, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:n2}}" Width="56"/>
                     </StackPanel>
                 </StackPanel>
                 <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Vertical">
@@ -51,31 +51,31 @@
             <StackPanel>
                 <DockPanel>
                     <Label Content="Math.Sin(A)="/>
-                    <TextBox Text="{c:Binding Math.Sin(A)}"/>
+                    <TextBox Text="{c:Binding Math.Sin(A*Math.PI/180), UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:n5}}"/>
                 </DockPanel>
                 <DockPanel>
                     <Label Content="Math.Cos(A)="/>
-                    <TextBox Text="{c:Binding Math.Cos(A)}"/>
+                    <TextBox Text="{c:Binding Math.Cos(A*Math.PI/180), UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:n5}}"/>
                 </DockPanel>
                 <DockPanel>
                     <Label Content="Math.Tan(A)="/>
-                    <TextBox Text="{c:Binding Math.Tan(A)}"/>
+                    <TextBox Text="{c:Binding Math.Tan(A*Math.PI/180), UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:n5}}"/>
                 </DockPanel>
                 <DockPanel>
                     <Label Content="Math.Pow(A, 3)"/>
-                    <TextBox Text="{c:Binding 'Math.Pow(A,3)'}"/>
+                    <TextBox Text="{c:Binding 'Math.Pow(A,3)', UpdateSourceTrigger=PropertyChanged}"/>
                 </DockPanel>
                 <DockPanel>
                     <Label Content="Math.Log(A, 2)"/>
-                    <TextBox Text="{c:Binding 'Math.Log(A,2)'}"/>
+                    <TextBox Text="{c:Binding 'Math.Log(A,2)', UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:n5}}"/>
                 </DockPanel>
                 <DockPanel>
                     <Label Content="A*Math.PI"/>
-                    <TextBox Text="{c:Binding Path=A*Math.PI, StringFormat={}{0:n2}}"/>
+                    <TextBox Text="{c:Binding Path=A*Math.PI, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:n5}}"/>
                 </DockPanel>
                 <DockPanel>
                     <Label Content="Math.Abs(A)"/>
-                    <TextBox Text="{c:Binding Math.Abs(A)}"/>
+                    <TextBox Text="{c:Binding Math.Abs(A), UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:n2}}"/>
                 </DockPanel>
             </StackPanel>
         </GroupBox>
@@ -83,15 +83,15 @@
             <StackPanel Orientation="Vertical">
                 <DockPanel>
                     <Label Content="-A + 5"/>
-                    <TextBox Text="{c:Binding A+5}"/>
+                    <TextBox Text="{c:Binding -A+5, StringFormat={}{0:n2}}"/>
                 </DockPanel>
                 <DockPanel>
                     <Label Content="(A+5) * 3 / 4.0 - 32"/>
-                    <TextBox Text="{c:Binding '(A+5)*3 / 4.0 - 32'}"/>
+                    <TextBox Text="{c:Binding '(A+5)*3 / 4.0 - 32', UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:n5}}"/>
                 </DockPanel>
                 <DockPanel>
                     <Label Content="Math.Sin(Math.Cos(A))"/>
-                    <TextBox Text="{c:Binding 'Math.Sin(Math.Cos(A))'}"/>
+                    <TextBox Text="{c:Binding 'Math.Sin(Math.Cos(A))', UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:n5}}"/>
                 </DockPanel>
             </StackPanel>
         </GroupBox>

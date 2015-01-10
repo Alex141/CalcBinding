@@ -24,7 +24,6 @@ namespace CalcBinding
         /// <summary>
         /// False to visibility. Default: False = Collapsed
         /// </summary>
-        //[DefaultValue(FalseToVisibility.Collapsed)]
         public FalseToVisibility FalseToVisibility 
         {
             get { return falseToVisibility; }
@@ -76,7 +75,8 @@ namespace CalcBinding
             //exprTemplate = "{1} {2} {0}" (AA C BBB)
             var mathConverter = new CalcConverter
             {
-                FalseToVisibility = FalseToVisibility
+                FalseToVisibility = FalseToVisibility,
+                StringFormatDefined = StringFormat != null
             };
 
             BindingBase resBinding;
@@ -140,7 +140,6 @@ namespace CalcBinding
                 if (StringFormat != null)
                     mBinding.StringFormat = StringFormat;
 
-                mathConverter.StringFormatDefined = StringFormat != null;
                 foreach (var path in uniquePathList)
                 {
                     var binding = new System.Windows.Data.Binding(path);
@@ -178,22 +177,21 @@ namespace CalcBinding
                         if (sourceIndex == index)
                         {
                             result += replace;
-                            sourceIndex += replace.Length;
+                            sourceIndex += path.Item1.Length;
                             replaced = true;
                             break;
                         }
                     }
                     if (replaced) break;
                 }
+                if (!replaced)
+                {
+                    result += source[sourceIndex];
+                    sourceIndex++;
+                }
             }
 
             return result;
-            //foreach (var path in orderedPathes)
-            //    foreach (var index in pathsList.First(p => p.Item1 == path.Item1).Item2)
-            //        exprTemplate = exprTemplate.Substring(0, index) +
-            //            path.Item2.ToString("{0}") +
-            //            exprTemplate.Substring(index + path.Item1.Length, exprTemplate.Length - index - path.Item1.Length);
-
         }
 
         /// <summary>

@@ -83,6 +83,7 @@ namespace Tests
                 () => { test.A = 12; test.B = 7; }, "5", (double)5
             );
 
+            //String Format with many values
             var calcBinding = new CalcBinding.Binding("A/B")
             {
                 StringFormat = "{0:n2}"
@@ -91,6 +92,23 @@ namespace Tests
             StringBindingAssert(calcBinding, test,
                 () => { test.A = 10; test.B = 3; }, "3.33",
                 () => { test.A = 20; test.B = -30; }, "-0.67"
+            );
+
+            //String Format with one value
+            calcBinding = new CalcBinding.Binding("Math.Sin(A)")
+            {
+                StringFormat = "{0:n2}"
+            };
+
+            StringBindingAssert(calcBinding, test,
+                () => { test.A = 10; }, "-0.54",
+                () => { test.A = 20; }, "0.91"
+            );
+
+            //many entries of parameter
+            StringAndObjectBindingAssert("A + 0.5*NestedViewModel.A + A + B + C + A - B", test,
+                () => { test.A = 10; test.NestedViewModel.A = 4; test.B = 5; test.C = 2; }, "34", (double)34,
+                () => { test.A = 12; test.NestedViewModel.A = 14; test.B = -2; test.C = 9; }, "52", (double)52
             );
         }
 

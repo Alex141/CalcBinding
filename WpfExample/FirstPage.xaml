@@ -51,31 +51,31 @@
             <StackPanel>
                 <DockPanel>
                     <Label Content="A+B+C="/>
-                    <TextBox Text="{c:Binding A+B+C}"/>
+                    <TextBox Text="{c:Binding A+B+C}" IsReadOnly="True" IsEnabled="False"/>
                 </DockPanel>
                 <DockPanel>
                     <Label Content="A-B-C="/>
-                    <TextBox Text="{c:Binding A-B-C}"/>
+                    <TextBox Text="{c:Binding A-B-C}" IsReadOnly="True" IsEnabled="False"/>
                 </DockPanel>
                 <DockPanel>
                     <Label Content="A*(B+C)="/>
-                    <TextBox Text="{c:Binding A*(B+C)}"/>
+                    <TextBox Text="{c:Binding A*(B+C)}" IsReadOnly="True" IsEnabled="False"/>
                 </DockPanel>
                 <DockPanel>
                     <Label Content="2*A-B*0.5="/>
-                    <TextBox Text="{c:Binding 2*A-B*0.5}"/>
+                    <TextBox Text="{c:Binding 2*A-B*0.5}" IsReadOnly="True" IsEnabled="False"/>
                 </DockPanel>
                 <DockPanel>
                     <Label Content="A/B (StringFormat=n2)"/>
-                    <TextBox Text="{c:Binding A/B, StringFormat={}{0:n2}}"/>
+                    <TextBox Text="{c:Binding A/B, StringFormat={}{0:n2}}" IsReadOnly="True" IsEnabled="False"/>
                 </DockPanel>
                 <DockPanel>
                     <Label Content="A%B="/>
-                    <TextBox Text="{c:Binding A%B}"/>
+                    <TextBox Text="{c:Binding A%B}" IsReadOnly="True" IsEnabled="False"/>
                 </DockPanel>
                 <DockPanel>
                     <Label Content="(A == 1) ? 10 : 20="/>
-                    <TextBox Text="{c:Binding '(A == 1) ? 10 : 20'}"/>
+                    <TextBox Text="{c:Binding '(A == 1) ? 10 : 20'}" IsReadOnly="True" IsEnabled="False"/>
                 </DockPanel>
             </StackPanel>
         </GroupBox>
@@ -86,19 +86,19 @@
                 </DockPanel>
                 <DockPanel>
                     <Label Content="!IsChecked and IsFull="/>
-                    <TextBox Text="{c:Binding 'IsChecked and IsFull'}"/>
+                    <TextBox Text="{c:Binding 'IsChecked and IsFull'}" IsReadOnly="True" IsEnabled="False"/>
                 </DockPanel>
                 <DockPanel>
                     <Label Content="!IsChecked or (A > B)="/>
-                    <TextBox Text="{c:Binding '!IsChecked or (A > B)'}"/>
+                    <TextBox Text="{c:Binding '!IsChecked or (A > B)'}" IsReadOnly="True" IsEnabled="False"/>
                 </DockPanel>
                 <DockPanel>
                     <Label Content="(A == 1) and (B less= 5)="/>
-                    <TextBox Text="{c:Binding '(A == 1) and (B less= 5)'}"/>
+                    <TextBox Text="{c:Binding '(A == 1) and (B less= 5)'}" IsReadOnly="True" IsEnabled="False"/>
                 </DockPanel>
                 <DockPanel>
                     <Label Content="(IsChecked || !IsFull)="/>
-                    <TextBox Text="{c:Binding (IsChecked || !IsFull)}"/>
+                    <TextBox Text="{c:Binding (IsChecked || !IsFull)}" IsReadOnly="True" IsEnabled="False"/>
                 </DockPanel>
             </StackPanel>
         </GroupBox>

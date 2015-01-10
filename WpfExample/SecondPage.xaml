@@ -49,10 +49,10 @@
             <StackPanel>
                 <DockPanel>
                     <Label Content="Dear" />
-                    <TextBox Text="{c:Binding (Name + \' \' + Surname)}" />
+                    <TextBox Text="{c:Binding (Name + \' \' + Surname)}" IsReadOnly="True" IsEnabled="False" />
                 </DockPanel>
                 <DockPanel>
-                    <TextBox Text="{c:Binding (IsMan?\'Mr\':\'Ms\') + \' \' + Surname + \' \' + Name}"/>
+                    <TextBox Text="{c:Binding (IsMan?\'Mr\':\'Ms\') + \' \' + Surname + \' \' + Name}" IsReadOnly="True" IsEnabled="False"/>
                 </DockPanel>
             </StackPanel>
         </GroupBox>

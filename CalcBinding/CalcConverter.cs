@@ -8,6 +8,8 @@ using System.Windows;
 using System.Windows.Data;
 using System.Linq.Expressions;
 using DynamicExpresso;
+using CalcBinding.Inverse;
+using System.Diagnostics;
 
 namespace CalcBinding
 {
@@ -64,36 +66,53 @@ namespace CalcBinding
             if (inverseFaulted)
                 throw new Exception("bad"); //todo: raise typed exception
 
-            if (compiledExpression == null)
+            //try convert back expression
+            try
             {
-                compiledExpression = compileExpression(new List<Type>{targetType}, (string)parameter, value.GetType());
-            }
+                if (compiledExpression == null)
+                {
+                    compiledExpression = compileExpression(new List<Type>{targetType}, (string)parameter, value.GetType());
+                }
 
-            if (compiledInversedExpression == null)
-            {
-                //try convert back expression
-                try
+                if (compiledInversedExpression == null)
                 {
                     var resType = compiledExpression.Expression.Type;
-                    //var resType = value.GetType() == typeof(Visibility) ? typeof(bool) : value.GetType();
                     var param = System.Linq.Expressions.Expression.Parameter(resType, "Path");
                     compiledInversedExpression = new Inverse.Inverter().InverseExpression(compiledExpression.Expression, param);
                 }
-                catch (Exception e)
-                {
-                    inverseFaulted = true;
-                    throw;
-                    //Console.WriteLine("CalcBinding error: {0}", e.Message);
-                }
             }
-            
-            if (targetType == typeof(bool) && value.GetType() == typeof(Visibility))
-                value = new BoolToVisibilityConverter(FalseToVisibility)
-                    .ConvertBack(value, targetType, null, culture);
+            catch (Exception e)
+            {
+                inverseFaulted = true;
+                Debug.WriteLine("CalcBinding error: {0}", e.Message);
+                throw;
+            }
 
-            var source = compiledInversedExpression.Invoke(value);
+            try
+            {
+                if (targetType == typeof(bool) && value.GetType() == typeof(Visibility))
+                    value = new BoolToVisibilityConverter(FalseToVisibility)
+                        .ConvertBack(value, targetType, null, culture);
 
-            return source;
+                if (value.GetType() == typeof(string) && compiledExpression.Expression.Type != value.GetType())
+                    value = ParseStringToObject((string)value, compiledExpression.Expression.Type);
+
+                var source = compiledInversedExpression.Invoke(value);
+                return source;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine("CalcBinding error: {0}", e.Message);
+            }
+
+            //todo: return IError (NotifyError etc...)
+            return null;
+        }
+
+        private object ParseStringToObject(string value, Type type)
+        {
+            var res = System.Convert.ChangeType(value, type, CultureInfo.InvariantCulture);
+            return res;
         } 
 
         #endregion

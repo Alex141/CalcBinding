@@ -95,7 +95,10 @@ namespace CalcBinding.Inverse
             // Other solution: switch to Expression based inverse, where we no need to generate string by Expression,
             // only expressions. But I don't wish to do this, because 
             //var invertedExp = removeConvertSubStrings(recInfo.InvertedExp);
-            var invertedExp = String.Format(recInfo.InvertedExp, parameter.Name);
+
+            var paramName = parameter.Name;
+
+            var invertedExp = String.Format(recInfo.InvertedExp, paramName);
 
             //Trace.WriteLine(Expression.Convert(Expression.Constant(2), typeof(double)).ToMyString()); 
             var res = new Interpreter().Parse(invertedExp, new Parameter(parameter.Name, parameter.Type));
@@ -103,23 +106,6 @@ namespace CalcBinding.Inverse
            
             return res;
         }
-
-        //private string removeConvertSubStrings(string expression)
-        //{
-        //    const string groupName = "convert_arg_group";
-        //    const string pattern = @"Convert\((?<" + groupName + @">\w+)\)";
-        //    const string replacement = @"(${"+ groupName + @"})";
-        //    Match match;
-        //    while (Regex.IsMatch(expression, pattern))
-        //        expression = Regex.Replace(expression, pattern, replacement);
-
-        //    return expression;
-        //}
-
-        //public Expression InverseExpression(Expression expression, ParameterExpression parameter)
-        //{
-        //    return InverseException()
-        //}
 
         /// <summary>
         /// Generate inversed expression tree from original expression tree of one parameter 
@@ -248,6 +234,21 @@ namespace CalcBinding.Inverse
                             recInfo.InvertedExp = String.Format(recInfo.InvertedExp, inversedRes);
 
                         return inversedRes == null ? NodeType.Constant : NodeType.Variable;
+                    }
+                case ExpressionType.MemberAccess:
+                    {
+                        var memberExpr = expr as MemberExpression;
+
+                        if (memberExpr.Member.DeclaringType.Name == "Math")
+                        {
+                            constantExpression = String.Format(CultureInfo.InvariantCulture, "({0})", memberExpr.Member.DeclaringType.Name + "." + memberExpr.Member.Name);
+                            return NodeType.Constant;
+                        }
+                        else
+                        {
+                            throw new InverseException(String.Format("Unsupported method call expression: {0}", expr));
+                        }
+
                     }
                 default:
                     throw new InverseException(String.Format("Unsupported expression: {0}", expr));

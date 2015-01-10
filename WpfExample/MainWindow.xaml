@@ -12,7 +12,7 @@
             <TabItem Header="String and Visibility">
                 <local:SecondPage/>
             </TabItem>
-            <TabItem Header="Math (class) and inversed expressions">
+            <TabItem Header="Math and inversed expressions">
                 <local:ThirdPage/>
             </TabItem>
         </TabControl>
