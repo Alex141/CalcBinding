@@ -53,7 +53,7 @@ namespace Tests
             Assert.AreEqual(10, converter.ConvertBack((object)15, typeof(int), "{0}+5", CultureInfo.CurrentCulture));
             
             converter = new CalcConverter();
-            Assert.AreEqual(10.4, converter.ConvertBack((object)15.0, typeof(double), "{0}+5.4", CultureInfo.CurrentCulture));
+            Assert.AreEqual(9.2, converter.ConvertBack((object)15.0, typeof(double), "{0}+5.8", CultureInfo.CurrentCulture));
             
             converter = new CalcConverter();
             Assert.AreEqual(true, converter.ConvertBack((object)false, typeof(bool), "!{0}", CultureInfo.CurrentCulture));
