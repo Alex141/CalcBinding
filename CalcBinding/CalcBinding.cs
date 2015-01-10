@@ -54,8 +54,6 @@ namespace CalcBinding
             var normPath = normalizePath(Path);
             var pathsList = getPathes(normPath);
             
-            //pathes = "AA BBB C"
-            //unique path list = "BBB AA C"
             var uniquePathList = pathsList
                 .Select(path => path.Item1)
                 .ToList();
@@ -72,11 +70,7 @@ namespace CalcBinding
 
             //bug detected: Math.Abs(A) => replace A -> a => Math.abs(A), 
             // not resolved
-            foreach (var path in orderedPathes)
-                foreach (var index in pathsList.First(p => p.Item1 == path.Item1).Item2)
-                    exprTemplate = exprTemplate.Substring(0, index) + 
-                        path.Item2.ToString("{0}") + 
-                        exprTemplate.Substring(index + path.Item1.Length, exprTemplate.Length - index - path.Item1.Length);
+            exprTemplate = getNormExprTemplate(exprTemplate, orderedPathes, pathsList);
 
             // end of critical code
             //exprTemplate = "{1} {2} {0}" (AA C BBB)
@@ -164,6 +158,42 @@ namespace CalcBinding
             }
             
             return resBinding.ProvideValue(serviceProvider);
+        }
+
+        private string getNormExprTemplate(string source, List<Tuple<string, int>> orderedPathes, List<Tuple<string, List<int>>> pathsList)
+        {
+            var result = "";
+            var sourceIndex = 0;
+
+            while (sourceIndex < source.Length)
+            {
+                var replaced = false;
+                foreach (var path in orderedPathes)
+                {
+                    var replace = path.Item2.ToString("{0}");
+                    var indexes = pathsList.First(p => p.Item1 == path.Item1).Item2;
+
+                    foreach (var index in indexes)
+                    {
+                        if (sourceIndex == index)
+                        {
+                            result += replace;
+                            sourceIndex += replace.Length;
+                            replaced = true;
+                            break;
+                        }
+                    }
+                    if (replaced) break;
+                }
+            }
+
+            return result;
+            //foreach (var path in orderedPathes)
+            //    foreach (var index in pathsList.First(p => p.Item1 == path.Item1).Item2)
+            //        exprTemplate = exprTemplate.Substring(0, index) +
+            //            path.Item2.ToString("{0}") +
+            //            exprTemplate.Substring(index + path.Item1.Length, exprTemplate.Length - index - path.Item1.Length);
+
         }
 
         /// <summary>

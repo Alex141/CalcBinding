@@ -48,14 +48,6 @@ namespace Tests
     [TestClass]
     public class CalcBindingSystemTests
     {
-        // что нужно передать для тестирования:
-        // биндинг к чему мы тестируем? (String, object, Visibility, bool)
-        // => создаётся: TextBox.Text, Label.Content, CheckBox.Visibility, CheckBox.IsChecked
-        // PropertyInfo изменяемого свойства
-        // Начальное значение в Source, что должны увидеть в xaml? 
-        // На что потом меняем. Что должны увидеть в xaml? 
-        // Меняем ли xaml? 
-        // На что меняем? Что должны ожидать в source?
         [TestMethod]
         public void MathPropertyTest()
         {
@@ -66,7 +58,6 @@ namespace Tests
                 () => test.A = 20.34, "20.34", 20.34
             );
 
-            // bug detected. Bug resolved
             StringAndObjectBindingAssert("A+B+C", test,
                 () => { test.A = 10; test.B = 20; test.C = -2; }, "28", (double)28,
                 () => { test.A = 20.34; test.B = 15; test.C = 12; }, "47.34", 47.34
@@ -77,7 +68,6 @@ namespace Tests
                 () => { test.A = 5; test.B = 3; test.C = -7; }, "9", (double)9
             );
 
-            // real))
             StringAndObjectBindingAssert("A*(B-C)", test,
                 () => { test.A = 10; test.B = 20; test.C = 5; }, "150", (double)150,
                 () => { test.A = 5.4; test.B = 3; test.C = -8; }, "59.4", (double)59.400000000000006
@@ -206,7 +196,6 @@ namespace Tests
         {
             var test = new ExampleViewModel();
 
-            // serious bug #1. Resolved
             StringAndObjectBindingAssert("A+NestedViewModel.A*0.2+C", test,
                 () => { test.A = 10; test.NestedViewModel.A = 30; test.C = -2; }, "14", (double)14,
                 () => { test.A = 20.34; test.NestedViewModel.A = 15; test.C = 12; }, "35.34", 35.34
@@ -225,7 +214,6 @@ namespace Tests
         //todo: сделать тесты на то, что вызывается компиляция 1 раз. Интерфейс для Interpreter.
         // как задать? В конструкторе. В его перегрузке задавать по умолчанию
         
-        //todo: ещё тесты: когда A + B.C (nested view models)
         //todo: тесты на inverse ( естественно с одной переменной )
         //todo: тесты на inverse с множеством операций привидения типов.
         //todo: вообще еще раз разобраться что там и как работает, именно на последнем и первом
