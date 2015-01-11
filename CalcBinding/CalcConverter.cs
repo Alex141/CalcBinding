@@ -18,7 +18,7 @@ namespace CalcBinding
     /// </summary>
     public class CalcConverter : IValueConverter, IMultiValueConverter
     {
-        private IExpressionParser parser = new InterpreterParser();
+        private IExpressionParser parser;
         private Lambda compiledExpression;
         private Lambda compiledInversedExpression;
         private bool inverseFaulted = false;
@@ -34,7 +34,7 @@ namespace CalcBinding
 
         #region Init
 
-        public CalcConverter() { }
+        public CalcConverter() : this(new InterpreterParser()) { }
 
         public CalcConverter(IExpressionParser parser)
         {
@@ -78,7 +78,7 @@ namespace CalcBinding
                 {
                     var resType = compiledExpression.Expression.Type;
                     var param = System.Linq.Expressions.Expression.Parameter(resType, "Path");
-                    compiledInversedExpression = new Inverse.Inverter().InverseExpression(compiledExpression.Expression, param);
+                    compiledInversedExpression = new Inverse.Inverter(parser).InverseExpression(compiledExpression.Expression, param);
                 }
             }
             catch (Exception e)

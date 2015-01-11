@@ -14,6 +14,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Markup;
 using WpfExample;
+using Tests.Mocks;
 
 namespace Tests
 {
@@ -70,6 +71,31 @@ namespace Tests
 
             converter = new CalcConverter();
             Assert.AreEqual(false, converter.ConvertBack("True", typeof(bool), "!{0}", CultureInfo.CurrentCulture));
+        }
+
+        [TestMethod]
+        public void BindingCompileTimesShouldBeOneTest()
+        {
+            var interpreterMock = new CompileTimesMockInterpreterParser();
+            var converter = new CalcConverter(interpreterMock);
+
+            converter.Convert("15", typeof(string), "{0}+\"5\"", CultureInfo.CurrentCulture);
+
+            Assert.AreEqual(1, interpreterMock.ParseCalls.Count);
+            Assert.AreEqual(1, interpreterMock.ParseCalls.First().Value);
+        }
+
+        [TestMethod]
+        public void BindingBackCompileTimesShouldBeTwoTest()
+        {
+            var interpreterMock = new CompileTimesMockInterpreterParser();
+            var converter = new CalcConverter(interpreterMock);
+
+            converter.ConvertBack("15", typeof(int), "{0}+5", CultureInfo.CurrentCulture);
+
+            Assert.AreEqual(2, interpreterMock.ParseCalls.Count);
+            Assert.AreEqual(1, interpreterMock.ParseCalls.First().Value);
+            Assert.AreEqual(1, interpreterMock.ParseCalls.Skip(1).First().Value);
         }
     }
 }

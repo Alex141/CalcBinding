@@ -18,6 +18,8 @@ namespace CalcBinding.Inverse
     {
         private const string RES = "({0})";
 
+        private IExpressionParser interpreter;
+
         private static readonly ExpressionFuncsDictionary<ExpressionType> inversedFuncs = new ExpressionFuncsDictionary<ExpressionType> 
         {
             // res = a+c or c+a => a = res - c
@@ -69,6 +71,13 @@ namespace CalcBinding.Inverse
             {"Sin", ConstantPlace.Wherever, (dummy) => "Asin" + RES}
         };
 
+        public Inverter() : this(new InterpreterParser()) {}
+
+        public Inverter(IExpressionParser interpreter)
+        {
+            this.interpreter = interpreter;
+        }
+
         /// <summary>
         /// Inverse expression of one parameter
         /// </summary>
@@ -101,7 +110,7 @@ namespace CalcBinding.Inverse
             var invertedExp = String.Format(recInfo.InvertedExp, paramName);
 
             //Trace.WriteLine(Expression.Convert(Expression.Constant(2), typeof(double)).ToMyString()); 
-            var res = new Interpreter().Parse(invertedExp, new Parameter(parameter.Name, parameter.Type));
+            var res = interpreter.Parse(invertedExp, new Parameter(parameter.Name, parameter.Type));
             Trace.WriteLine(res.ExpressionText);
            
             return res;
@@ -332,13 +341,5 @@ namespace CalcBinding.Inverse
         }
         
         #endregion    
-    }
-
-    public static class ConvertExtension
-    {
-        public static String ToMyString(this UnaryExpression unary)
-        {
-            return String.Format("({0}){1}", unary.Type, unary.Operand);
-        }
     }
 }

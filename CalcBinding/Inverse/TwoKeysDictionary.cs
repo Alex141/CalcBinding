@@ -15,7 +15,7 @@ namespace CalcBinding.Inverse
     /// <typeparam name="TValue"></typeparam>
     internal class Dictionary<TKey1, TKey2, TValue> : Dictionary<TKey1, Dictionary<TKey2, TValue>>
     {
-        public new void Add(TKey1 key1, TKey2 key2, TValue value)
+        public void Add(TKey1 key1, TKey2 key2, TValue value)
         {
             if (!ContainsKey(key1))
                 Add(key1, new Dictionary<TKey2, TValue>());

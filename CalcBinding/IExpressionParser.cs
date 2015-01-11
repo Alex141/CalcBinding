@@ -26,26 +26,4 @@ namespace CalcBinding
             return interpreter.Parse(expressionText, parameters);
         }
     }
-
-    public class CompileTimesMockInterpreterParser: IExpressionParser
-    {
-        Interpreter interpreter;
-        Dictionary<string, int> parseCalls;
-
-        public CompileTimesMockInterpreterParser()
-        {
-            interpreter = new Interpreter();        
-            parseCalls = new Dictionary<string, int>();
-        }
-
-        public Lambda Parse(string expressionText, params Parameter[] parameters)
-        {
-            if (parseCalls.ContainsKey(expressionText))
-                parseCalls[expressionText]++;
-            else
-                parseCalls.Add(expressionText, 1);
-
-            return interpreter.Parse(expressionText, parameters);
-        }
-    }
 }
