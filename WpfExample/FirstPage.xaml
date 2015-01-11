@@ -11,6 +11,7 @@
             <Setter Property="Height" Value="23"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
         </Style>
+        <SolidColorBrush x:Key="EditBackground"/>
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>

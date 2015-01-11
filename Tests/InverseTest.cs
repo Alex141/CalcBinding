@@ -61,11 +61,11 @@ namespace Tests
         {
             testDoubleInverse<double, double>("Math.Sin(a)", "Math.Asin(Path)");
             testDoubleInverse<double, double>("Math.Cos(a)", "Math.Acos(Path)");
+            testInverse<double, double>("Math.Tan(a)", "Math.Atan(Path)");
             testDoubleInverse<double, double>("Math.Pow(4, a)", "Math.Log(Path, 4)");
             testInverse<double, double>("Math.Pow(a, 2)", "Math.Pow((Path), 1.0/((Double)(2)))");
             testInverse<double, double>("Math.Pow((a), 1.0/((Double)(2)))", "(Math.Pow((Path), 1.0/((1)/((Double)(2)))))");
-        
-            //todo: Tan tests, Tests with PI
+            testInverse<double, double>("Math.Sin((a+5)*Math.PI/4.0)", "((((Math.Asin(Path))*(4))/(Math.PI))-((Double)(5)))");
         }
 
         private void AssertException<T>(Action action) where T: Exception

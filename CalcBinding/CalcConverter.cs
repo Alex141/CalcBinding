@@ -64,14 +64,14 @@ namespace CalcBinding
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (inverseFaulted)
-                throw new Exception("bad"); //todo: raise typed exception
+                throw new InverseException("converter can't inverse expression:" + parameter);
 
             //try convert back expression
             try
             {
                 if (compiledExpression == null)
                 {
-                    compiledExpression = compileExpression(new List<Type>{targetType}, (string)parameter, value.GetType());
+                    compiledExpression = compileExpression(new List<Type>{targetType}, (string)parameter);
                 }
 
                 if (compiledInversedExpression == null)
@@ -84,7 +84,8 @@ namespace CalcBinding
             catch (Exception e)
             {
                 inverseFaulted = true;
-                Debug.WriteLine("CalcBinding error: {0}", e.Message);
+                Debug.WriteLine("Binding error: calc converter can't convert expression " + parameter + ": " + e.Message);
+                Debug.WriteLine(e); 
                 throw;
             }
 
@@ -102,10 +103,9 @@ namespace CalcBinding
             }
             catch (Exception e)
             {
-                Debug.WriteLine("CalcBinding error: {0}", e.Message);
+                Debug.WriteLine("Binding error: calc converter can't convert back expression " + parameter + ": " + e.Message);
+                Debug.WriteLine(e);
             }
-
-            //todo: return IError (NotifyError etc...)
             return null;
         }
 
@@ -132,7 +132,7 @@ namespace CalcBinding
                 }
                 //todo: questions on this code
 
-                compiledExpression = compileExpression(values.Select(v => v.GetType()).ToList(), (string)parameter, targetType);
+                compiledExpression = compileExpression(values.Select(v => v.GetType()).ToList(), (string)parameter);
             }
 
             var result = compiledExpression.Invoke(values);
@@ -152,21 +152,13 @@ namespace CalcBinding
             return result;
         }
 
-        //todo: resultType is not used, delete?
-        private Lambda compileExpression(List<Type> argumentsTypes, string expressionTemplate, Type resultType)
+        private Lambda compileExpression(List<Type> argumentsTypes, string expressionTemplate)
         {
-            //template = "{1} {2} {0}"
-            //argTypes = "BBB AA C"
-
             for (int i = 0; i < argumentsTypes.Count(); i++)
             {
                 expressionTemplate = expressionTemplate.Replace("{" + i.ToString() + "}", getVariableName(i));
             }
 
-            // exprTemplate = "{b c a}"
-            //replace: BBB -> a, AA -> b, C -> c
-            // input expected: "{a b c}"    | error detected
-            // real input: "BBB AA C"          | error detected
             var parametersDefinition = new List<Parameter>();
 
             for (var i = 0; i < argumentsTypes.Count(); i++)

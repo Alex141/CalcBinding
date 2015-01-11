@@ -91,7 +91,7 @@ namespace CalcBinding.Inverse
             InverseExpressionInternal(expression, recInfo, ref dummy);
 
             if (recInfo.FoundedParamName == null)
-                throw new InverseException("Parameter was not found in expression!");
+                throw new InverseException(String.Format("Parameter was not found in expression '{0}'!", expression));
 
             // difficult with constant subtrees: we write to string all constant subtrees,
             // but some of them can take Convert operator, which converted to string as Convert(arg).
@@ -165,7 +165,7 @@ namespace CalcBinding.Inverse
                         }
 
                         if (recInfo.FoundedParamName == parameter.Name)
-                            throw new InverseException(String.Format("Variable {0} is defined more than one time!"));
+                            throw new InverseException(String.Format("Variable {0} is defined more than one time!", recInfo.FoundedParamName));
                         else
                             throw new InverseException(String.Format("More than one variables are defined in expression: {0} and {1}", recInfo.FoundedParamName, parameter.Name));
                     }
@@ -291,7 +291,7 @@ namespace CalcBinding.Inverse
                 case ExpressionType.Not:
                     return "!";
                 default:
-                    throw new Exception("Unkwnown binary node Type: " + nodeType + "!");
+                    throw new Exception("Unkwnown binary node type: " + nodeType + "!");
             }
         }
 
