@@ -84,8 +84,8 @@ namespace CalcBinding
             catch (Exception e)
             {
                 inverseFaulted = true;
-                Debug.WriteLine("Binding error: calc converter can't convert expression " + parameter + ": " + e.Message);
-                Debug.WriteLine(e); 
+                Trace.WriteLine("Binding error: calc converter can't convert expression " + parameter + ": " + e.Message);
+                Trace.WriteLine(e); 
                 throw;
             }
 
@@ -103,8 +103,8 @@ namespace CalcBinding
             }
             catch (Exception e)
             {
-                Debug.WriteLine("Binding error: calc converter can't convert back expression " + parameter + ": " + e.Message);
-                Debug.WriteLine(e);
+                Trace.WriteLine("Binding error: calc converter can't convert back expression " + parameter + ": " + e.Message);
+                Trace.WriteLine(e);
             }
             return null;
         }

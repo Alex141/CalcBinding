@@ -65,12 +65,6 @@ namespace CalcBinding.Inverse
 
         };
 
-        private static readonly ExpressionFuncsDictionary<String> inversedMath = new ExpressionFuncsDictionary<String>
-        {
-            // res = Sin(a) => a = Asin(res)
-            {"Sin", ConstantPlace.Wherever, (dummy) => "Asin" + RES}
-        };
-
         public Inverter() : this(new InterpreterParser()) {}
 
         public Inverter(IExpressionParser interpreter)
@@ -103,16 +97,13 @@ namespace CalcBinding.Inverse
             // this is not very hard task. Good.
             // Other solution: switch to Expression based inverse, where we no need to generate string by Expression,
             // only expressions. But I don't wish to do this, because 
-            //var invertedExp = removeConvertSubStrings(recInfo.InvertedExp);
 
             var paramName = parameter.Name;
 
             var invertedExp = String.Format(recInfo.InvertedExp, paramName);
 
-            //Trace.WriteLine(Expression.Convert(Expression.Constant(2), typeof(double)).ToMyString()); 
-            var res = interpreter.Parse(invertedExp, new Parameter(parameter.Name, parameter.Type));
-            Trace.WriteLine(res.ExpressionText);
-           
+            var res = interpreter.Parse(invertedExp, new Parameter(parameter.Name, parameter.Type));                       
+            Debug.WriteLine(res.ExpressionText);          
             return res;
         }
 
