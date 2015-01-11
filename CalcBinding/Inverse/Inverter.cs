@@ -179,6 +179,18 @@ namespace CalcBinding.Inverse
                             recInfo.InvertedExp = String.Format(recInfo.InvertedExp, "((" + convertExpr.Operand.Type.Name + ")" + RES + ")");
                         return operandType;
                     }
+                case ExpressionType.Negate:
+                    {
+                        var negateExpr = expr as UnaryExpression;
+                        string constant = null;
+                        var operandType = InverseExpressionInternal(negateExpr.Operand, recInfo, ref constant);
+
+                        if (operandType == NodeType.Constant)
+                            constantExpression = "(-" + constant + ")";
+                        else
+                            recInfo.InvertedExp = String.Format(recInfo.InvertedExp, "(-" + RES + ")");
+                        return operandType;
+                    }
                 case ExpressionType.Not:
                     {
                         var convertExpr = expr as UnaryExpression;
