@@ -21,7 +21,6 @@ namespace CalcBinding
         private IExpressionParser parser;
         private Lambda compiledExpression;
         private Lambda compiledInversedExpression;
-        private bool inverseFaulted = false;
 
         public bool StringFormatDefined { get; set; }
 
@@ -63,30 +62,25 @@ namespace CalcBinding
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (inverseFaulted)
-                throw new InverseException("converter can't inverse expression:" + parameter);
-
-            //try convert back expression
-            try
+            if (compiledExpression == null)
             {
-                if (compiledExpression == null)
-                {
-                    compiledExpression = compileExpression(new List<Type>{targetType}, (string)parameter);
-                }
+                if ((compiledExpression = compileExpression(null, (string)parameter, true, new List<Type>{targetType})) == null)
+                    return null;
+            }
 
-                if (compiledInversedExpression == null)
+            if (compiledInversedExpression == null)
+            {
+                //try convert back expression
+                try
                 {
                     var resType = compiledExpression.Expression.Type;
                     var param = System.Linq.Expressions.Expression.Parameter(resType, "Path");
                     compiledInversedExpression = new Inverse.Inverter(parser).InverseExpression(compiledExpression.Expression, param);
                 }
-            }
-            catch (Exception e)
-            {
-                inverseFaulted = true;
-                Trace.WriteLine("Binding error: calc converter can't convert expression " + parameter + ": " + e.Message);
-                Trace.WriteLine(e); 
-                throw;
+                catch (Exception e)
+                {
+                    Trace.WriteLine("Binding error: calc converter can't convert back expression " + parameter + ": " + e.Message);
+                }
             }
 
             try
@@ -103,10 +97,9 @@ namespace CalcBinding
             }
             catch (Exception e)
             {
-                Trace.WriteLine("Binding error: calc converter can't convert back expression " + parameter + ": " + e.Message);
-                Trace.WriteLine(e);
+                Trace.WriteLine("Binding error: calc converter can't invoke back expression " + parameter + ": " + e.Message);
+                return null;
             }
-            return null;
         }
 
         private object ParseStringToObject(string value, Type type)
@@ -123,33 +116,73 @@ namespace CalcBinding
         {
             if (compiledExpression == null)
             {
+                if ((compiledExpression = compileExpression(values, (string)parameter)) == null)
+                    return null;
+            }
+
+            try
+            {
+                var result = compiledExpression.Invoke(values);
+
+                if (!StringFormatDefined)
+                {
+                    if (targetType == typeof(Visibility))
+                    {
+                        result = new BoolToVisibilityConverter(FalseToVisibility)
+                                        .Convert(result, targetType, null, culture);
+                    }
+
+                    if (targetType == typeof(String))
+                        result = String.Format(CultureInfo.InvariantCulture, "{0}", result);
+                }
+                return result;
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine("Binding error: calc converter can't invoke expression " + compiledExpression.ExpressionText + ": " + e.Message);
+                return null;
+            }
+        }
+
+        private Lambda compileExpression(Object[] values, string expressionTemplate, bool convertBack = false, List<Type> targetTypes = null)
+        {
+            try
+            {
+                Lambda res = null;
+
+                var needCompile = false;
                 // we can't determine value type if value is null
                 // so, binding Path = (a == null) ? "a" : "b" is permitted
-                if (values.Any(v => v == null))
+                if (convertBack)
+                    needCompile = true;
+                else
+                if (values.Contains(null))
                 {
-                    Console.WriteLine("calcBinding: error: one of source fields is null in binding init, return NULL");
-                    return null;
+                    Trace.WriteLine("Binding error: one of source fields is null in binding init, return NULL");
                 }
-                //todo: questions on this code
+                else
+                    if (values.Contains(DependencyProperty.UnsetValue))
+                    {
+                        Trace.WriteLine("Binding error: one of source fields is Unset, return null");
+                    }
+                    else
+                    {
+                        needCompile = true;
+                    }
 
-                compiledExpression = compileExpression(values.Select(v => v.GetType()).ToList(), (string)parameter);
+                if (needCompile)
+                {
+                    var argumentsTypes = convertBack ? targetTypes : values.Select(v => v.GetType()).ToList();
+                    res = compileExpression(argumentsTypes, expressionTemplate);
+                }
+
+                return res;
             }
-
-            var result = compiledExpression.Invoke(values);
-
-            if (!StringFormatDefined)
+            catch (Exception e)
             {
-                if (targetType == typeof(Visibility))
-                {
-                    result = new BoolToVisibilityConverter(FalseToVisibility)
-                                    .Convert(result, targetType, null, culture);
-                }
-
-                if (targetType == typeof(String))
-                    result = String.Format(CultureInfo.InvariantCulture, "{0}", result);
+                Trace.WriteLine("Binding error: calc converter can't convert expression" + expressionTemplate + ": " + e.Message);
+                return null;
             }
-
-            return result;
         }
 
         private Lambda compileExpression(List<Type> argumentsTypes, string expressionTemplate)

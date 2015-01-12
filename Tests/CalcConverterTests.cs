@@ -97,5 +97,17 @@ namespace Tests
             Assert.AreEqual(1, interpreterMock.ParseCalls.First().Value);
             Assert.AreEqual(1, interpreterMock.ParseCalls.Skip(1).First().Value);
         }
+
+        [TestMethod]
+        public void BindingBadTest()
+        {
+            new CalcConverter().Convert(null, typeof(string), "A+3", CultureInfo.InvariantCulture);
+            new CalcConverter().Convert(DependencyProperty.UnsetValue, typeof(string), "A+3", CultureInfo.InvariantCulture);
+            new CalcConverter().Convert(new object[] { 2, null }, typeof(string), "A+3", CultureInfo.InvariantCulture);
+            new CalcConverter().Convert(new object[] { 2, DependencyProperty.UnsetValue }, typeof(string), "A+3", CultureInfo.InvariantCulture);
+            
+            new CalcConverter().ConvertBack(null, typeof(int), "A+3", CultureInfo.InvariantCulture);
+            new CalcConverter().ConvertBack(DependencyProperty.UnsetValue, typeof(int), "A+3", CultureInfo.InvariantCulture);
+        }
     }
 }
