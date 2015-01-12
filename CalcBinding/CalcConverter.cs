@@ -83,23 +83,26 @@ namespace CalcBinding
                 }
             }
 
-            try
+            if (compiledInversedExpression != null)
             {
-                if (targetType == typeof(bool) && value.GetType() == typeof(Visibility))
-                    value = new BoolToVisibilityConverter(FalseToVisibility)
-                        .ConvertBack(value, targetType, null, culture);
+                try
+                {
+                    if (targetType == typeof(bool) && value.GetType() == typeof(Visibility))
+                        value = new BoolToVisibilityConverter(FalseToVisibility)
+                            .ConvertBack(value, targetType, null, culture);
 
-                if (value.GetType() == typeof(string) && compiledExpression.Expression.Type != value.GetType())
-                    value = ParseStringToObject((string)value, compiledExpression.Expression.Type);
+                    if (value.GetType() == typeof(string) && compiledExpression.Expression.Type != value.GetType())
+                        value = ParseStringToObject((string)value, compiledExpression.Expression.Type);
 
-                var source = compiledInversedExpression.Invoke(value);
-                return source;
+                    var source = compiledInversedExpression.Invoke(value);
+                    return source;
+                }
+                catch (Exception e)
+                {
+                    Trace.WriteLine("Binding error: calc converter can't invoke back expression " + parameter + ": " + e.Message);
+                }
             }
-            catch (Exception e)
-            {
-                Trace.WriteLine("Binding error: calc converter can't invoke back expression " + parameter + ": " + e.Message);
-                return null;
-            }
+            return null;
         }
 
         private object ParseStringToObject(string value, Type type)

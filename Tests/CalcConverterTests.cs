@@ -101,13 +101,15 @@ namespace Tests
         [TestMethod]
         public void BindingBadTest()
         {
-            new CalcConverter().Convert(null, typeof(string), "A+3", CultureInfo.InvariantCulture);
-            new CalcConverter().Convert(DependencyProperty.UnsetValue, typeof(string), "A+3", CultureInfo.InvariantCulture);
-            new CalcConverter().Convert(new object[] { 2, null }, typeof(string), "A+3", CultureInfo.InvariantCulture);
-            new CalcConverter().Convert(new object[] { 2, DependencyProperty.UnsetValue }, typeof(string), "A+3", CultureInfo.InvariantCulture);
-            
-            new CalcConverter().ConvertBack(null, typeof(int), "A+3", CultureInfo.InvariantCulture);
-            new CalcConverter().ConvertBack(DependencyProperty.UnsetValue, typeof(int), "A+3", CultureInfo.InvariantCulture);
+            new CalcConverter().Convert(null, typeof(string), "{0}+3", CultureInfo.InvariantCulture);
+            new CalcConverter().Convert(DependencyProperty.UnsetValue, typeof(string), "{0}+3", CultureInfo.InvariantCulture);
+            new CalcConverter().Convert(new object[] { 2, null }, typeof(string), "{0}+3", CultureInfo.InvariantCulture);
+            new CalcConverter().Convert(new object[] { 2, DependencyProperty.UnsetValue }, typeof(string), "{0}+3", CultureInfo.InvariantCulture);
+            new CalcConverter().Convert("asdf", typeof(int), "{1}*3", CultureInfo.InvariantCulture);
+
+            new CalcConverter().ConvertBack(null, typeof(int), "{0}+3", CultureInfo.InvariantCulture);
+            new CalcConverter().ConvertBack(DependencyProperty.UnsetValue, typeof(int), "{0}+3", CultureInfo.InvariantCulture);
+            new CalcConverter().ConvertBack("sfdf", typeof(int), "{0}+3", CultureInfo.InvariantCulture);
         }
     }
 }

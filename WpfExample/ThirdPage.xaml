@@ -83,7 +83,7 @@
             <StackPanel Orientation="Vertical">
                 <DockPanel>
                     <Label Content="-A + 5"/>
-                    <TextBox Text="{c:Binding -A+5, StringFormat={}{0:n2}}"/>
+                    <TextBox Text="{c:Binding -A+5, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:n2}}"/>
                 </DockPanel>
                 <DockPanel>
                     <Label Content="(A+5) * 3 / 4.0 - 32"/>
