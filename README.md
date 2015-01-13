@@ -1,6 +1,6 @@
 # CalcBinding
 
-CalcBinding is an advanced Binding markup extension that allows you to write binding expressions directly in xaml, without custom converters. CalcBinding makes binding expressions shorter and user friendly.
+CalcBinding is an advanced Binding markup extension that allows you to write binding expressions directly in xaml, without custom converters. CalcBinding can automaticaly perfom bool to visibility convertion, inverse your expression and create two way binding, and more. CalcBinding makes binding expressions shorter and more user friendly.
 
 ## Install
 
@@ -95,7 +95,7 @@ or
 ```
  CalcBinding determines Visibility target type and converts bool to visibility automaticaly for you
  
-## Before:
+## Before (Automatic inverse example):
 ```xml
 <TextBox Text = "{Binding Path=A Conveter={x:StaticResource MyMathConverter}">
 ```
