@@ -252,7 +252,7 @@ As Xaml is generally xml format, some symbols are denied in markupExtension: &, 
 <= -> less=
 ```
 
-See Logic section of examples
+See [logic](https://github.com/Alex141/CalcBinding#logic) section of examples
 ```
 2. I wrote string expression A + " some text", but my xaml doesn't compile, what's wrong?
 ```
