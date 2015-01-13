@@ -1,6 +1,6 @@
 # CalcBinding
 
-CalcBinding is a library that contains advanced Binding markup extension that allows you to write binding expressions directly in xaml, without custom converters and stringFormats. CalcBinding makes binding expressions shorter and user friendly. 
+CalcBinding is an advanced Binding markup extension that allows you to write binding expressions directly in xaml, without custom converters and stringFormats. CalcBinding makes binding expressions shorter and user friendly.
 
 ## Install
 
@@ -23,7 +23,7 @@ Following examples show xaml snippets with standart Binding and with CalcBinding
     <Binding C/> 
   </MultiBinding>
   </Label.Content>
-<Label> 
+</Label> 
 ```
 
 (without MyCustomConveter declaration and referencing to it in xaml)
@@ -45,7 +45,7 @@ Following examples show xaml snippets with standart Binding and with CalcBinding
     <Binding C/> 
     </MultiBinding> 
   </Label.Content>
-<Label> 
+</Label> 
 ```
 
 (without MyCustomConveter declaration and referencing to it in xaml)
@@ -93,12 +93,42 @@ or
 ```xml 
 <Button Visibility="{c:Binding IsChecked, FalseToVisibility=Hidden}" />
 ```
+ CalcBinding determines Visibility target type and converts bool to visibility automaticaly for you
+ 
+## Before:
+```xml
+<TextBox Text = "{Binding Path=A Conveter={x:StaticResource MyMathConverter}">
+```
 
-CalcBinding determines Visibility target type and converts bool to visibility automaticly for you
+```C#
+public class MyMathConverter : IValueConverter
+{
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+          var source = (int)value;
+          return Math.Sin(source*2)-5;
+        }
+        
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {        
+          var res = Double.Parse(value);
+          return (int)(Math.Asin(res + 5) / 2);
+        }
+}
+```
+
+## After:
+```xml
+<TextBox Text = "{c:Binding 'Math.Sin(source*2)-5'}">
+```
+
+ CalcBinding automaticaly inverse your expression (only for Binding not for MultiBinding) and create two way binding. If all of operators that consist your expression have inversed operators, your expression will be automaticaly inversed and binding will be two way: from source to dependency property and from dependency propery to source too.
+
+
 
 # Documentation
 
-You can write any mathematic, logical and string expressions, that contains pathes (as variables), strings, digits and following operators:
+You can write any mathematic, logical and string expressions, that contains pathes (as variables), strings, digits, all method of class Math (sin, cos, PI etc) and following operators:
 
 ```
 "(", ")", "+", "-", "*", "/", "%", "^", "!", "&&","||", "&", "|", "?", ":", "<", ">", "<=", ">=", "==", "!="};
@@ -139,6 +169,22 @@ or just
 ```xml
 <TextBox Text="{c:Binding (Name + \' \' + Surname)}" />
 <TextBox Text="{c:Binding (IsMan?\'Mr\':\'Ms\') + \' \' + Surname + \' \' + Name}"/>
+```
+
+##Math Class
+```xml
+<TextBox Text="{c:Binding Math.Sin(A*Math.PI/180), StringFormat={}{0:n5}}"/>
+<TextBox Text="{c:Binding A*Math.PI}" />
+<TextBox Text="{c:Binding 'Math.Sin(Math.Cos(A))'}"/>
+```
+
+##Automatic inverse binding expression
+
+ If you have binding with expression consisting only of operators that have inversed operators, calcBinding attempt to generate inversed expression for you and create two way binding instead of one way binding. For example, if you have expression 'Path = (A + 5) / 3' inversed expression is 'source = Path * 3 - 5'.
+ 
+ CalcBinding supports inversing of many operators:
+ ```
+"+", "- (binary)", "*", "/", "Math.Sin", "Math.Cos", "Math.Tan", "Math.Asin", "Math.Acos", "Math.Atan","Math.Pow", "Math.Log", "!", "- (unary)"};
 ```
 
 #What is inside?
@@ -211,7 +257,7 @@ See Logic section of examples
 2. I wrote string expression A + " some text", but my xaml doesn't compile, what's wrong?
 ```
 
-In markup extension we can't use double quotes, so we can you single quotes and backslash for escaping like this:
+In markup extension we can't use double quotes, so we can use single quotes and backslash for escaping like this:
 
 ```xml
 <c:Binding Path='A + \'some text\'' />
@@ -219,9 +265,8 @@ In markup extension we can't use double quotes, so we can you single quotes and 
 
 ##Restrictions
 
-1. If at least one of the properties involved in expression is null while binding initialization, then expression will not be evaluated.
- (fix in the future)
+1. If at least one of the properties involved in expression is null while binding initialization, then expression will not be evaluated, until all properties at least one time will not be not null. Then null property will not have any effect on epxression evaluation.
 
-2. CalcBinding don't support your custom conveters at all now. I hope this will be fixed in nearly future. You can help to the project resolving this [issue](https://github.com/Alex141/CalcBinding/issues/1)
+2. CalcBinding don't support your custom conveters at all now. I did not invent the case for which it would be required in CalcBinding.
 
-3. In path expression you can't use .Net classes and methods such as Math or method ToString(). I hope this will be fixed in nearly future.
+3. In path expression you can't use any .Net classes except of Math class.
