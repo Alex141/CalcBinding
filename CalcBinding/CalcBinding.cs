@@ -46,9 +46,16 @@ namespace CalcBinding
             //provider with reflection of binding and target object
             var providerValuetarget = (IProvideValueTarget)serviceProvider
               .GetService(typeof(IProvideValueTarget));
-
-            FrameworkElement _targetObject = (FrameworkElement)providerValuetarget.TargetObject;
-            DependencyProperty _targetProperty = (DependencyProperty)providerValuetarget.TargetProperty; 
+      
+            Type propertyType;
+            if (providerValuetarget.TargetProperty is DependencyProperty)
+            {
+                propertyType = ((DependencyProperty)providerValuetarget.TargetProperty).PropertyType;
+            }
+            else
+            {
+                propertyType = providerValuetarget.TargetProperty.GetType();
+            }
 
             var normPath = normalizePath(Path);
             var pathsList = getPathes(normPath);
@@ -111,7 +118,7 @@ namespace CalcBinding
                     binding.StringFormat = StringFormat;
 
                 // we don't use converter if binding is trivial - {0}, except type convertion from bool to visibility
-                if (exprTemplate != "{0}" || _targetProperty.PropertyType == typeof(Visibility))
+                if (exprTemplate != "{0}" || propertyType == typeof(Visibility))
                 {
                     binding.Converter = mathConverter;
                     binding.ConverterParameter = exprTemplate;
