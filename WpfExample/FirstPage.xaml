@@ -80,8 +80,15 @@
                 </DockPanel>
             </StackPanel>
         </GroupBox>
-        <GroupBox Header="Logic" Grid.Row="1" Grid.Column="1">
-            <StackPanel Orientation="Vertical">
+
+        <Grid Grid.Row="1" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            
+            <GroupBox Header="Logic">
+                <StackPanel Orientation="Vertical">
                 <DockPanel>
                     <CheckBox Content="!IsChecked" IsChecked="{c:Binding !IsChecked}"/>
                 </DockPanel>
@@ -102,6 +109,29 @@
                     <TextBox Text="{c:Binding (IsChecked || !IsFull)}" IsReadOnly="True" IsEnabled="False"/>
                 </DockPanel>
             </StackPanel>
-        </GroupBox>
+            </GroupBox>
+            <GroupBox Header="DataTrigger" Grid.Row="1">
+                <StackPanel>
+                    <Label Content="A+B>10: AntiqueWhite, Enabled = true," />
+                    <Label Content="A+B&lt;=10: Green, Enabled = false"/>
+                    <TextBox Text="Change A and B to see changes">
+                        <TextBox.Style>
+                            <Style TargetType="{x:Type TextBox}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{c:Binding 'A+B>10'}" Value="True">
+                                        <Setter Property="Background" Value="AntiqueWhite"/>
+                                        <Setter Property="IsEnabled" Value="True"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{c:Binding 'A+B less= 10'}" Value="True">
+                                        <Setter Property="Background" Value="Green"/>
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBox.Style>
+                    </TextBox>
+                </StackPanel>
+            </GroupBox>
+        </Grid>     
     </Grid>
 </UserControl>

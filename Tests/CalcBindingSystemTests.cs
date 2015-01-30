@@ -11,6 +11,10 @@ using System.Windows.Controls;
 using System.Windows.Markup;
 using WpfExample;
 using Tests.Mocks;
+using CalcBinding;
+using System.Xaml;
+using System.Windows.Data;
+using System.Windows.Media;
 
 namespace Tests
 {
@@ -206,6 +210,62 @@ namespace Tests
                 () => { test.A = 20; test.NestedViewModel.A = 30; }, "42", (double)42,
                 () => { test.A = 30; test.NestedViewModel.A = 10; }, "28", (double)28
             );
+        }
+
+        [TestMethod]
+        public void DataTriggerTest()
+        {
+            var viewModel = new ExampleViewModel() { A = 1, B = 1 };
+            var text = new TextBox
+            {
+                DataContext = viewModel
+            };
+
+            var dataTrigger1 = new DataTrigger
+            {
+                Value = true
+            };
+
+            dataTrigger1.Setters.Add(new Setter { Property = TextBox.BackgroundProperty, Value = Brushes.Red });
+            dataTrigger1.Setters.Add(new Setter { Property = TextBox.IsEnabledProperty, Value = true });
+
+            var calcBinding1 = new CalcBinding.Binding("(A+B)>10");
+
+            var bindingExpression1 = calcBinding1.ProvideValue(new ServiceProviderMock(dataTrigger1, typeof(DataTrigger).GetProperty("Binding")));
+
+            dataTrigger1.Binding = bindingExpression1 as BindingBase;
+
+            var dataTrigger2 = new DataTrigger
+            {
+                Value = true,
+            };
+
+            dataTrigger2.Setters.Add(new Setter { Property = TextBox.BackgroundProperty, Value = Brushes.Green });
+            dataTrigger2.Setters.Add(new Setter { Property = TextBox.IsEnabledProperty, Value = false });
+
+            var calcBinding2 = new CalcBinding.Binding("(A+B)<=10");
+
+            var bindingExpression2 = calcBinding2.ProvideValue(new ServiceProviderMock(dataTrigger2, typeof(DataTrigger).GetProperty("Binding")));
+
+            dataTrigger2.Binding = bindingExpression2 as BindingBase;
+
+            var style = new Style();
+            style.Triggers.Add(dataTrigger1);
+            style.Triggers.Add(dataTrigger2);
+
+            text.Style = style;
+
+            // act, assert
+            viewModel.A = 5;
+            viewModel.B = 7;
+
+            Assert.AreEqual(Brushes.Red, text.Background);
+            Assert.AreEqual(true, text.IsEnabled);
+
+            viewModel.B = 2;
+
+            Assert.AreEqual(Brushes.Green, text.Background);
+            Assert.AreEqual(false, text.IsEnabled);
         }
 
         //--------------------ConvertBack-----------------------------------//

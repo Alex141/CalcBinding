@@ -44,7 +44,6 @@
                 </StackPanel>
             </Grid>
         </GroupBox>
-
         <GroupBox Header="String" Grid.Row="1" Grid.Column="0">
             <StackPanel>
                 <DockPanel>
@@ -56,7 +55,6 @@
                 </DockPanel>
             </StackPanel>
         </GroupBox>
-        
         <GroupBox Header="BoolToVisibility" Grid.Row="1" Grid.Column="1">
             <StackPanel Orientation="Vertical">
                 <CheckBox Content="!HasPrivileges" IsChecked="{c:Binding !HasPrivileges}" />
