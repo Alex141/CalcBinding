@@ -24,6 +24,8 @@ namespace Tests
     [TestClass]
     public class CalcBindingSystemTests
     {
+        //--------------------Convert-----------------------------------//
+
         [TestMethod]
         public void MathTest()
         {
@@ -135,8 +137,8 @@ namespace Tests
             );
 
             BoolBindingAssert("!IsChecked or (A > B)", test,
-                () => { test.IsChecked = false; test.A = 10; test.B = 20; }, true,
-                () => { test.IsChecked = true; test.A = 5; }, false
+                () => { test.IsChecked = false; test.A = 20; test.B = 10; }, true,
+                () => { test.IsChecked = true; test.A = 4; }, false
             );
 
             BoolBindingAssert("IsChecked || !IsFull", test,
@@ -150,7 +152,22 @@ namespace Tests
             );
 
             BoolBindingAssert("A == 1 and (B less= 5)", test,
-                () => { test.A = 1; test.B = 10; }, false,
+                () => { test.A = 1; test.B = 6; }, false,
+                () => { test.B = 5; }, true
+            );
+
+            BoolBindingAssert("A == 1 and (B less= 5)", test,
+                () => { test.A = 1; test.B = 5; }, true,
+                () => { test.B = 4; }, true
+            );
+
+            BoolBindingAssert("A == 1 and (B less 5)", test,
+                () => { test.A = 1; test.B = 6; }, false,
+                () => { test.B = 5; }, false
+            );
+
+            BoolBindingAssert("A == 1 and (B less 5)", test,
+                () => { test.A = 1; test.B = 5; }, false,
                 () => { test.B = 4; }, true
             );
         }
@@ -212,61 +229,6 @@ namespace Tests
             );
         }
 
-        [TestMethod]
-        public void DataTriggerTest()
-        {
-            var viewModel = new ExampleViewModel() { A = 1, B = 1 };
-            var text = new TextBox
-            {
-                DataContext = viewModel
-            };
-
-            var dataTrigger1 = new DataTrigger
-            {
-                Value = true
-            };
-
-            dataTrigger1.Setters.Add(new Setter { Property = TextBox.BackgroundProperty, Value = Brushes.Red });
-            dataTrigger1.Setters.Add(new Setter { Property = TextBox.IsEnabledProperty, Value = true });
-
-            var calcBinding1 = new CalcBinding.Binding("(A+B)>10");
-
-            var bindingExpression1 = calcBinding1.ProvideValue(new ServiceProviderMock(dataTrigger1, typeof(DataTrigger).GetProperty("Binding")));
-
-            dataTrigger1.Binding = bindingExpression1 as BindingBase;
-
-            var dataTrigger2 = new DataTrigger
-            {
-                Value = true,
-            };
-
-            dataTrigger2.Setters.Add(new Setter { Property = TextBox.BackgroundProperty, Value = Brushes.Green });
-            dataTrigger2.Setters.Add(new Setter { Property = TextBox.IsEnabledProperty, Value = false });
-
-            var calcBinding2 = new CalcBinding.Binding("(A+B)<=10");
-
-            var bindingExpression2 = calcBinding2.ProvideValue(new ServiceProviderMock(dataTrigger2, typeof(DataTrigger).GetProperty("Binding")));
-
-            dataTrigger2.Binding = bindingExpression2 as BindingBase;
-
-            var style = new Style();
-            style.Triggers.Add(dataTrigger1);
-            style.Triggers.Add(dataTrigger2);
-
-            text.Style = style;
-
-            // act, assert
-            viewModel.A = 5;
-            viewModel.B = 7;
-
-            Assert.AreEqual(Brushes.Red, text.Background);
-            Assert.AreEqual(true, text.IsEnabled);
-
-            viewModel.B = 2;
-
-            Assert.AreEqual(Brushes.Green, text.Background);
-            Assert.AreEqual(false, text.IsEnabled);
-        }
 
         //--------------------ConvertBack-----------------------------------//
 
@@ -388,6 +350,91 @@ namespace Tests
             StringAndObjectBindingBackAssert("Math.Log(2, NestedViewModel.A)", test, () => test.NestedViewModel.A,
                 "0.8", "-0.2", 0.8, -0.2,
                 2.3784142300054421, 0.03125);
+        }
+
+        //--------------------Issues-----------------------------------//
+        [TestMethod]
+        public void DataTriggerTest()
+        {
+            var viewModel = new ExampleViewModel() { A = 1, B = 1 };
+            var text = new TextBox
+            {
+                DataContext = viewModel
+            };
+
+            var dataTrigger1 = new DataTrigger
+            {
+                Value = true
+            };
+
+            dataTrigger1.Setters.Add(new Setter { Property = TextBox.BackgroundProperty, Value = Brushes.Red });
+            dataTrigger1.Setters.Add(new Setter { Property = TextBox.IsEnabledProperty, Value = true });
+
+            var calcBinding1 = new CalcBinding.Binding("(A+B)>10");
+
+            var bindingExpression1 = calcBinding1.ProvideValue(new ServiceProviderMock(dataTrigger1, typeof(DataTrigger).GetProperty("Binding")));
+
+            dataTrigger1.Binding = bindingExpression1 as BindingBase;
+
+            var dataTrigger2 = new DataTrigger
+            {
+                Value = true,
+            };
+
+            dataTrigger2.Setters.Add(new Setter { Property = TextBox.BackgroundProperty, Value = Brushes.Green });
+            dataTrigger2.Setters.Add(new Setter { Property = TextBox.IsEnabledProperty, Value = false });
+
+            var calcBinding2 = new CalcBinding.Binding("(A+B)<=10");
+
+            var bindingExpression2 = calcBinding2.ProvideValue(new ServiceProviderMock(dataTrigger2, typeof(DataTrigger).GetProperty("Binding")));
+
+            dataTrigger2.Binding = bindingExpression2 as BindingBase;
+
+            var style = new Style();
+            style.Triggers.Add(dataTrigger1);
+            style.Triggers.Add(dataTrigger2);
+
+            text.Style = style;
+
+            // act, assert
+            viewModel.A = 5;
+            viewModel.B = 7;
+
+            Assert.AreEqual(Brushes.Red, text.Background);
+            Assert.AreEqual(true, text.IsEnabled);
+
+            viewModel.B = 2;
+
+            Assert.AreEqual(Brushes.Green, text.Background);
+            Assert.AreEqual(false, text.IsEnabled);
+        }
+
+        [TestMethod]
+        public void ParsePseudonimsOfOperatorsAsPartOfPropertiesNamesTest()
+        {
+            //-------------------------------------------------------------------//
+            var test = new ExampleViewModel();
+
+            //-------------------------------------------------------------------//
+            ObjectBindingAssert("PorksCount*2", test,
+                () => { test.PorksCount = 2; }, 4,
+                () => { test.PorksCount = 4; }, 8
+            );
+
+            ObjectBindingAssert("Pandus*2", test,
+                () => { test.Pandus = 2; }, 4,
+                () => { test.Pandus = 4; }, 8
+            );
+
+            ObjectBindingAssert("Fairlessly*2", test,
+                () => { test.Fairlessly = 2; }, 4,
+                () => { test.Fairlessly = 4; }, 8
+            );
+
+            ObjectBindingAssert("Fairless==5", test,
+                () => { test.Fairless = 5; }, true,
+                () => { test.Fairless = 4; }, false
+            );        
         }
 
         #region Convert

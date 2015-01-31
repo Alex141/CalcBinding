@@ -272,9 +272,10 @@ namespace CalcBinding
         {
             var replaceDict = new Dictionary<String, String>
             {
-                {"and",     "&&"},
-                {"or",      "||"},
-                {"less=",   "<="},
+                {" and ",     " && "},
+                {" or ",      " || "},
+                {" less ",    " < "}, // test on it normal case. yes
+                {" less=",   " <="}, // <-- we can do it
                 {"\'",      "\""}
             };
 

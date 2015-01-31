@@ -257,6 +257,58 @@ namespace WpfExample
                 );
             }
         }
+
+        private int porksCount = 1;
+        public int PorksCount
+        {
+            get { return porksCount; }
+            set
+            {
+                porksCount = value;
+                new object().TraceTime(
+                    () => RaisePropertyChanged(() => PorksCount)
+                );
+            }
+        }
+
+        private int pandus = 1;
+        public int Pandus
+        {
+            get { return pandus; }
+            set
+            {
+                pandus = value;
+                new object().TraceTime(
+                    () => RaisePropertyChanged(() => Pandus)
+                );
+            }
+        }
+
+        private int fairlessly = 1;
+        public int Fairlessly
+        {
+            get { return fairlessly; }
+            set
+            {
+                fairlessly = value;
+                new object().TraceTime(
+                    () => RaisePropertyChanged(() => Fairlessly)
+                );
+            }
+        }
+
+        private int fairless = 1;
+        public int Fairless
+        {
+            get { return fairless; }
+            set
+            {
+                fairless = value;
+                new object().TraceTime(
+                    () => RaisePropertyChanged(() => Fairless)
+                );
+            }
+        }    
     }
 
     public static class TimeExtension
