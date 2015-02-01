@@ -285,9 +285,12 @@ In markup extension we can't use double quotes, so we can use single quotes and 
 ##version 2.0.0.0
 
 * support of two way binding, support of automatic invert binding expression and realization inverted binding from dependency property to source
+* Math class support
 * support of nested properties (in nested view-models)
+* bug fixes
 
 ##version 1.0.0.0
 
 * binding support
 * supported features: binding/multibinding, algebraic, logic, string and ternary operators
+* support of bool to visibility convertion (two way)
