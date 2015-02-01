@@ -437,6 +437,144 @@ namespace Tests
             );        
         }
 
+        [TestMethod]
+        public void ParsePseudonimsWithBracketsWithoutSpacesTest()
+        {
+            //-------------------------------------------------------------------//
+            var test = new ExampleViewModel();
+
+            //-------------------------------------------------------------------//
+            ObjectBindingAssert("(A>B)or(B > C)", test,
+                () => { test.A = 5; test.B = 4; test.C = 3; }, true,
+                () => { test.A = 5; test.B = 7; test.C = 9; }, false
+            );
+
+            ObjectBindingAssert("(A>B)and(B > C)", test,
+                () => { test.A = 5; test.B = 4; test.C = 3; }, true,
+                () => { test.A = 2; }, false
+            );
+            ObjectBindingAssert("(A+B)less(B + C)", test,
+                () => { test.A = 5; test.B = 4; test.C = 10; }, true,
+                () => { test.C = 2; }, false
+            );
+            ObjectBindingAssert("(A+B)less=(B + C)", test,
+                () => { test.A = 5; test.B = 4; test.C = 5; }, true,
+                () => { test.C = 3; }, false
+            );
+        }
+
+        [TestMethod]
+        public void ParsePseudonimsWithBracketsWithSpacesTest()
+        {
+            //-------------------------------------------------------------------//
+            var test = new ExampleViewModel();
+
+            //-------------------------------------------------------------------//
+            ObjectBindingAssert("(A>B) or(B > C)", test,
+                () => { test.A = 5; test.B = 4; test.C = 3; }, true,
+                () => { test.A = 5; test.B = 7; test.C = 9; }, false
+            );
+            ObjectBindingAssert("(A>B)or (B > C)", test,
+                () => { test.A = 5; test.B = 4; test.C = 3; }, true,
+                () => { test.A = 5; test.B = 7; test.C = 9; }, false
+            );
+            ObjectBindingAssert("(A>B) or (B > C)", test,
+                () => { test.A = 5; test.B = 4; test.C = 3; }, true,
+                () => { test.A = 5; test.B = 7; test.C = 9; }, false
+            );
+
+            ObjectBindingAssert("(A>B) and(B > C)", test,
+                () => { test.A = 5; test.B = 4; test.C = 3; }, true,
+                () => { test.A = 2; }, false
+            );
+            ObjectBindingAssert("(A>B)and (B > C)", test,
+                () => { test.A = 5; test.B = 4; test.C = 3; }, true,
+                () => { test.A = 2; }, false
+            );
+            ObjectBindingAssert("(A>B) and (B > C)", test,
+                () => { test.A = 5; test.B = 4; test.C = 3; }, true,
+                () => { test.A = 2; }, false
+            );
+
+            ObjectBindingAssert("(A+B) less(B + C)", test,
+                () => { test.A = 5; test.B = 4; test.C = 10; }, true,
+                () => { test.C = 2; }, false
+            );
+            ObjectBindingAssert("(A+B)less (B + C)", test,
+                () => { test.A = 5; test.B = 4; test.C = 10; }, true,
+                () => { test.C = 2; }, false
+            );
+            ObjectBindingAssert("(A+B) less (B + C)", test,
+                () => { test.A = 5; test.B = 4; test.C = 10; }, true,
+                () => { test.C = 2; }, false
+            );
+
+            ObjectBindingAssert("(A+B) less=(B + C)", test,
+                () => { test.A = 5; test.B = 4; test.C = 5; }, true,
+                () => { test.C = 3; }, false
+            );
+            ObjectBindingAssert("(A+B)less= (B + C)", test,
+                () => { test.A = 5; test.B = 4; test.C = 5; }, true,
+                () => { test.C = 3; }, false
+            );
+            ObjectBindingAssert("(A+B) less= (B + C)", test,
+                () => { test.A = 5; test.B = 4; test.C = 5; }, true,
+                () => { test.C = 3; }, false
+            );
+        }
+
+        [TestMethod]
+        public void ParseLessEqualOperatorTest()
+        {
+            //-------------------------------------------------------------------//
+            var test = new ExampleViewModel();
+
+            //-------------------------------------------------------------------//
+            ObjectBindingAssert("A <= B", test,
+                () => { test.A = 5; test.B = 4; }, false,
+                () => { test.A = 5; test.B = 7; }, true
+            );
+        }
+
+        [TestMethod]
+        public void ParseGreaterEqualOperatorTest()
+        {
+            //-------------------------------------------------------------------//
+            var test = new ExampleViewModel();
+
+            //-------------------------------------------------------------------//
+            ObjectBindingAssert("A >= B", test,
+                () => { test.A = 3; test.B = 4; }, false,
+                () => { test.A = 7; test.B = 5; }, true
+            );
+        }
+
+        [TestMethod]
+        public void ParseEqualOperatorTest()
+        {
+            //-------------------------------------------------------------------//
+            var test = new ExampleViewModel();
+
+            //-------------------------------------------------------------------//
+            ObjectBindingAssert("A == B", test,
+                () => { test.A = 4; test.B = 4; }, true,
+                () => { test.A = 7; test.B = 5; }, false
+            );
+        }
+
+        [TestMethod]
+        public void ParseNotEqualOperatorTest()
+        {
+            //-------------------------------------------------------------------//
+            var test = new ExampleViewModel();
+
+            //-------------------------------------------------------------------//
+            ObjectBindingAssert("A != B", test,
+                () => { test.A = 3; test.B = 4; }, true,
+                () => { test.A = 5; test.B = 5; }, false
+            );
+        }
+
         #region Convert
 
         public void StringAndObjectBindingAssert(string path, INotifyPropertyChanged source,
@@ -664,5 +802,4 @@ namespace Tests
 
         #endregion
     }
-
 }

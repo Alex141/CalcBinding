@@ -210,8 +210,8 @@ namespace CalcBinding
         {
             var operators = new List<String>() 
             { 
-                "(", ")", "+", "-", "*", "/", "%", "^", "!", "&&", "||", 
-                "&", "|", "?", ":", "<", ">", "<=", ">=", "==", "!=", "," 
+                "(", ")", "+", "-", "*", "/", "%", "^", "&&", "||", 
+                "&", "|", "?", ":", "<=", ">=", "<", ">", "==", "!=", "!", "," 
             };
 
             var matches = normPath.Split(operators.ToArray(), StringSplitOptions.RemoveEmptyEntries);
@@ -273,9 +273,22 @@ namespace CalcBinding
             var replaceDict = new Dictionary<String, String>
             {
                 {" and ",     " && "},
+                {")and ",     ")&& "},
+                {" and(",     " &&("},
+                {")and(",     ")&&("},
+
                 {" or ",      " || "},
-                {" less ",    " < "}, // test on it normal case. yes
-                {" less=",   " <="}, // <-- we can do it
+                {")or ",      ")|| "},
+                {" or(",      " ||("},
+                {")or(",      ")||("},
+
+                {" less ",    " < "},
+                {")less ",    ")< "},
+                {" less(",    " <("},
+                {")less(",    ")<("},
+
+                {" less=",   " <="}, 
+                {")less=",   ")<="}, 
                 {"\'",      "\""}
             };
 
