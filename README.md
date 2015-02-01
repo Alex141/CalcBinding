@@ -1,6 +1,6 @@
 # CalcBinding
 
-CalcBinding is an advanced Binding markup extension that allows you to write binding expressions directly in xaml, without custom converters. CalcBinding can automaticaly perfom bool to visibility convertion, inverse your expression and create two way binding, and more. CalcBinding makes binding expressions shorter and more user friendly.
+CalcBinding is an advanced Binding markup extension that allows you to write binding expressions directly in xaml, without custom converters. CalcBinding can automaticaly perfom bool to visibility convertion, inverse your expression and create two way binding, and more. CalcBinding makes binding expressions shorter and more user friendly. [Release notes](https://github.com/Alex141/CalcBinding#release-notes)
 
 ## Install
 
@@ -270,3 +270,27 @@ In markup extension we can't use double quotes, so we can use single quotes and 
 2. CalcBinding don't support your custom conveters at all now. I did not invent the case for which it would be required in CalcBinding.
 
 3. In path expression you can't use any .Net classes except of Math class.
+
+#Release notes
+
+##version 2.1.1.0
+
+* bug fixes
+
+##version 2.1.0.0
+
+* DataTrigger support
+* bug fixes
+
+##version 2.0.0.0
+
+* support of two way binding, support of automatic invert binding expression and realization inverted binding from dependency property to source
+* Math class support
+* support of nested properties (in nested view-models)
+* bug fixes
+
+##version 1.0.0.0
+
+* binding support
+* supported features: binding/multibinding, algebraic, logic, string and ternary operators
+* support of bool to visibility convertion (two way)
