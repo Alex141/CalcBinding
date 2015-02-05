@@ -273,6 +273,10 @@ In markup extension we can't use double quotes, so we can use single quotes and 
 
 #Release notes
 
+##version 2.1.2.0
+
+* RelativeSource in multibinding support
+
 ##version 2.1.1.0
 
 * bug fixes
