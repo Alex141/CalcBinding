@@ -157,6 +157,9 @@ namespace CalcBinding
                     if (ElementName != null)
                         binding.ElementName = ElementName;
 
+                    if (RelativeSource != null)
+                        binding.RelativeSource = RelativeSource;
+
                     mBinding.Bindings.Add(binding);
                 }
 
