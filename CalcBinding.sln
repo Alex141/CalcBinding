@@ -18,21 +18,35 @@ EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug-net4.0|Any CPU = Debug-net4.0|Any CPU
 		Release|Any CPU = Release|Any CPU
+		Release-net4.0|Any CPU = Release-net4.0|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{54EAD481-B6FC-41BB-ABBE-F0B33E123C61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{54EAD481-B6FC-41BB-ABBE-F0B33E123C61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54EAD481-B6FC-41BB-ABBE-F0B33E123C61}.Debug-net4.0|Any CPU.ActiveCfg = Debug-net4.0|Any CPU
+		{54EAD481-B6FC-41BB-ABBE-F0B33E123C61}.Debug-net4.0|Any CPU.Build.0 = Debug-net4.0|Any CPU
 		{54EAD481-B6FC-41BB-ABBE-F0B33E123C61}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{54EAD481-B6FC-41BB-ABBE-F0B33E123C61}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54EAD481-B6FC-41BB-ABBE-F0B33E123C61}.Release-net4.0|Any CPU.ActiveCfg = Release-net4.0|Any CPU
+		{54EAD481-B6FC-41BB-ABBE-F0B33E123C61}.Release-net4.0|Any CPU.Build.0 = Release-net4.0|Any CPU
 		{705D5657-B94D-4A9C-9377-37454281357D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{705D5657-B94D-4A9C-9377-37454281357D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{705D5657-B94D-4A9C-9377-37454281357D}.Debug-net4.0|Any CPU.ActiveCfg = Debug-net4.0|Any CPU
+		{705D5657-B94D-4A9C-9377-37454281357D}.Debug-net4.0|Any CPU.Build.0 = Debug-net4.0|Any CPU
 		{705D5657-B94D-4A9C-9377-37454281357D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{705D5657-B94D-4A9C-9377-37454281357D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{705D5657-B94D-4A9C-9377-37454281357D}.Release-net4.0|Any CPU.ActiveCfg = Release-net4.0|Any CPU
+		{705D5657-B94D-4A9C-9377-37454281357D}.Release-net4.0|Any CPU.Build.0 = Release-net4.0|Any CPU
 		{7719DA11-D048-4D6C-AFEB-8F19D8627C8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7719DA11-D048-4D6C-AFEB-8F19D8627C8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7719DA11-D048-4D6C-AFEB-8F19D8627C8C}.Debug-net4.0|Any CPU.ActiveCfg = Debug-net4.0|Any CPU
+		{7719DA11-D048-4D6C-AFEB-8F19D8627C8C}.Debug-net4.0|Any CPU.Build.0 = Debug-net4.0|Any CPU
 		{7719DA11-D048-4D6C-AFEB-8F19D8627C8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7719DA11-D048-4D6C-AFEB-8F19D8627C8C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7719DA11-D048-4D6C-AFEB-8F19D8627C8C}.Release-net4.0|Any CPU.ActiveCfg = Release-net4.0|Any CPU
+		{7719DA11-D048-4D6C-AFEB-8F19D8627C8C}.Release-net4.0|Any CPU.Build.0 = Release-net4.0|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

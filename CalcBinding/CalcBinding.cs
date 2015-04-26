@@ -102,8 +102,10 @@ namespace CalcBinding
                     UpdateSourceTrigger = UpdateSourceTrigger,
                     ValidatesOnDataErrors = ValidatesOnDataErrors,
                     ValidatesOnExceptions = ValidatesOnExceptions,
+#if NET45
                     ValidatesOnNotifyDataErrors = ValidatesOnNotifyDataErrors,
-                };
+#endif
+                    };
 
                 if (Source != null)
                     binding.Source = Source;
@@ -141,7 +143,9 @@ namespace CalcBinding
                     UpdateSourceTrigger = UpdateSourceTrigger,
                     ValidatesOnDataErrors = ValidatesOnDataErrors,
                     ValidatesOnExceptions = ValidatesOnExceptions,
+#if NET45
                     ValidatesOnNotifyDataErrors = ValidatesOnNotifyDataErrors,
+#endif
                 };
 
                 if (StringFormat != null)
@@ -449,6 +453,7 @@ namespace CalcBinding
         [DefaultValue(false)]
         public bool ValidatesOnExceptions { get; set; }
  
+#if NET45
         //
         // Summary:
         //     Gets or sets a value that indicates whether to include the System.Windows.Controls.NotifyDataErrorValidationRule.
@@ -458,7 +463,7 @@ namespace CalcBinding
         //     otherwise, false. The default is true.
         [DefaultValue(true)]
         public bool ValidatesOnNotifyDataErrors { get; set; }
-
+#endif
         //
         // Summary:
         //     Gets or sets the binding source by specifying its location relative to the

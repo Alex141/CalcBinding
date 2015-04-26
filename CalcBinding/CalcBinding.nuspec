@@ -15,4 +15,7 @@
     <copyright>Copyright 2014</copyright>
     <tags>Xaml WPF Binding Expression</tags>
   </metadata>
+  <files>
+    <file src="bin\release-net4.0\CalcBinding.dll" target="lib\net40" />
+</files>
 </package>
