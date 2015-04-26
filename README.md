@@ -273,6 +273,10 @@ In markup extension we can't use double quotes, so we can use single quotes and 
 
 #Release notes
 
+##version 2.2.2.0
+
+* version for .net 4.0
+
 ##version 2.1.2.0
 
 * RelativeSource in multibinding support
