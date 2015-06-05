@@ -575,6 +575,62 @@ namespace Tests
             );
         }
 
+        [TestMethod]
+        [ExpectedExceptionEx(exceptionType: typeof(InvalidOperationException), hResult: -2146233079)]
+        public void BindingToReadonlyPropertyWithTwoWayFailsTest()
+        {
+            var calcBinding = new CalcBinding.Binding("ReadonlyA")
+            {
+                UpdateSourceTrigger = System.Windows.Data.UpdateSourceTrigger.PropertyChanged,
+                Mode = BindingMode.TwoWay
+            };
+
+            var source = new ExampleViewModel();
+            var element = new TextBox();
+
+            BindingBackAssert(calcBinding, source, () => source.A,
+                element, TextBox.TextProperty, (string s) => element.Text = s,
+                "10", "100",
+                (double)10, (double)100);
+        }
+
+        [TestMethod]
+        [ExpectedExceptionEx(exceptionType: typeof(InvalidOperationException), hResult: -2146233079)]
+        public void BindingToReadonlyPropertyWithOneWayToSourceFailsTest()
+        {
+            var calcBinding = new CalcBinding.Binding("ReadonlyA")
+            {
+                UpdateSourceTrigger = System.Windows.Data.UpdateSourceTrigger.PropertyChanged,
+                Mode = BindingMode.OneWayToSource
+            };
+
+            var source = new ExampleViewModel();
+            var element = new TextBox();
+
+            BindingBackAssert(calcBinding, source, () => source.A,
+                element, TextBox.TextProperty, (string s) => element.Text = s,
+                "10", "100",
+                (double)10, (double)100);
+        }
+
+        [TestMethod]
+        public void BindingToReadonlyPropertyWithOneWaySuccessTest()
+        {
+            var calcBinding = new CalcBinding.Binding("ReadonlyA")
+            {
+                UpdateSourceTrigger = System.Windows.Data.UpdateSourceTrigger.PropertyChanged,
+                Mode = BindingMode.OneWay
+            };
+
+            var source = new ExampleViewModel();
+            var element = new TextBox();
+
+            BindingBackAssert(calcBinding, source, () => source.A,
+                element, TextBox.TextProperty, (string s) => element.Text = s,
+                "10", "100",
+                (double)10, (double)10);
+        }
+
         #region Convert
 
         public void StringAndObjectBindingAssert(string path, INotifyPropertyChanged source,

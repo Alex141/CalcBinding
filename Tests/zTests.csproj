@@ -81,6 +81,7 @@
   <ItemGroup>
     <Compile Include="BoolToVisibilityConverterTests.cs" />
     <Compile Include="CalcConverterTests.cs" />
+    <Compile Include="ExpectedExceptionEx.cs" />
     <Compile Include="InverseTest.cs" />
     <Compile Include="Mocks\CompileTimesMockInterpreterParser.cs" />
     <Compile Include="Mocks\ProvideValueTargetMock.cs" />

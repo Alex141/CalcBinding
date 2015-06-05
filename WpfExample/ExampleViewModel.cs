@@ -308,7 +308,13 @@ namespace WpfExample
                     () => RaisePropertyChanged(() => Fairless)
                 );
             }
-        }    
+        }
+
+        private double readonlyA = 4;
+        public double ReadonlyA
+        {
+            get { return readonlyA; }
+        }
     }
 
     public static class TimeExtension

@@ -179,3 +179,7 @@ $RECYCLE.BIN/
  
 # Visual Studio 2014 CTP
 **/*.sln.ide 
+/packages/DynamicExpresso.Core.1.1.0.0/*.nupkg
+/packages/DynamicExpresso.Core.1.1.0.0/*.nuspec
+/packages/DynamicExpresso.Core.1.1.0.0/lib/net40/*.dll
+/packages
