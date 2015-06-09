@@ -200,14 +200,14 @@ The whole process can be divided into the following stages:
 
 Stage 1: Initialization
 
-1. String expression pre-process: deleting spacebars, replacing operators second names to original names:
+1 String expression pre-process: deleting spacebars, replacing operators second names to original names:
 
 ```C#
 Input:  exprStr = (IsChecked and !(Settings.Count > 0)) ? 'example str 1' : 'example str 2 '
 Output: exprStr = (IsChecked&&!(Settings.Count>0))?"example str 1":"example str 2 "
 ```
 
-2. Expression templating: searching properties pathes and replacing pathes to appropriate variables numbers:
+2 Expression templating: searching properties pathes and replacing pathes to appropriate variables numbers:
  
 ```C#
 Input: exprStr = (IsChecked&&!(Settings.Count>0))?"example str 1":"example str 2 "
@@ -217,7 +217,7 @@ Output: exprStr = ({0}&&!({1}>0))?"example str 1":"example str 2 "
 
 This expression template is transmitted to converter as Converter Parameter
 
-3. (In converter) Expression template parsing and creating of expression dependencing from the variables:
+3 (In converter) Expression template parsing and creating of expression dependencing from the variables:
 
 ```C#
 Input: exprStr = ({0}&&!({1}>0))?"example str 1":"example str 2 "
@@ -225,14 +225,14 @@ Output: exprStr = (a&&!(b)>0))?"example str 1":"example str 2 "
          varList = a:Boolean, b:Integer
 ```
 
-4. (In conveter) Compiling result string expression to delegate:
+4 (In conveter) Compiling result string expression to delegate:
 ```C#
 Lambda compiledExpression = new Interpreter().Parse(exprStr, varList);
 ```
 
 Stage 2: Fires when binding Binding fires:
 
-1. (In Converter) Run created delegate with current source values
+1 (In Converter) Run created delegate with current source values
 
 ```C#
 var result = compiledExpression.Invoke(values); where values - new binding source values
@@ -241,7 +241,7 @@ var result = compiledExpression.Invoke(values); where values - new binding sourc
 #Q&A
 
 ```
-2. I wrote logical expression A && B, A < B, A <= B, but my xaml doesn't compile, what's wrong?
+1 I wrote logical expression A && B, A < B, A <= B, but my xaml doesn't compile, what's wrong?
 ```
 As Xaml is generally xml format, some symbols are denied in markupExtension: &, &&, <. Therefore, these characters are replaced with the following:
 
@@ -254,7 +254,7 @@ As Xaml is generally xml format, some symbols are denied in markupExtension: &, 
 
 See [logic](https://github.com/Alex141/CalcBinding#logic) section of examples
 ```
-3. I wrote string expression A + " some text", but my xaml doesn't compile, what's wrong?
+2 I wrote string expression A + " some text", but my xaml doesn't compile, what's wrong?
 ```
 
 In markup extension we can't use double quotes, so we can use single quotes and backslash for escaping like this:
