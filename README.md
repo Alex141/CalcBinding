@@ -241,7 +241,7 @@ var result = compiledExpression.Invoke(values); where values - new binding sourc
 #Q&A
 
 ```
-1. I wrote logical expression A && B, A < B, A <= B, but my xaml doesn't compile, what's wrong?
+2. I wrote logical expression A && B, A < B, A <= B, but my xaml doesn't compile, what's wrong?
 ```
 As Xaml is generally xml format, some symbols are denied in markupExtension: &, &&, <. Therefore, these characters are replaced with the following:
 
@@ -254,7 +254,7 @@ As Xaml is generally xml format, some symbols are denied in markupExtension: &, 
 
 See [logic](https://github.com/Alex141/CalcBinding#logic) section of examples
 ```
-2. I wrote string expression A + " some text", but my xaml doesn't compile, what's wrong?
+3. I wrote string expression A + " some text", but my xaml doesn't compile, what's wrong?
 ```
 
 In markup extension we can't use double quotes, so we can use single quotes and backslash for escaping like this:
