@@ -126,9 +126,19 @@ namespace Tests
                 () => test.IsChecked = false, true
             );
 
+            BoolBindingAssert("not IsChecked", test,
+                () => test.IsChecked = true, false,
+                () => test.IsChecked = false, true
+            );
+            
             BoolBindingAssert("!IsChecked and IsFull", test,
                 () => { test.IsChecked = false; test.IsFull = false; }, false,
                 () => { test.IsChecked = false; test.IsFull = true; }, true
+            );
+
+            BoolBindingAssert("IsChecked and not IsFull", test,
+                () => { test.IsChecked = true; test.IsFull = true; }, false,
+                () => { test.IsChecked = true; test.IsFull = false; }, true
             );
 
             BoolBindingAssert("!IsChecked && IsFull", test,

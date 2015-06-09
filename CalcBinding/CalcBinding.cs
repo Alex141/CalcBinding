@@ -296,7 +296,10 @@ namespace CalcBinding
 
                 {" less=",   " <="}, 
                 {")less=",   ")<="}, 
-                {"\'",      "\""}
+                
+                {"\'",    "\""},
+
+                {"not ",    "!"}
             };
 
             var normPath = path;
