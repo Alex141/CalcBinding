@@ -586,7 +586,11 @@ namespace Tests
         }
 
         [TestMethod]
+#if NET45
         [ExpectedExceptionEx(exceptionType: typeof(InvalidOperationException), hResult: -2146233079)]
+#else
+        [ExpectedException(exceptionType: typeof(InvalidOperationException))]
+#endif
         public void BindingToReadonlyPropertyWithTwoWayFailsTest()
         {
             var calcBinding = new CalcBinding.Binding("ReadonlyA")
@@ -605,7 +609,11 @@ namespace Tests
         }
 
         [TestMethod]
+#if NET45
         [ExpectedExceptionEx(exceptionType: typeof(InvalidOperationException), hResult: -2146233079)]
+#else
+        [ExpectedException(exceptionType: typeof(InvalidOperationException))]
+#endif
         public void BindingToReadonlyPropertyWithOneWayToSourceFailsTest()
         {
             var calcBinding = new CalcBinding.Binding("ReadonlyA")

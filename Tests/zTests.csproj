@@ -80,14 +80,16 @@
   </Choose>
   <ItemGroup>
     <Compile Include="BoolToVisibilityConverterTests.cs" />
-    <Compile Include="CalcConverterTests.cs" />
-    <Compile Include="ExpectedExceptionEx.cs" />
     <Compile Include="InverseTest.cs" />
     <Compile Include="Mocks\CompileTimesMockInterpreterParser.cs" />
     <Compile Include="Mocks\ProvideValueTargetMock.cs" />
     <Compile Include="Mocks\ServiceProviderMock.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="CalcConverterTests.cs" />
     <Compile Include="CalcBindingSystemTests.cs" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release'">
+    <Compile Include="Net45AndHigh\ExpectedExceptionEx.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CalcBinding\CalcBinding.csproj">
