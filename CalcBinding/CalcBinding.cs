@@ -33,10 +33,10 @@ namespace CalcBinding
 
         public Binding()
         {
-
+            Mode = BindingMode.Default;
         }
 
-        public Binding(String path)
+        public Binding(String path):this()
         {
             Path = path;
         }

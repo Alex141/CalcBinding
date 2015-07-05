@@ -6,6 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace WpfExample
 {
@@ -315,6 +316,18 @@ namespace WpfExample
         {
             get { return readonlyA; }
         }
+
+        private bool readonlyB = true;
+        public bool ReadonlyB
+        {
+            get { return readonlyB; }
+        }
+
+        private Visibility readonlyV = Visibility.Collapsed;
+        public Visibility ReadonlyV
+        {
+            get { return readonlyV; }
+        }        
     }
 
     public static class TimeExtension

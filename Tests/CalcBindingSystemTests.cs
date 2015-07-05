@@ -632,6 +632,18 @@ namespace Tests
         }
 
         [TestMethod]
+        public void BindingVisibilityToReadonlyPropertyWithoutDeterminingBindingModeSuccessTest()
+        {
+            var calcBinding = new CalcBinding.Binding("ReadonlyB");
+
+            var source = new ExampleViewModel();
+            var element = new TextBox();
+
+            BindingAssert(calcBinding, source, element, TextBox.VisibilityProperty, () => element.Visibility,
+                () => { }, Visibility.Visible, () => { }, Visibility.Visible);
+        }
+
+        [TestMethod]
         public void BindingToReadonlyPropertyWithOneWaySuccessTest()
         {
             var calcBinding = new CalcBinding.Binding("ReadonlyA")
@@ -836,7 +848,8 @@ namespace Tests
         {
             var calcBinding = new CalcBinding.Binding(path)
             {
-                UpdateSourceTrigger = System.Windows.Data.UpdateSourceTrigger.PropertyChanged
+                UpdateSourceTrigger = System.Windows.Data.UpdateSourceTrigger.PropertyChanged,
+                Mode = BindingMode.TwoWay
             };
 
             BindingBackAssert(calcBinding, source, sourcePropertyGetter, 
