@@ -122,6 +122,49 @@ namespace WpfExample
         }    
     }
 
+    public class AbstractViewModel:BaseViewModel
+    {
+
+    }
+
+    public class ConcreteViewModel1:AbstractViewModel
+    {
+        private double a;
+        public double A
+        {
+            get { return a; }
+            set
+            {
+                a = value;
+                RaisePropertyChanged(() => A);
+            }
+        }
+
+        public ConcreteViewModel1(int a)
+        {
+            this.a = a;
+        }
+    }
+
+    public class ConcreteViewModel2 : AbstractViewModel
+    {
+        private double a;
+        public double A
+        {
+            get { return a; }
+            set
+            {
+                a = value;
+                RaisePropertyChanged(() => A);
+            }
+        }
+
+        public ConcreteViewModel2(int a)
+        {
+            this.a = a;
+        }
+    }
+
     /// <summary>
     /// Example view model
     /// </summary>
@@ -258,6 +301,19 @@ namespace WpfExample
             }
         }
 
+        private NestedViewModel nestedViewModelOther = new NestedViewModel();
+        public NestedViewModel NestedViewModelOther
+        {
+            get { return nestedViewModelOther; }
+            set
+            {
+                nestedViewModelOther = value;
+                new object().TraceTime(
+                    () => RaisePropertyChanged(() => NestedViewModelOther)
+                );
+            }
+        }
+
         private int porksCount = 1;
         public int PorksCount
         {
@@ -314,6 +370,46 @@ namespace WpfExample
         public double ReadonlyA
         {
             get { return readonlyA; }
+        }
+
+        private double? nullableA;
+        public double? NullableA
+        {
+            get
+            {
+                return nullableA;
+            }
+            set
+            {
+                nullableA = value;
+                RaisePropertyChanged(() => NullableA);
+            }
+        }
+
+        private AbstractViewModel flickeringViewModel;
+        public AbstractViewModel FlickeringViewModel
+        {
+            get { return flickeringViewModel; }
+            set
+            {
+                flickeringViewModel = value;
+
+                RaisePropertyChanged(() => FlickeringViewModel);
+            }
+        }
+
+        public bool NameIsNull
+        {
+            get
+            {
+                return name == null;
+            }
+            set
+            {
+                Name = value ? null : "";
+
+                RaisePropertyChanged(() => NameIsNull);
+            }
         }
     }
 

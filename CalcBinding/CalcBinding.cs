@@ -231,7 +231,8 @@ namespace CalcBinding
                 {
                     // math detection
                     if (!Regex.IsMatch(match, @"Math.\w+\(\w+\)") && !Regex.IsMatch(match, @"Math.\w+"))
-                        pathsList.Add(match);
+                        if (match != "null")
+                            pathsList.Add(match);
                 }
             }
 

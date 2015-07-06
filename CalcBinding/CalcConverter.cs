@@ -21,6 +21,7 @@ namespace CalcBinding
         private IExpressionParser parser;
         private Lambda compiledExpression;
         private Lambda compiledInversedExpression;
+        private Type[] sourceValuesTypes;
 
         public bool StringFormatDefined { get; set; }
 
@@ -117,6 +118,26 @@ namespace CalcBinding
         
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
+            if (values == null)
+                return null;
+
+            if (sourceValuesTypes == null)
+            {
+                sourceValuesTypes = GetTypes(values);
+            }
+            else
+            {
+                var currentValuesTypes = GetTypes(values);
+
+                if (CollectionsAreEqual(sourceValuesTypes, currentValuesTypes))
+                {
+                    sourceValuesTypes = currentValuesTypes;
+
+                    compiledExpression = null;
+                    compiledInversedExpression = null;
+                }
+            }
+
             if (compiledExpression == null)
             {
                 if ((compiledExpression = compileExpression(values, (string)parameter)) == null)
@@ -147,6 +168,22 @@ namespace CalcBinding
             }
         }
 
+        private bool CollectionsAreEqual(Type[] array1, Type[] array2)
+        {
+            for (int i = 0; i < array1.Count(); i++)
+                if (array1[i] != array2[i])
+                    return true;
+
+            return false;
+
+            //return array1.Zip(array2, (v1, v2) => v1 == v2).Any(v => v);
+        }
+
+        private Type[] GetTypes(object[] values)
+        {
+            return values.Select(v => v != null ? v.GetType() : null).ToArray();
+        }
+
         private Lambda compileExpression(Object[] values, string expressionTemplate, bool convertBack = false, List<Type> targetTypes = null)
         {
             try
@@ -159,11 +196,6 @@ namespace CalcBinding
                 if (convertBack)
                     needCompile = true;
                 else
-                if (values.Contains(null))
-                {
-                    Trace.WriteLine("Binding error: one of source fields is null in binding init, return NULL");
-                }
-                else
                     if (values.Contains(DependencyProperty.UnsetValue))
                     {
                         Trace.WriteLine("Binding error: one of source fields is Unset, return null");
@@ -175,7 +207,7 @@ namespace CalcBinding
 
                 if (needCompile)
                 {
-                    var argumentsTypes = convertBack ? targetTypes : values.Select(v => v.GetType()).ToList();
+                    var argumentsTypes = convertBack ? targetTypes : sourceValuesTypes.Select(t => t ?? typeof(Object)).ToList();
                     res = compileExpression(argumentsTypes, expressionTemplate);
                 }
 

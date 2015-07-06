@@ -15,6 +15,9 @@
             <TabItem Header="Math and inversed expressions">
                 <local:ThirdPage/>
             </TabItem>
+            <TabItem Header="Null properties support">
+                <local:FourthPage/>
+            </TabItem>
         </TabControl>
     </Grid>
 </Window>

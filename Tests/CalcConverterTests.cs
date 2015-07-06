@@ -52,12 +52,20 @@ namespace Tests
         {
             var converter = new CalcConverter();
             Assert.AreEqual(10, converter.ConvertBack((object)15, typeof(int), "{0}+5", CultureInfo.CurrentCulture));
-            
+
             converter = new CalcConverter();
             Assert.AreEqual(9.2, converter.ConvertBack((object)15.0, typeof(double), "{0}+5.8", CultureInfo.CurrentCulture));
-            
+
             converter = new CalcConverter();
             Assert.AreEqual(true, converter.ConvertBack((object)false, typeof(bool), "!{0}", CultureInfo.CurrentCulture));
+        }
+
+        [TestMethod]
+        public void NullableValueTypesAreNotSupportedInConvertBackBinding()
+        {
+            var converter = new CalcConverter();
+            // instead of NULL there must be //5// but nullable values doesn't support so binding retrieve NULL instead of //5//
+            Assert.AreEqual(null, converter.ConvertBack((object)10.0, typeof(double?), "{0}+5", CultureInfo.CurrentCulture));        
         }
 
         [TestMethod]

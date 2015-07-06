@@ -239,6 +239,67 @@ namespace Tests
             );
         }
 
+        [TestMethod]
+        public void NullPropertiesTest()
+        {
+            var test = new ExampleViewModel();
+
+            test.NestedViewModel = null;
+
+            BoolBindingAssert("NestedViewModel != null", test,
+                () => { test.NestedViewModel = null; }, false,
+                () => { test.NestedViewModel = new NestedViewModel(); }, true
+            );
+
+            StringBindingAssert("(NestedViewModel == null) ? \"a\" : \"b\"", test,
+                () => { test.NestedViewModel = null; }, "a",
+                () => { test.NestedViewModel = new NestedViewModel(); }, "b"
+            );
+
+            BoolBindingAssert("(NestedViewModel != null) && (NestedViewModelOther != null)", test,
+                () => { test.NestedViewModel = null; test.NestedViewModelOther = new NestedViewModel(); }, false,
+                () => { test.NestedViewModel = new NestedViewModel(); test.NestedViewModelOther = null; }, false
+            );
+
+            BoolBindingAssert("(NestedViewModel != null) && (NestedViewModelOther != null)", test,
+                () => { test.NestedViewModel = new NestedViewModel(); test.NestedViewModelOther = null; }, false,
+                () => { test.NestedViewModelOther = new NestedViewModel(); }, true
+            );
+        }
+
+        [TestMethod]
+        public void NullNullablePropertiesTest()
+        {
+            var test = new ExampleViewModel();
+
+            test.NullableA = null;
+
+            BoolBindingAssert("NullableA != null", test,
+                () => { test.NullableA = null; }, false,
+                () => { test.NullableA = 5; }, true
+            );
+
+            ObjectBindingAssert("5 + NullableA", test,
+                () => { test.NullableA = null; }, null,
+                () => { test.NullableA = 5; }, (double?)10
+            );
+
+            ObjectBindingAssert("NullableA == 10", test,
+                () => { test.NullableA = null; }, null,
+                () => { test.NullableA = 10; }, true
+            );
+        }
+
+        [TestMethod]
+        public void PropertyThatChangeItsTypeDuringBinding()
+        {
+            var test = new ExampleViewModel();
+
+            ObjectBindingAssert("FlickeringViewModel.A", test,
+                () => { test.FlickeringViewModel = new ConcreteViewModel1(100); }, (double)100,
+                () => { test.FlickeringViewModel = new ConcreteViewModel2(150); }, (double)150
+            );
+        }
 
         //--------------------ConvertBack-----------------------------------//
 
@@ -361,6 +422,18 @@ namespace Tests
                 "0.8", "-0.2", 0.8, -0.2,
                 2.3784142300054421, 0.03125);
         }
+
+        //[TestMethod]
+        //public void NullNullablePropertiesBackTest()
+        //{
+        //    var test = new ExampleViewModel();
+
+        //    test.NullableA = 1;
+
+        //    StringAndObjectBindingBackAssert("NullableA+5", test, () => test.NullableA,
+        //        "10.2", "-5", 10.2, -5,
+        //        (double?)5.1999999999999993, (double?)-10);
+        //}
 
         //--------------------Issues-----------------------------------//
         [TestMethod]
