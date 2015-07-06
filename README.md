@@ -265,7 +265,7 @@ In markup extension we can't use double quotes, so we can use single quotes and 
 
 ##Restrictions
 
-1. If at least one of the properties involved in expression is null while binding initialization, then expression will not be evaluated, until all properties at least one time will not be not null. Then null property will not have any effect on epxression evaluation.
+1. Nullable value types doesn't supported in reverse binding (e.g. mode OneWayToSurce)
 
 2. CalcBinding don't support your custom conveters at all now. I did not invent the case for which it would be required in CalcBinding.
 
@@ -273,6 +273,9 @@ In markup extension we can't use double quotes, so we can use single quotes and 
 
 #Release notes
 
+## version 2.2.4.0
+
+* add support of 'null' values: objects that can be null, nullable value types. For nullable value types there are resctrictions, see restrictions page
 ##version 2.2.3.0
 
 * add 'not' alias for '!' operator
