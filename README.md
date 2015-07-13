@@ -187,6 +187,19 @@ or just
 "+", "- (binary)", "*", "/", "Math.Sin", "Math.Cos", "Math.Tan", "Math.Asin", "Math.Acos", "Math.Atan","Math.Pow", "Math.Log", "!", "- (unary)"};
 ```
 
+##TemplateBinding
+Althouth CalcBinding hasn't yet analog for TemplateBinding, as temporary solution you can write as follow: 
+```xml
+<Button Content="Button" Width="100">
+    <Button.Template>
+        <ControlTemplate>
+            <TextBox Width="{c:Binding Width+10, RelativeSource={RelativeSource TemplatedParent}}"/>
+        </ControlTemplate>
+    </Button.Template>
+</Button> 
+```
+Setting RelativeSource property to TemplatedParent value makes CalcBinding similar to TemplateBinding
+
 #What is inside?
 
 CalcBinding uses DynamicExpresso library to parse string expression to Linq Expression and compiled expression tree for binding.
@@ -262,6 +275,12 @@ In markup extension we can't use double quotes, so we can use single quotes and 
 ```xml
 <c:Binding Path='A + \'some text\'' />
 ```
+
+```
+3 Can I use CalcBinding instead of TemplateBinding?
+```
+
+Yes, you can, but with setting RelativeSource property, see [example](https://github.com/Alex141/CalcBinding##TemplateBinding) . It is temporary solution, support of TemplateBinding is [planned](https://github.com/Alex141/CalcBinding/issues/20) to the future
 
 ##Restrictions
 
