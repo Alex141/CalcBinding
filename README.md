@@ -280,7 +280,7 @@ In markup extension we can't use double quotes, so we can use single quotes and 
 3 Can I use CalcBinding instead of TemplateBinding?
 ```
 
-Yes, you can, but with setting RelativeSource property, see [example](https://github.com/Alex141/CalcBinding##TemplateBinding) . It is temporary solution, support of TemplateBinding is [planned](https://github.com/Alex141/CalcBinding/issues/20) to the future
+Yes, you can, but with setting RelativeSource property, see [example](https://github.com/Alex141/CalcBinding#templatebinding) . It is temporary solution, support of TemplateBinding is [planned](https://github.com/Alex141/CalcBinding/issues/20) to the future
 
 ##Restrictions
 
