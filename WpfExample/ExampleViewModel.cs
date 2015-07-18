@@ -417,10 +417,10 @@ namespace WpfExample
     {
         public static void TraceTime(this object obj, Action proc)
         {
-            var startTime = DateTime.Now;
+            var timer = new Stopwatch();
+            timer.Start();
             proc();
-            var time = DateTime.Now - startTime;
-            Trace.WriteLine(String.Format("timeSpan: {0}", time));
+            Trace.WriteLine(String.Format("timeSpan: {0}", timer.ElapsedMilliseconds));
         }
     }
 }

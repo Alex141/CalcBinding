@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Markup;
-using System.Linq.Expressions;
-using System.Globalization;
-using System.ComponentModel;
-using DynamicExpresso;
 
 namespace CalcBinding
 {
@@ -31,10 +27,7 @@ namespace CalcBinding
         }
         private FalseToVisibility falseToVisibility = FalseToVisibility.Collapsed;
 
-        public Binding()
-        {
-
-        }
+        public Binding() { }
 
         public Binding(String path)
         {
@@ -43,24 +36,12 @@ namespace CalcBinding
 
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
-            //provider with reflection of binding and target object
-            var providerValuetarget = (IProvideValueTarget)serviceProvider
-              .GetService(typeof(IProvideValueTarget));
-      
-            Type propertyType;
-            if (providerValuetarget.TargetProperty is DependencyProperty)
-            {
-                propertyType = ((DependencyProperty)providerValuetarget.TargetProperty).PropertyType;
-            }
-            else
-            {
-                propertyType = providerValuetarget.TargetProperty.GetType();
-            }
-
-            var normPath = normalizePath(Path);
-            var pathsList = getPathes(normPath);
+            var targetPropertyType = GetPropertyType(serviceProvider);
+            var normalizedPath = NormalizePath(Path);
+            var sourceProperties = GetSourceProperties(normalizedPath);
             
-            var uniquePathList = pathsList
+            /* NEED TO REFACTOR */
+            var uniquePathList = sourceProperties
                 .Select(path => path.Item1)
                 .ToList();
 
@@ -72,14 +53,20 @@ namespace CalcBinding
                 .Select((path, index) => new Tuple<string, int>(path, index))
                 .OrderByDescending(path => path.Item1.Length).ToList();
 
-            var exprTemplate = normPath;
+            /* NEED TO REFACTOR END */
 
+            var exprTemplate = normalizedPath;
+
+            /* NEED TO REFACTOR */
             //bug detected: Math.Abs(A) => replace A -> a => Math.abs(A), 
             // not resolved
-            exprTemplate = getNormExprTemplate(exprTemplate, orderedPathes, pathsList);
+            exprTemplate = GetNormExprTemplate(exprTemplate, orderedPathes, sourceProperties);
 
             // end of critical code
             //exprTemplate = "{1} {2} {0}" (AA C BBB)
+
+            /* NEED TO REFACTOR END */
+
             var mathConverter = new CalcConverter
             {
                 FalseToVisibility = FalseToVisibility,
@@ -105,7 +92,7 @@ namespace CalcBinding
 #if NET45
                     ValidatesOnNotifyDataErrors = ValidatesOnNotifyDataErrors,
 #endif
-                    };
+                };
 
                 if (Source != null)
                     binding.Source = Source;
@@ -120,7 +107,7 @@ namespace CalcBinding
                     binding.StringFormat = StringFormat;
 
                 // we don't use converter if binding is trivial - {0}, except type convertion from bool to visibility
-                if (exprTemplate != "{0}" || propertyType == typeof(Visibility))
+                if (exprTemplate != "{0}" || targetPropertyType == typeof(Visibility))
                 {
                     binding.Converter = mathConverter;
                     binding.ConverterParameter = exprTemplate;
@@ -173,7 +160,25 @@ namespace CalcBinding
             return resBinding.ProvideValue(serviceProvider);
         }
 
-        private string getNormExprTemplate(string source, List<Tuple<string, int>> orderedPathes, List<Tuple<string, List<int>>> pathsList)
+        private Type GetPropertyType(IServiceProvider serviceProvider)
+        {
+            //provider with reflection of binding and target object
+            var providerValuetarget = (IProvideValueTarget) serviceProvider
+                .GetService(typeof (IProvideValueTarget));
+
+            Type propertyType;
+            if (providerValuetarget.TargetProperty is DependencyProperty)
+            {
+                propertyType = ((DependencyProperty) providerValuetarget.TargetProperty).PropertyType;
+            }
+            else
+            {
+                propertyType = providerValuetarget.TargetProperty.GetType();
+            }
+            return propertyType;
+        }
+
+        private string GetNormExprTemplate(string source, List<Tuple<string, int>> orderedPathes, List<Tuple<string, List<int>>> pathsList)
         {
             var result = "";
             var sourceIndex = 0;
@@ -213,7 +218,7 @@ namespace CalcBinding
         /// </summary>
         /// <param name="normPath"></param>
         /// <returns>List of value and it start positions</returns>
-        private List<Tuple<String, List<int>>> getPathes(string normPath)
+        private List<Tuple<String, List<int>>> GetSourceProperties(string normPath)
         {
             var operators = new List<String>() 
             { 
@@ -276,7 +281,7 @@ namespace CalcBinding
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        private string normalizePath(string path)
+        private string NormalizePath(string path)
         {
             var replaceDict = new Dictionary<String, String>
             {

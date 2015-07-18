@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CalcBinding.Inverse;
+using CalcBinding.Inversion;
 using System.Linq.Expressions;
 using DynamicExpresso;
 using System.Collections.Generic;

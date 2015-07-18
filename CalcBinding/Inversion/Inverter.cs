@@ -1,15 +1,10 @@
-﻿using DynamicExpresso;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Diagnostics;
 using System.Globalization;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+using DynamicExpresso;
 
-namespace CalcBinding.Inverse
+namespace CalcBinding.Inversion
 {
     /// <summary>
     /// Validate and inverse expression of one parameter

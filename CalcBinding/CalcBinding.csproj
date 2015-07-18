@@ -73,10 +73,11 @@
     <Compile Include="BoolToVisibilityConverter.cs" />
     <Compile Include="FalseToVisibility.cs" />
     <Compile Include="IExpressionParser.cs" />
-    <Compile Include="Inverse\InverseExceptions.cs" />
-    <Compile Include="Inverse\Inverter.cs" />
+    <Compile Include="InterpreterParser.cs" />
+    <Compile Include="Inversion\InverseExceptions.cs" />
+    <Compile Include="Inversion\Inverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Inverse\TwoKeysDictionary.cs" />
+    <Compile Include="Inversion\TwoKeysDictionary.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

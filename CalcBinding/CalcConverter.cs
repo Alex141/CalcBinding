@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
-using System.Linq.Expressions;
+using CalcBinding.Inversion;
 using DynamicExpresso;
-using CalcBinding.Inverse;
-using System.Diagnostics;
+using Expression = System.Linq.Expressions.Expression;
 
 namespace CalcBinding
 {
@@ -25,7 +23,7 @@ namespace CalcBinding
 
         public bool StringFormatDefined { get; set; }
 
-        private FalseToVisibility falseToVisibility = CalcBinding.FalseToVisibility.Collapsed;
+        private FalseToVisibility falseToVisibility = FalseToVisibility.Collapsed;
         public FalseToVisibility FalseToVisibility 
         {
             get { return falseToVisibility; }
@@ -75,8 +73,8 @@ namespace CalcBinding
                 try
                 {
                     var resType = compiledExpression.Expression.Type;
-                    var param = System.Linq.Expressions.Expression.Parameter(resType, "Path");
-                    compiledInversedExpression = new Inverse.Inverter(parser).InverseExpression(compiledExpression.Expression, param);
+                    var param = Expression.Parameter(resType, "Path");
+                    compiledInversedExpression = new Inverter(parser).InverseExpression(compiledExpression.Expression, param);
                 }
                 catch (Exception e)
                 {

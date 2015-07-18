@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CalcBinding
+﻿namespace CalcBinding
 {
     /// <summary>
-    /// FalseToVisibility enum
+    /// Enum for BoolToVisibility converter: in which property convert "false" value? 
     /// </summary>
     public enum FalseToVisibility
     {

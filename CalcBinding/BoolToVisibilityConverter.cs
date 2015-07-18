@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 
 namespace CalcBinding
 {
     /// <summary>
-    /// Bool to visibility converter (common) with FalseToVisibility parameter
+    /// Common BoolToVisibility converter with FalseToVisibility parameter
     /// </summary>
     public class BoolToVisibilityConverter : IValueConverter
     {
@@ -23,24 +19,18 @@ namespace CalcBinding
         {
             FalseToVisibility = falseToVisibility;
         }
+
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var b = (bool)value;
-
-            if (b)
+            if ((bool)value)
                 return Visibility.Visible;
 
-            if (FalseToVisibility == FalseToVisibility.Collapsed)
-                return Visibility.Collapsed;
-
-            return Visibility.Hidden;
+            return (FalseToVisibility == FalseToVisibility.Collapsed) ? Visibility.Collapsed : Visibility.Hidden;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var visible = (Visibility)value;
-
-            return visible == Visibility.Visible;
+            return (Visibility)value == Visibility.Visible;
         }
 
         public FalseToVisibility FalseToVisibility { get; set; }
