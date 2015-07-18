@@ -1,9 +1,8 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CalcBinding.Inversion;
 using System.Linq.Expressions;
+using CalcBinding.Inversion;
 using DynamicExpresso;
-using System.Collections.Generic;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Tests
 {

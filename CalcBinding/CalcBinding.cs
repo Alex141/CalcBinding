@@ -38,34 +38,8 @@ namespace CalcBinding
         {
             var targetPropertyType = GetPropertyType(serviceProvider);
             var normalizedPath = NormalizePath(Path);
-            var sourceProperties = GetSourceProperties(normalizedPath);
-            
-            /* NEED TO REFACTOR */
-            var uniquePathList = sourceProperties
-                .Select(path => path.Item1)
-                .ToList();
-
-            // logic critical code: order of params must be only {0}..{1}..{2} etc, 
-            // and not another. We can't unsynchronize order of parameters[] and params occure
-            // in expression template (bug 3).
-            // There is an example in description of bug 3 in bug tracker
-            var orderedPathes = uniquePathList
-                .Select((path, index) => new Tuple<string, int>(path, index))
-                .OrderByDescending(path => path.Item1.Length).ToList();
-
-            /* NEED TO REFACTOR END */
-
-            var exprTemplate = normalizedPath;
-
-            /* NEED TO REFACTOR */
-            //bug detected: Math.Abs(A) => replace A -> a => Math.abs(A), 
-            // not resolved
-            exprTemplate = GetNormExprTemplate(exprTemplate, orderedPathes, sourceProperties);
-
-            // end of critical code
-            //exprTemplate = "{1} {2} {0}" (AA C BBB)
-
-            /* NEED TO REFACTOR END */
+            var sourcePropertiesPathes = GetSourcePropertiesPathes(normalizedPath);
+            var expressionTemplate = GetExpressionTemplate(normalizedPath, sourcePropertiesPathes);
 
             var mathConverter = new CalcConverter
             {
@@ -77,9 +51,9 @@ namespace CalcBinding
 
             // possibility of twoway mode. Out of the box it is only 
             // one variable or negative from bool variable
-            if (uniquePathList.Count() == 1)
+            if (sourcePropertiesPathes.Count() == 1)
             {
-                var binding = new System.Windows.Data.Binding(uniquePathList.Single())
+                var binding = new System.Windows.Data.Binding(sourcePropertiesPathes.Single())
                 {
                     Mode = Mode,
                     NotifyOnSourceUpdated = NotifyOnSourceUpdated,
@@ -107,10 +81,10 @@ namespace CalcBinding
                     binding.StringFormat = StringFormat;
 
                 // we don't use converter if binding is trivial - {0}, except type convertion from bool to visibility
-                if (exprTemplate != "{0}" || targetPropertyType == typeof(Visibility))
+                if (expressionTemplate != "{0}" || targetPropertyType == typeof(Visibility))
                 {
                     binding.Converter = mathConverter;
-                    binding.ConverterParameter = exprTemplate;
+                    binding.ConverterParameter = expressionTemplate;
                     binding.ConverterCulture = ConverterCulture;
                 }
                 resBinding = binding;
@@ -120,7 +94,7 @@ namespace CalcBinding
                 var mBinding = new MultiBinding
                 {
                     Converter = mathConverter,
-                    ConverterParameter = exprTemplate,
+                    ConverterParameter = expressionTemplate,
                     ConverterCulture = ConverterCulture,
                     Mode = BindingMode.OneWay,
                     NotifyOnSourceUpdated = NotifyOnSourceUpdated,
@@ -138,7 +112,7 @@ namespace CalcBinding
                 if (StringFormat != null)
                     mBinding.StringFormat = StringFormat;
 
-                foreach (var path in uniquePathList)
+                foreach (var path in sourcePropertiesPathes)
                 {
                     var binding = new System.Windows.Data.Binding(path);
 
@@ -178,56 +152,36 @@ namespace CalcBinding
             return propertyType;
         }
 
-        private string GetNormExprTemplate(string source, List<Tuple<string, int>> orderedPathes, List<Tuple<string, List<int>>> pathsList)
+        /// <summary>
+        /// Replace source properties pathes by its numbers
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="pathes"></param>
+        /// <returns></returns>
+        private string GetExpressionTemplate(string path, List<string> pathes)
         {
-            var result = "";
-            var sourceIndex = 0;
-
-            while (sourceIndex < source.Length)
-            {
-                var replaced = false;
-                foreach (var path in orderedPathes)
-                {
-                    var replace = path.Item2.ToString("{0}");
-                    var indexes = pathsList.First(p => p.Item1 == path.Item1).Item2;
-
-                    foreach (var index in indexes)
-                    {
-                        if (sourceIndex == index)
-                        {
-                            result += replace;
-                            sourceIndex += path.Item1.Length;
-                            replaced = true;
-                            break;
-                        }
-                    }
-                    if (replaced) break;
-                }
-                if (!replaced)
-                {
-                    result += source[sourceIndex];
-                    sourceIndex++;
-                }
-            }
-
-            return result;
+            for (int i = 0; i < pathes.Count; i++)
+                path = path.Replace(pathes[i], "{" + i + "}");
+            
+            return path;
         }
 
         /// <summary>
-        /// Find and return all pathes in Path string
+        /// Find and return all sourceProperties pathes in Path string
         /// </summary>
         /// <param name="normPath"></param>
-        /// <returns>List of value and it start positions</returns>
-        private List<Tuple<String, List<int>>> GetSourceProperties(string normPath)
+        /// <returns>List of pathes and its start positions</returns>
+        private List<String> GetSourcePropertiesPathes(string normPath)
         {
-            var operators = new List<String>() 
+            var operators = new [] 
             { 
                 "(", ")", "+", "-", "*", "/", "%", "^", "&&", "||", 
                 "&", "|", "?", ":", "<=", ">=", "<", ">", "==", "!=", "!", "," 
             };
 
-            var matches = normPath.Split(operators.ToArray(), StringSplitOptions.RemoveEmptyEntries);
+            var matches = normPath.Split(operators, StringSplitOptions.RemoveEmptyEntries);
 
+            // detect all pathes
             var pathsList = new List<string>();
 
             foreach (var match in matches)
@@ -241,39 +195,10 @@ namespace CalcBinding
                 }
             }
 
-            var pathIndexList = pathsList
-                .Distinct()
-                .Select(path => new Tuple<string, List<int>>(path, new List<int>()))
-                .ToList();
-
-            foreach (var path in pathIndexList)
-            {
-                var indexes = Regex.Matches(normPath, path.Item1).Cast<Match>().Select(m => m.Index).ToList();
-
-                foreach (var index in indexes)
-                {
-                    var startPosIsOperator = false;
-                    if (index == 0)
-                        startPosIsOperator = true;
-
-                    foreach (var op in operators)
-                        if (index >= op.Length && normPath.Substring(index-op.Length, op.Length) == op)
-                            startPosIsOperator = true;
-
-                    var endPosIsOperator = false;
-
-                    if (index + path.Item1.Length == normPath.Length)
-                        endPosIsOperator = true;
-
-                    foreach (var op in operators)
-                        if (index + path.Item1.Length <= normPath.Length - op.Length && normPath.Substring(index + path.Item1.Length, op.Length) == op)
-                            endPosIsOperator = true;
-
-                    if (startPosIsOperator && endPosIsOperator)
-                        path.Item2.Add(index);
-                }
-            }
-            return pathIndexList;
+            return pathsList
+                        .Distinct()
+                        .OrderByDescending(path => path.Length)
+                        .ToList();
         }
 
         /// <summary>
