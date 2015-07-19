@@ -63,7 +63,7 @@ namespace CalcBinding
         {
             if (compiledExpression == null)
             {
-                if ((compiledExpression = compileExpression(null, (string)parameter, true, new List<Type>{targetType})) == null)
+                if ((compiledExpression = CompileExpression(null, (string)parameter, true, new List<Type>{targetType})) == null)
                     return null;
             }
 
@@ -127,7 +127,7 @@ namespace CalcBinding
             {
                 var currentValuesTypes = GetTypes(values);
 
-                if (CollectionsAreEqual(sourceValuesTypes, currentValuesTypes))
+                if (!sourceValuesTypes.SequenceEqual(currentValuesTypes))
                 {
                     sourceValuesTypes = currentValuesTypes;
 
@@ -138,7 +138,7 @@ namespace CalcBinding
 
             if (compiledExpression == null)
             {
-                if ((compiledExpression = compileExpression(values, (string)parameter)) == null)
+                if ((compiledExpression = CompileExpression(values, (string)parameter)) == null)
                     return null;
             }
 
@@ -166,23 +166,12 @@ namespace CalcBinding
             }
         }
 
-        private bool CollectionsAreEqual(Type[] array1, Type[] array2)
-        {
-            for (int i = 0; i < array1.Count(); i++)
-                if (array1[i] != array2[i])
-                    return true;
-
-            return false;
-
-            //return array1.Zip(array2, (v1, v2) => v1 == v2).Any(v => v);
-        }
-
         private Type[] GetTypes(object[] values)
         {
             return values.Select(v => v != null ? v.GetType() : null).ToArray();
         }
 
-        private Lambda compileExpression(Object[] values, string expressionTemplate, bool convertBack = false, List<Type> targetTypes = null)
+        private Lambda CompileExpression(Object[] values, string expressionTemplate, bool convertBack = false, List<Type> targetTypes = null)
         {
             try
             {
@@ -206,7 +195,7 @@ namespace CalcBinding
                 if (needCompile)
                 {
                     var argumentsTypes = convertBack ? targetTypes : sourceValuesTypes.Select(t => t ?? typeof(Object)).ToList();
-                    res = compileExpression(argumentsTypes, expressionTemplate);
+                    res = CompileExpression(argumentsTypes, expressionTemplate);
                 }
 
                 return res;
@@ -218,11 +207,11 @@ namespace CalcBinding
             }
         }
 
-        private Lambda compileExpression(List<Type> argumentsTypes, string expressionTemplate)
+        private Lambda CompileExpression(List<Type> argumentsTypes, string expressionTemplate)
         {
             for (int i = 0; i < argumentsTypes.Count(); i++)
             {
-                expressionTemplate = expressionTemplate.Replace("{" + i.ToString() + "}", getVariableName(i));
+                expressionTemplate = expressionTemplate.Replace("{" + i.ToString() + "}", GetVariableName(i));
             }
 
             var parametersDefinition = new List<Parameter>();
@@ -230,7 +219,7 @@ namespace CalcBinding
             for (var i = 0; i < argumentsTypes.Count(); i++)
             {
                 parametersDefinition.Add(
-                    new Parameter(getVariableName(i), argumentsTypes[i])
+                    new Parameter(GetVariableName(i), argumentsTypes[i])
                 );
             }
 
@@ -244,7 +233,7 @@ namespace CalcBinding
         /// </summary>
         /// <param name="i"></param>
         /// <returns></returns>
-        private string getVariableName(int i)
+        private string GetVariableName(int i)
         {
             return new string( new[] { (Char)(i + (int)'a') });
         }

@@ -210,6 +210,20 @@ namespace WpfExample
             }
         }
 
+        private double m = 10;
+        public double M
+        {
+            get { return m; }
+            set
+            {
+                m = value;
+
+                new object().TraceTime(
+                    () => RaisePropertyChanged(() => M)
+                );
+            }
+        }
+
         private bool isChecked;
         public bool IsChecked
         {

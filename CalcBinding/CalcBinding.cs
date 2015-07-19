@@ -38,8 +38,8 @@ namespace CalcBinding
         {
             var targetPropertyType = GetPropertyType(serviceProvider);
             var normalizedPath = NormalizePath(Path);
-            var sourcePropertiesPathes = GetSourcePropertiesPathes(normalizedPath);
-            var expressionTemplate = GetExpressionTemplate(normalizedPath, sourcePropertiesPathes);
+            var sourcePropertiesPathesWithPositions = GetSourcePropertiesPathes(normalizedPath);
+            var expressionTemplate = GetExpressionTemplate(normalizedPath, sourcePropertiesPathesWithPositions);
 
             var mathConverter = new CalcConverter
             {
@@ -49,11 +49,9 @@ namespace CalcBinding
 
             BindingBase resBinding;
 
-            // possibility of twoway mode. Out of the box it is only 
-            // one variable or negative from bool variable
-            if (sourcePropertiesPathes.Count() == 1)
+            if (sourcePropertiesPathesWithPositions.Count() == 1)
             {
-                var binding = new System.Windows.Data.Binding(sourcePropertiesPathes.Single())
+                var binding = new System.Windows.Data.Binding(sourcePropertiesPathesWithPositions.Single().Item1)
                 {
                     Mode = Mode,
                     NotifyOnSourceUpdated = NotifyOnSourceUpdated,
@@ -112,9 +110,9 @@ namespace CalcBinding
                 if (StringFormat != null)
                     mBinding.StringFormat = StringFormat;
 
-                foreach (var path in sourcePropertiesPathes)
+                foreach (var sourcePropertyPathWithPositions in sourcePropertiesPathesWithPositions)
                 {
-                    var binding = new System.Windows.Data.Binding(path);
+                    var binding = new System.Windows.Data.Binding(sourcePropertyPathWithPositions.Item1);
 
                     if (Source != null)
                         binding.Source = Source;
@@ -136,20 +134,16 @@ namespace CalcBinding
 
         private Type GetPropertyType(IServiceProvider serviceProvider)
         {
-            //provider with reflection of binding and target object
-            var providerValuetarget = (IProvideValueTarget) serviceProvider
+            //provider of target object and it's property
+            var targetProvider = (IProvideValueTarget) serviceProvider
                 .GetService(typeof (IProvideValueTarget));
 
-            Type propertyType;
-            if (providerValuetarget.TargetProperty is DependencyProperty)
+            if (targetProvider.TargetProperty is DependencyProperty)
             {
-                propertyType = ((DependencyProperty) providerValuetarget.TargetProperty).PropertyType;
+                return ((DependencyProperty) targetProvider.TargetProperty).PropertyType;
             }
-            else
-            {
-                propertyType = providerValuetarget.TargetProperty.GetType();
-            }
-            return propertyType;
+
+            return targetProvider.TargetProperty.GetType();
         }
 
         /// <summary>
@@ -158,12 +152,36 @@ namespace CalcBinding
         /// <param name="path"></param>
         /// <param name="pathes"></param>
         /// <returns></returns>
-        private string GetExpressionTemplate(string path, List<string> pathes)
+        private string GetExpressionTemplate(string path, List<Tuple<string, List<int>>> pathes)
         {
-            for (int i = 0; i < pathes.Count; i++)
-                path = path.Replace(pathes[i], "{" + i + "}");
-            
-            return path;
+            var result = "";
+            var sourceIndex = 0;
+
+            while (sourceIndex < path.Length)
+            {
+                var replaced = false;
+                for (int index = 0; index < pathes.Count; index++)
+                {
+                    var replace = index.ToString("{0}");
+                    var positions = pathes[index].Item2;
+                    var sourcePropertyPath = pathes[index].Item1;
+
+                    if (positions.Contains(sourceIndex))
+                    {
+                        result += replace;
+                        sourceIndex += sourcePropertyPath.Length;
+                        replaced = true;
+                        break;
+                    }
+                }
+                if (!replaced)
+                {
+                    result += path[sourceIndex];
+                    sourceIndex++;
+                }
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -171,7 +189,7 @@ namespace CalcBinding
         /// </summary>
         /// <param name="normPath"></param>
         /// <returns>List of pathes and its start positions</returns>
-        private List<String> GetSourcePropertiesPathes(string normPath)
+        private List<Tuple<String, List<int>>> GetSourcePropertiesPathes(string normPath)
         {
             var operators = new [] 
             { 
@@ -179,7 +197,7 @@ namespace CalcBinding
                 "&", "|", "?", ":", "<=", ">=", "<", ">", "==", "!=", "!", "," 
             };
 
-            var matches = normPath.Split(operators, StringSplitOptions.RemoveEmptyEntries);
+            var matches = normPath.Split(operators, StringSplitOptions.RemoveEmptyEntries).Distinct();
 
             // detect all pathes
             var pathsList = new List<string>();
@@ -195,10 +213,43 @@ namespace CalcBinding
                 }
             }
 
-            return pathsList
-                        .Distinct()
-                        .OrderByDescending(path => path.Length)
-                        .ToList();
+            //detect all start positions
+            
+            //what problem this code solves:
+            //for examle, we have Path = Math.Abs(M) + M, where M - source property.
+            //We found that M - source property name, but we don't know positions of M.
+            // If we call Path.Replace("M", "{0}"), we obtain expressionTemlate = "{0}ath.Abs({0}) + {0}"
+            // which is invalid, because we souldn't replace M when it is the part of other property name.
+            // So, foreach founded source property name we need to found all positions and foreaech of 
+            // these positions check - near source property path at founded positions must be OPERATORS
+            // not other symbols. So, following code perform this check 
+            var pathIndexList = pathsList
+                .Select(path => new Tuple<string, List<int>>(path, new List<int>()))
+                .ToList();
+
+            foreach (var path in pathIndexList)
+            {
+                var indexes = Regex.Matches(normPath, path.Item1).Cast<Match>().Select(m => m.Index).ToList();
+
+                foreach (var index in indexes)
+                {
+                    bool startPosIsOperator = index == 0;
+
+                    foreach (var op in operators)
+                        if (index >= op.Length && normPath.Substring(index - op.Length, op.Length) == op)
+                            startPosIsOperator = true;
+
+                    bool endPosIsOperator = index + path.Item1.Length == normPath.Length;
+
+                    foreach (var op in operators)
+                        if (index + path.Item1.Length <= normPath.Length - op.Length && normPath.Substring(index + path.Item1.Length, op.Length) == op)
+                            endPosIsOperator = true;
+
+                    if (startPosIsOperator && endPosIsOperator)
+                        path.Item2.Add(index);
+                }
+            }
+            return pathIndexList;
         }
 
         /// <summary>

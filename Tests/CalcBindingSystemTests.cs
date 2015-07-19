@@ -722,6 +722,17 @@ namespace Tests
                 (double)10, (double)10);
         }
 
+        [TestMethod]
+        public void MPropertyWithMathBindingTest()
+        {
+            var test = new ExampleViewModel();
+
+            StringAndObjectBindingAssert("M + Math.Abs(M)", test,
+                () => test.M = 10, "20", (double)20,
+                () => test.M = -10, "0", (double)0
+            );         
+        }
+
         #region Convert
 
         public void StringAndObjectBindingAssert(string path, INotifyPropertyChanged source,
