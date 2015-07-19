@@ -90,7 +90,7 @@ namespace CalcBinding
                         value = new BoolToVisibilityConverter(FalseToVisibility)
                             .ConvertBack(value, targetType, null, culture);
 
-                    if (value.GetType() == typeof(string) && compiledExpression.Expression.Type != value.GetType())
+                    if (value is string && compiledExpression.Expression.Type != value.GetType())
                         value = ParseStringToObject((string)value, compiledExpression.Expression.Type);
 
                     var source = compiledInversedExpression.Invoke(value);
@@ -211,7 +211,7 @@ namespace CalcBinding
         {
             for (int i = 0; i < argumentsTypes.Count(); i++)
             {
-                expressionTemplate = expressionTemplate.Replace("{" + i.ToString() + "}", GetVariableName(i));
+                expressionTemplate = expressionTemplate.Replace("{" + i + "}", GetVariableName(i));
             }
 
             var parametersDefinition = new List<Parameter>();
@@ -235,7 +235,7 @@ namespace CalcBinding
         /// <returns></returns>
         private string GetVariableName(int i)
         {
-            return new string( new[] { (Char)(i + (int)'a') });
+            return new string( new[] { (Char)(i + 'a') });
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
