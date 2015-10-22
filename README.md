@@ -292,9 +292,14 @@ Yes, you can, but with setting RelativeSource property, see [example](https://gi
 
 #Release notes
 
+## version 2.2.5.0
+
+* add support of properties that contain digits in there names (thanks to halllo!)
+
 ## version 2.2.4.0
 
 * add support of 'null' values: objects that can be null, nullable value types. For nullable value types there are resctrictions, see restrictions page
+
 ##version 2.2.3.0
 
 * add 'not' alias for '!' operator
