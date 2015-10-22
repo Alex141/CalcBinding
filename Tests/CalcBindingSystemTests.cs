@@ -36,11 +36,6 @@ namespace Tests
                 () => test.A = 20.34, "20.34", 20.34
             );
 
-            StringAndObjectBindingAssert("N1", test,
-                () => test.N1 = 10, "10", (double)10,
-                () => test.N1 = 20.34, "20.34", 20.34
-            );
-
             StringAndObjectBindingAssert("A+B+C", test,
                 () => { test.A = 10; test.B = 20; test.C = -2; }, "28", (double)28,
                 () => { test.A = 20.34; test.B = 15; test.C = 12; }, "47.34", 47.34
@@ -202,7 +197,7 @@ namespace Tests
             //-------------------------------------------------------------------//
             var calcBinding = new CalcBinding.Binding("!HasPrivileges")
             {
-                FalseToVisibility = CalcBinding.FalseToVisibility.Collapsed
+                FalseToVisibility = FalseToVisibility.Collapsed
             };
 
             VisibilityBindingAssert(calcBinding, test,
@@ -213,7 +208,7 @@ namespace Tests
             //-------------------------------------------------------------------//
             calcBinding = new CalcBinding.Binding("!HasPrivileges")
             {
-                FalseToVisibility = CalcBinding.FalseToVisibility.Hidden
+                FalseToVisibility = FalseToVisibility.Hidden
             };
 
             VisibilityBindingAssert(calcBinding, test,
@@ -736,6 +731,17 @@ namespace Tests
                 () => test.M = 10, "20", (double)20,
                 () => test.M = -10, "0", (double)0
             );         
+        }
+
+        [TestMethod]
+        public void BindingToPropertyContainingDigits()
+        {
+            var test = new ExampleViewModel();
+
+            StringAndObjectBindingAssert("N1", test,
+                () => test.N1 = 10, "10", (double)10,
+                () => test.N1 = 20.34, "20.34", 20.34
+            );
         }
 
         #region Convert

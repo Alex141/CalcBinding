@@ -204,8 +204,7 @@ namespace CalcBinding
 
             foreach (var match in matches)
             {
-                double result;
-                if (!Double.TryParse(match, out result) && !match.Contains("\""))
+                if (!isDouble(match) && !match.Contains("\""))
                 {
                     // math detection
                     if (!Regex.IsMatch(match, @"Math.\w+\(\w+\)") && !Regex.IsMatch(match, @"Math.\w+"))
@@ -251,6 +250,17 @@ namespace CalcBinding
                 }
             }
             return pathIndexList;
+        }
+
+        /// <summary>
+        /// Return true, is string can be converted to Double type, and false otherwise
+        /// </summary>
+        /// <param name="match"></param>
+        /// <returns></returns>
+        private bool isDouble(string match)
+        {
+            double result;
+            return Double.TryParse(match, NumberStyles.Float, CultureInfo.InvariantCulture, out result);
         }
 
         /// <summary>

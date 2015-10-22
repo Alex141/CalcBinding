@@ -170,20 +170,6 @@ namespace WpfExample
     /// </summary>
     public class ExampleViewModel : BaseViewModel
     {
-        private double n1 = 10;
-        public double N1
-        {
-            get { return n1; }
-            set
-            {
-                n1 = value;
-
-                new object().TraceTime(
-                    () => RaisePropertyChanged(() => N1)
-                );
-            }
-        }
-
         private double a = 10;
         public double A
         {
@@ -234,6 +220,21 @@ namespace WpfExample
 
                 new object().TraceTime(
                     () => RaisePropertyChanged(() => M)
+                );
+            }
+        }
+
+        // test for properties, containing numbers
+        private double n1 = 10;
+        public double N1
+        {
+            get { return n1; }
+            set
+            {
+                n1 = value;
+
+                new object().TraceTime(
+                    () => RaisePropertyChanged(() => N1)
                 );
             }
         }
