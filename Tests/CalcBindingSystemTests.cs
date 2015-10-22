@@ -36,6 +36,11 @@ namespace Tests
                 () => test.A = 20.34, "20.34", 20.34
             );
 
+            StringAndObjectBindingAssert("N1", test,
+                () => test.N1 = 10, "10", (double)10,
+                () => test.N1 = 20.34, "20.34", 20.34
+            );
+
             StringAndObjectBindingAssert("A+B+C", test,
                 () => { test.A = 10; test.B = 20; test.C = -2; }, "28", (double)28,
                 () => { test.A = 20.34; test.B = 15; test.C = 12; }, "47.34", 47.34

@@ -204,7 +204,8 @@ namespace CalcBinding
 
             foreach (var match in matches)
             {
-                if (!Regex.IsMatch(match, @"\d") && !match.Contains("\""))
+                double result;
+                if (!Double.TryParse(match, out result) && !match.Contains("\""))
                 {
                     // math detection
                     if (!Regex.IsMatch(match, @"Math.\w+\(\w+\)") && !Regex.IsMatch(match, @"Math.\w+"))
