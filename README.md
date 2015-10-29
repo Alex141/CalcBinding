@@ -284,7 +284,7 @@ Yes, you can, but with setting RelativeSource property, see [example](https://gi
 
 ##Restrictions
 
-1. Nullable value types doesn't supported in reverse binding (e.g. mode OneWayToSurce)
+1. Nullable value types doesn't supported in reverse binding (e.g. mode OneWayToSource)
 
 2. CalcBinding don't support your custom conveters at all now. I did not invent the case for which it would be required in CalcBinding.
 
