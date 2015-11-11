@@ -744,6 +744,36 @@ namespace Tests
             );
         }
 
+		[TestMethod]
+		public void BindingToMethod()
+		{
+			var viewModel1 = new ExampleViewModel();
+			var viewModel2 = new ExampleViewModel();
+			Assert.IsFalse(viewModel1.ClickMethodInvoked);
+			Assert.IsFalse(viewModel2.ClickMethodInvoked);
+
+			var button = new Button();
+			button.DataContext = viewModel1;
+
+			var calcBinding = new CalcBinding.Binding("ClickMethod()");
+			var bindingExpression = calcBinding.ProvideValue(new ServiceProviderMock(button, Button.CommandProperty));
+
+			button.SetValue(Button.CommandProperty, bindingExpression);
+			var command = button.GetValue(Button.CommandProperty) as System.Windows.Input.ICommand;
+			command.Execute(null);
+
+			Assert.IsTrue(viewModel1.ClickMethodInvoked);
+			Assert.IsFalse(viewModel2.ClickMethodInvoked);
+
+			button.DataContext = viewModel2;
+			command = button.GetValue(Button.CommandProperty) as System.Windows.Input.ICommand;
+			command.Execute(null);
+
+			Assert.IsTrue(viewModel1.ClickMethodInvoked);
+			Assert.IsTrue(viewModel2.ClickMethodInvoked);
+		}
+
+
         #region Convert
 
         public void StringAndObjectBindingAssert(string path, INotifyPropertyChanged source,

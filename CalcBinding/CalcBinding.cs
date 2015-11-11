@@ -49,7 +49,16 @@ namespace CalcBinding
 
             BindingBase resBinding;
 
-            if (sourcePropertiesPathesWithPositions.Count() == 1)
+			if (sourcePropertiesPathesWithPositions.Count == 1 && expressionTemplate == "{0}()")
+			{
+				var methodName = sourcePropertiesPathesWithPositions.Single().Item1;
+
+				var targetProvider = (IProvideValueTarget)serviceProvider.GetService(typeof(IProvideValueTarget));
+				var targetObject = targetProvider.TargetObject as FrameworkElement;
+
+				return new DataContextMethodCommand(methodName, targetObject);
+			}
+            else if (sourcePropertiesPathesWithPositions.Count() == 1)
             {
                 var binding = new System.Windows.Data.Binding(sourcePropertiesPathesWithPositions.Single().Item1)
                 {

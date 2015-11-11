@@ -170,6 +170,24 @@ namespace WpfExample
     /// </summary>
     public class ExampleViewModel : BaseViewModel
     {
+		private bool clickMethodInvoked;
+		public bool ClickMethodInvoked
+		{
+			get { return clickMethodInvoked; }
+			set
+			{
+				clickMethodInvoked = value;
+
+				new object().TraceTime(
+					() => RaisePropertyChanged(() => ClickMethodInvoked)
+				);
+			}
+		}
+		public void ClickMethod()
+		{
+			ClickMethodInvoked = !ClickMethodInvoked;
+		}
+
         private double a = 10;
         public double A
         {

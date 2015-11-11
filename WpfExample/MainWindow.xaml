@@ -14,10 +14,13 @@
             </TabItem>
             <TabItem Header="Math and inversed expressions">
                 <local:ThirdPage/>
-            </TabItem>
-            <TabItem Header="Null properties support">
-                <local:FourthPage/>
-            </TabItem>
-        </TabControl>
+			</TabItem>
+			<TabItem Header="Null properties support">
+				<local:FourthPage/>
+			</TabItem>
+			<TabItem Header="Commands">
+				<local:FifthPage/>
+			</TabItem>
+		</TabControl>
     </Grid>
 </Window>
