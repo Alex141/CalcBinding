@@ -49,7 +49,7 @@ namespace CalcBinding
 
             BindingBase resBinding;
 
-			if (sourcePropertiesPathesWithPositions.Count == 1 && expressionTemplate == "{0}()")
+			if (sourcePropertiesPathesWithPositions.Count == 1 && targetPropertyType == typeof(System.Windows.Input.ICommand) && expressionTemplate == "{0}()")
 			{
 				var methodName = sourcePropertiesPathesWithPositions.Single().Item1;
 
