@@ -97,7 +97,7 @@ or
  
 ## Before (Automatic inverse example):
 ```xml
-<TextBox Text = "{Binding Path=A Conveter={x:StaticResource MyMathConverter}">
+<TextBox Text = "{Binding Path=A, Conveter={x:StaticResource MyMathConverter}">
 ```
 
 ```C#
@@ -119,7 +119,7 @@ public class MyMathConverter : IValueConverter
 
 ## After:
 ```xml
-<TextBox Text = "{c:Binding 'Math.Sin(source*2)-5'}">
+<TextBox Text = "{c:Binding 'Math.Sin(A*2)-5'}">
 ```
 
  CalcBinding automaticaly inverse your expression (only for Binding not for MultiBinding) and create two way binding. If all of operators that consist your expression have inversed operators, your expression will be automaticaly inversed and binding will be two way: from source to dependency property and from dependency propery to source too.
