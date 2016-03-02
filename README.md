@@ -292,6 +292,10 @@ Yes, you can, but with setting RelativeSource property, see [example](https://gi
 
 #Release notes
 
+## version 2.2.5.1
+
+* fix defect with special characters in const strings in path expression (thanks to xmedeko!)
+
 ## version 2.2.5.0
 
 * add support of properties that contain digits in there names (thanks to halllo!)
