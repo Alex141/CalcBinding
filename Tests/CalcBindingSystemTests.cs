@@ -744,6 +744,19 @@ namespace Tests
             );
         }
 
+        /// <summary>
+        /// Defect https://github.com/Alex141/CalcBinding/issues/32
+        /// </summary>
+        [TestMethod]
+        public void BindingToStringWithParenteses()
+        {
+            var test = new ExampleViewModel();
+
+            StringBindingAssert("Name == null ? '(new)' : 'Name = ' + Name", test,
+                () => test.Name = null, "(new)",
+                () => test.Name = "ViewModel", "Name = ViewModel"
+            );
+        }
         #region Convert
 
         public void StringAndObjectBindingAssert(string path, INotifyPropertyChanged source,

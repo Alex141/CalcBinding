@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Data;
@@ -197,21 +198,10 @@ namespace CalcBinding
                 "&", "|", "?", ":", "<=", ">=", "<", ">", "==", "!=", "!", "," 
             };
 
-            var matches = normPath.Split(operators, StringSplitOptions.RemoveEmptyEntries).Distinct();
+            // temporary solution of problem: all string content shouldn't be parsed. Solution - remove strings from sourcePath.
+            //todo: better solution is to use parser PARSER!!
 
-            // detect all pathes
-            var pathsList = new List<string>();
-
-            foreach (var match in matches)
-            {
-                if (!isDouble(match) && !match.Contains("\""))
-                {
-                    // math detection
-                    if (!Regex.IsMatch(match, @"Math.\w+\(\w+\)") && !Regex.IsMatch(match, @"Math.\w+"))
-                        if (match != "null")
-                            pathsList.Add(match);
-                }
-            }
+            var pathsList = GetPathes(normPath, operators);
 
             //detect all start positions
             
@@ -223,6 +213,8 @@ namespace CalcBinding
             // So, foreach founded source property name we need to found all positions and foreaech of 
             // these positions check - near source property path at founded positions must be OPERATORS
             // not other symbols. So, following code perform this check 
+
+            //may be that task solved by using PARSER!
             var pathIndexList = pathsList
                 .Select(path => new Tuple<string, List<int>>(path, new List<int>()))
                 .ToList();
@@ -250,6 +242,48 @@ namespace CalcBinding
                 }
             }
             return pathIndexList;
+        }
+
+        /// <summary>
+        /// Returns all strings that are pathes
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="operators"></param>
+        /// <returns></returns>
+        private List<string> GetPathes(string path, string[] operators)
+        {
+            var substrings = path.Split(new[] { "\"" }, StringSplitOptions.None);
+
+            if (substrings.Length > 0)
+            {
+                var pathWithoutStringsBuilder = new StringBuilder();
+                for (int i = 0; i < substrings.Length; i++)
+                {
+                    if (i % 2 == 0)
+                        pathWithoutStringsBuilder.Append(substrings[i]);
+                    else
+                        pathWithoutStringsBuilder.Append("\"\"");
+                }
+
+                path = pathWithoutStringsBuilder.ToString();
+            }
+
+            var matches = path.Split(operators, StringSplitOptions.RemoveEmptyEntries).Distinct();
+
+            // detect all pathes
+            var pathsList = new List<string>();
+
+            foreach (var match in matches)
+            {
+                if (!isDouble(match) && !match.Contains("\""))
+                {
+                    // math detection
+                    if (!Regex.IsMatch(match, @"Math.\w+\(\w+\)") && !Regex.IsMatch(match, @"Math.\w+"))
+                        if (match != "null")
+                            pathsList.Add(match);
+                }
+            }
+            return pathsList;
         }
 
         /// <summary>
