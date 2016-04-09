@@ -52,7 +52,7 @@ namespace CalcBinding
 
             if (sourcePropertiesPathesWithPositions.Count() == 1)
             {
-                var binding = new System.Windows.Data.Binding(sourcePropertiesPathesWithPositions.Single().Item1)
+                var binding = new System.Windows.Data.Binding(sourcePropertiesPathesWithPositions.Single().LocalPath)
                 {
                     Mode = Mode,
                     NotifyOnSourceUpdated = NotifyOnSourceUpdated,
@@ -113,7 +113,7 @@ namespace CalcBinding
 
                 foreach (var sourcePropertyPathWithPositions in sourcePropertiesPathesWithPositions)
                 {
-                    var binding = new System.Windows.Data.Binding(sourcePropertyPathWithPositions.Item1);
+                    var binding = new System.Windows.Data.Binding(sourcePropertyPathWithPositions.LocalPath);
 
                     if (Source != null)
                         binding.Source = Source;
@@ -153,7 +153,7 @@ namespace CalcBinding
         /// <param name="path"></param>
         /// <param name="pathes"></param>
         /// <returns></returns>
-        private string GetExpressionTemplate(string path, List<Tuple<string, List<int>>> pathes)
+        private string GetExpressionTemplate(string path, List<ParsedPath> pathes)
         {
             var result = "";
             var sourceIndex = 0;
@@ -164,8 +164,8 @@ namespace CalcBinding
                 for (int index = 0; index < pathes.Count; index++)
                 {
                     var replace = index.ToString("{0}");
-                    var positions = pathes[index].Item2;
-                    var sourcePropertyPath = pathes[index].Item1;
+                    var positions = pathes[index].MergedIndexes;
+                    var sourcePropertyPath = pathes[index].LocalPath;
 
                     if (positions.Contains(sourceIndex))
                     {
@@ -188,20 +188,13 @@ namespace CalcBinding
         /// <summary>
         /// Find and return all sourceProperties pathes in Path string
         /// </summary>
-        /// <param name="normPath"></param>
+        /// <param name="fullPath"></param>
         /// <returns>List of pathes and its start positions</returns>
-        private List<Tuple<String, List<int>>> GetSourcePropertiesPathes(string normPath)
+        private List<ParsedPath> GetSourcePropertiesPathes(string fullPath)
         {
-            var operators = new [] 
-            { 
-                "(", ")", "+", "-", "*", "/", "%", "^", "&&", "||", 
-                "&", "|", "?", ":", "<=", ">=", "<", ">", "==", "!=", "!", "," 
-            };
-
             // temporary solution of problem: all string content shouldn't be parsed. Solution - remove strings from sourcePath.
             //todo: better solution is to use parser PARSER!!
 
-            var pathsList = GetPathes(normPath, operators);
 
             //detect all start positions
             
@@ -215,44 +208,111 @@ namespace CalcBinding
             // not other symbols. So, following code perform this check 
 
             //may be that task solved by using PARSER!
-            var pathIndexList = pathsList
-                .Select(path => new Tuple<string, List<int>>(path, new List<int>()))
+
+            //Get the set of valid paths
+            var pathsList = GetPathes(fullPath)
+                .Where(p => p.ValidPath)
                 .ToList();
 
-            foreach (var path in pathIndexList)
+            //Merge the groups. 
+            //We are combining each distinct value of the LocalPath, merging the differing indexes into the MergedIndexes list
+            //This is so that we don't have duplicate property evaluations for the same data, improving performance
+            var pathGroups = pathsList.GroupBy(p => p.LocalPath);
+            foreach (var g in pathGroups)
             {
-                var indexes = Regex.Matches(normPath, path.Item1).Cast<Match>().Select(m => m.Index).ToList();
+                var first = g.First();
+                first.MergedIndexes = g.Select(x => x.StartIndex).ToList();
+            }
 
-                foreach (var index in indexes)
+            pathsList = pathsList.Where(p => p.MergedIndexes?.Count > 0).ToList();
+
+            return pathsList;
+        }
+
+        class ParsedPath
+        {
+            public static string[] operators = new[]
+            {
+                "(", ")", "+", "-", "*", "/", "%", "^", "&&", "||",
+                "&", "|", "?", ":", "<=", ">=", "<", ">", "==", "!=", "!", ","
+            };
+
+            static string[] opsWithoutParenthesis = operators.Except(new[] { "(", ")" }).ToArray();
+
+            public string FullPath { get; set; }
+            public string LocalPath { get; set; }
+            public int StartIndex { get; set; }
+            public int EndIndex { get { return StartIndex + LocalPath.Length - 1; } }
+            public List<int> MergedIndexes { get; set; }
+
+            public bool ValidPath
+            {
+                get
                 {
-                    bool startPosIsOperator = index == 0;
-
-                    foreach (var op in operators)
-                        if (index >= op.Length && normPath.Substring(index - op.Length, op.Length) == op)
-                            startPosIsOperator = true;
-
-                    bool endPosIsOperator = index + path.Item1.Length == normPath.Length;
-
-                    foreach (var op in operators)
-                        if (index + path.Item1.Length <= normPath.Length - op.Length && normPath.Substring(index + path.Item1.Length, op.Length) == op)
-                            endPosIsOperator = true;
-
-                    if (startPosIsOperator && endPosIsOperator)
-                        path.Item2.Add(index);
+                    return StartPosIsOperator && EndPosIsOperator;
                 }
             }
-            return pathIndexList;
+
+            public bool StartPosIsOperator
+            {
+                get
+                {
+                    if (StartIndex == 0)
+                        return true;
+                    return operators.Any(op =>
+                        op.Length <= StartIndex &&
+                        op == FullPath.Substring(StartIndex - op.Length, op.Length));
+                }
+            } 
+
+            public bool EndPosIsOperator
+            {
+                get
+                {
+                    if (StartIndex + LocalPath.Length == FullPath.Length)
+                        return true;
+                    return operators.Any(op =>
+                        FullPath.Length - op.Length >= StartIndex + LocalPath.Length &&
+                        op == FullPath.Substring(StartIndex + LocalPath.Length, op.Length));
+                }
+            }
+            
+            public bool LocalPathIsNotAtEdge
+            {
+                get
+                {
+                    return (StartIndex > 0 && EndIndex < FullPath.Length - 1);
+                }
+            }
+
+            public bool SurroundedByParenthesis
+            {
+                get
+                {
+                    if (!LocalPathIsNotAtEdge)
+                        return false;
+                    char start = FullPath[StartIndex - 1];
+                    char end = FullPath[EndIndex + 1];
+                    return start == '(' && end == ')';
+                }
+            }
+
+            public override string ToString()
+            {
+                return LocalPath;
+            }
         }
 
         /// <summary>
         /// Returns all strings that are pathes
         /// </summary>
-        /// <param name="path"></param>
-        /// <param name="operators"></param>
+        /// <param name="fullPath"></param>
         /// <returns></returns>
-        private List<string> GetPathes(string path, string[] operators)
+        private List<ParsedPath> GetPathes(string fullPath)
         {
-            var substrings = path.Split(new[] { "\"" }, StringSplitOptions.None);
+            var operators = ParsedPath.operators;
+
+            var substrings = fullPath.Split(new[] { "\"" }, StringSplitOptions.None);
 
             if (substrings.Length > 0)
             {
@@ -265,22 +325,44 @@ namespace CalcBinding
                         pathWithoutStringsBuilder.Append("\"\"");
                 }
 
-                path = pathWithoutStringsBuilder.ToString();
+                fullPath = pathWithoutStringsBuilder.ToString();
             }
 
-            var matches = path.Split(operators, StringSplitOptions.RemoveEmptyEntries).Distinct();
+            var matches = fullPath.Split(operators, StringSplitOptions.RemoveEmptyEntries);
+
+            //If containing text has no operators, but surrounded by ( ), treat the enclosing parenthesis 
+            //as part of the string
 
             // detect all pathes
-            var pathsList = new List<string>();
+            var pathsList = new List<ParsedPath>();
 
+            //Scan through the full path to locate the indexes of the matches
+            int currentIndex = 0;
             foreach (var match in matches)
             {
+                currentIndex = fullPath.IndexOf(match, currentIndex);
+                var parsed = new ParsedPath()
+                {
+                    FullPath = fullPath,
+                    LocalPath = match,
+                    StartIndex = currentIndex
+                };
+                currentIndex++;
+
+                //Since (Canvas.Left) is a valid path but Canvas.Left is not, we need to account for this.
+                if (parsed.SurroundedByParenthesis)
+                {
+                    //Expand local path by one character in each direction, to include the surrounding parenthesis
+                    parsed.LocalPath = parsed.FullPath.Substring(parsed.StartIndex - 1, parsed.LocalPath.Length + 2);
+                    parsed.StartIndex--;
+                }
+
                 if (!isDouble(match) && !match.Contains("\""))
                 {
                     // math detection
                     if (!Regex.IsMatch(match, @"Math.\w+\(\w+\)") && !Regex.IsMatch(match, @"Math.\w+"))
                         if (match != "null")
-                            pathsList.Add(match);
+                            pathsList.Add(parsed);
                 }
             }
             return pathsList;
