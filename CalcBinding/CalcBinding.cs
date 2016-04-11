@@ -153,35 +153,49 @@ namespace CalcBinding
         /// <param name="path"></param>
         /// <param name="pathes"></param>
         /// <returns></returns>
-        private string GetExpressionTemplate(string path, List<ParsedPath> pathes)
+        private string GetExpressionTemplate(string fullpath, List<ParsedPath> pathes)
         {
-            var result = "";
-            var sourceIndex = 0;
-
-            while (sourceIndex < path.Length)
+            //Flatten parsed paths, get all merged indexes and corresponding localpath keys
+            var pathmap = new List<Tuple<string, int, int>>(); //Item1 = LocalPath, Item2 = order of localpath, Item3 = position of localpath in fullpath
+            
+            for (int i = 0; i < pathes.Count; i++)
             {
-                var replaced = false;
-                for (int index = 0; index < pathes.Count; index++)
+                foreach (var index in pathes[i].MergedIndexes)
                 {
-                    var replace = index.ToString("{0}");
-                    var positions = pathes[index].MergedIndexes;
-                    var sourcePropertyPath = pathes[index].LocalPath;
-
-                    if (positions.Contains(sourceIndex))
-                    {
-                        result += replace;
-                        sourceIndex += sourcePropertyPath.Length;
-                        replaced = true;
-                        break;
-                    }
-                }
-                if (!replaced)
-                {
-                    result += path[sourceIndex];
-                    sourceIndex++;
+                    var t = new Tuple<string, int, int>(pathes[i].LocalPath, i, index);
+                    pathmap.Add(t);
                 }
             }
+            pathmap = pathmap.OrderBy(x => x.Item2).ToList();
 
+            //Iterate through ascending index values and rebuild the fullpath with replaced values
+            StringBuilder sb = new StringBuilder();
+            int currentindex = 0;
+            foreach (var m in pathmap)
+            {
+                var index = m.Item3;
+                var localpath = m.Item1;
+                var pathorder = m.Item2;
+
+                //Either we are appending the local path, or we are appending what is between the consecutive map values
+                if (currentindex < index)
+                {
+                    var s = fullpath.Substring(currentindex, index - currentindex);
+                    sb.Append(s);
+                    currentindex += s.Length;
+                }
+                if (currentindex == index)
+                {
+                    sb.AppendFormat("{{{0}}}", pathorder);
+                    currentindex += localpath.Length;
+                }
+            }
+            //Fill in the remaining characters
+            var remaininglength = fullpath.Length - currentindex;
+            var substr = fullpath.Substring(currentindex, remaininglength);
+            sb.Append(substr);
+
+            var result = sb.ToString();
             return result;
         }
 
@@ -310,9 +324,13 @@ namespace CalcBinding
         /// <returns></returns>
         private List<ParsedPath> GetPathes(string fullPath)
         {
+            var originalPath = fullPath;
             var operators = ParsedPath.operators;
 
-            var substrings = fullPath.Split(new[] { "\"" }, StringSplitOptions.None);
+            var substrings = originalPath.Split(new[] { "\"" }, StringSplitOptions.None);
+
+            //Keep track of quoted string lengths in order to preserve token indexes
+            var stringlengths = new Queue<int>();
 
             if (substrings.Length > 0)
             {
@@ -322,11 +340,16 @@ namespace CalcBinding
                     if (i % 2 == 0)
                         pathWithoutStringsBuilder.Append(substrings[i]);
                     else
+                    {
                         pathWithoutStringsBuilder.Append("\"\"");
+                        stringlengths.Enqueue(substrings[i].Length);
+                    }
                 }
 
                 fullPath = pathWithoutStringsBuilder.ToString();
             }
+
+            
 
             var matches = fullPath.Split(operators, StringSplitOptions.RemoveEmptyEntries);
 
@@ -338,14 +361,22 @@ namespace CalcBinding
 
             //Scan through the full path to locate the indexes of the matches
             int currentIndex = 0;
+            int totalStringLengths = 0;
             foreach (var match in matches)
             {
+                if (match == "\"\"")
+                {
+                    //Keep track of the current number of characters removed up to this point
+                    //So that an offset can be calculated
+                    totalStringLengths += stringlengths.Dequeue();
+                }
+
                 currentIndex = fullPath.IndexOf(match, currentIndex);
                 var parsed = new ParsedPath()
                 {
-                    FullPath = fullPath,
+                    FullPath = originalPath,
                     LocalPath = match,
-                    StartIndex = currentIndex
+                    StartIndex = currentIndex + totalStringLengths
                 };
                 currentIndex++;
 
