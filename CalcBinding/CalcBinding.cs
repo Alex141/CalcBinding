@@ -166,7 +166,7 @@ namespace CalcBinding
                     pathmap.Add(t);
                 }
             }
-            pathmap = pathmap.OrderBy(x => x.Item2).ToList();
+            pathmap = pathmap.OrderBy(x => x.Item3).ToList();
 
             //Iterate through ascending index values and rebuild the fullpath with replaced values
             StringBuilder sb = new StringBuilder();
@@ -226,6 +226,7 @@ namespace CalcBinding
             //Get the set of valid paths
             var pathsList = GetPathes(fullPath)
                 .Where(p => p.ValidPath)
+                .Where(p => p.LocalPath != "null")
                 .ToList();
 
             //Merge the groups. 
@@ -318,7 +319,7 @@ namespace CalcBinding
         }
 
         /// <summary>
-        /// Returns all strings that are pathes
+        /// Returns all strings that are pathes. Includes locations of each path in relation to the fullPath input.
         /// </summary>
         /// <param name="fullPath"></param>
         /// <returns></returns>
@@ -349,9 +350,9 @@ namespace CalcBinding
                 fullPath = pathWithoutStringsBuilder.ToString();
             }
 
-            
 
-            var matches = fullPath.Split(operators, StringSplitOptions.RemoveEmptyEntries);
+
+            var matches = SplitWithIndexes(fullPath, operators);
 
             //If containing text has no operators, but surrounded by ( ), treat the enclosing parenthesis 
             //as part of the string
@@ -362,15 +363,20 @@ namespace CalcBinding
             //Scan through the full path to locate the indexes of the matches
             int currentIndex = 0;
             int totalStringLengths = 0;
-            foreach (var match in matches)
+            for(int matchIdx = 0; matchIdx < matches.Count; matchIdx++)
             {
+                var match = matches[matchIdx].Item2;
+                var matchFoundAtLoc = matches[matchIdx].Item1;
+                if (matchFoundAtLoc < currentIndex) //Already parsed recursively, skip
+                    continue;
+
                 if (match == "\"\"")
                 {
                     //Keep track of the current number of characters removed up to this point
                     //So that an offset can be calculated
                     totalStringLengths += stringlengths.Dequeue();
                 }
-
+                
                 currentIndex = fullPath.IndexOf(match, currentIndex);
                 var parsed = new ParsedPath()
                 {
@@ -378,7 +384,7 @@ namespace CalcBinding
                     LocalPath = match,
                     StartIndex = currentIndex + totalStringLengths
                 };
-                currentIndex++;
+                currentIndex += match.Length;
 
                 //Since (Canvas.Left) is a valid path but Canvas.Left is not, we need to account for this.
                 if (parsed.SurroundedByParenthesis)
@@ -391,12 +397,104 @@ namespace CalcBinding
                 if (!isDouble(match) && !match.Contains("\""))
                 {
                     // math detection
-                    if (!Regex.IsMatch(match, @"Math.\w+\(\w+\)") && !Regex.IsMatch(match, @"Math.\w+"))
-                        if (match != "null")
-                            pathsList.Add(parsed);
+                    var mathmatches1 = Regex.Matches(match, @"Math.\w+\(\w+\)").Cast<Match>();
+                    var mathmatches2 = Regex.Matches(match, @"Math.\w+").Cast<Match>();
+                    bool isMath = mathmatches1.Count() > 0 || mathmatches2.Count() > 0;
+
+                    if (isMath)
+                    {
+                        //Get what is inside the math function, parse it, and unbox
+                        int mathIdx = (mathmatches1.FirstOrDefault()?.Index ?? 0) + (mathmatches2.FirstOrDefault()?.Index ?? 0);
+                        int beginIdxInner = parsed.FullPath.IndexOf("(", parsed.StartIndex + mathIdx) + 1;
+
+                        //Traverse string until we get to the closing parenthesis
+                        //An exception will be thrown if there is no closing parenthesis
+                        int endIdxInner = beginIdxInner;
+                        int depth = 1;
+                        bool found = false;
+                        for (int i = beginIdxInner; i < parsed.FullPath.Length; i++, endIdxInner++)
+                        {
+                            if (parsed.FullPath[i] == '(')
+                                depth++;
+                            if (parsed.FullPath[i] == ')')
+                            {
+                                depth--;
+                                if (depth == 0)
+                                {
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (!found)
+                            throw new InvalidOperationException($"Unclosed parenthesis: {parsed.FullPath}");
+
+                        string innerArg = parsed.FullPath.Substring(beginIdxInner, endIdxInner - beginIdxInner);
+                        var innerRecursiveParsedPaths = GetPathes(innerArg);
+
+                        //merge paths
+                        foreach (var innerpath in innerRecursiveParsedPaths)
+                        {
+                            innerpath.FullPath = parsed.FullPath;
+                            innerpath.StartIndex += beginIdxInner; //innerpath index is just an offset until this point. Convert to absolute index
+                            pathsList.Add(innerpath);
+                        }
+
+                        //advance currentindex past the point at which we procesed the fullpath, as we do not want to parse the same region twice!
+                       // currentIndex += 
+                    }
+                    else
+                        pathsList.Add(parsed);
                 }
             }
             return pathsList;
+        }
+
+        //Splits a string using splitby as a delimiter, returns each substring along with the original index at which the substring resides
+        private List<Tuple<int, string>> SplitWithIndexes(string input, string[] splitby)
+        {
+            //Remove empty strings
+            splitby = splitby.Where(s => s != null && s.Length > 0).ToArray();
+
+            var list = new List<Tuple<int, string>>();
+
+            int idx = 0;
+            while (idx < input.Length)
+            {
+                //Get the first location that any of the splitby args are located in input, starting from idx
+                var next = splitby.Select(s =>
+                {
+                    int loc = input.IndexOf(s, idx);
+                    if (loc < 0)
+                        loc = int.MaxValue;
+                    return new { op = s, loc = loc };
+                });
+                var minidx = next.Min(o => o.loc);
+
+                if (minidx == int.MaxValue) //nothing found, finish up
+                {
+                    var remainingText = input.Substring(idx);
+                    if (remainingText.Length > 0)
+                        list.Add(new Tuple<int, string>(idx, remainingText));
+                    break;
+                }
+
+                //Get the next delimiter that the string is split by
+                var nextop = next.Where(x => x.loc == minidx).First();
+
+                //Get the end index of the current substring that we are including in the results
+                int endIdxCurrent = nextop.loc - 1;
+
+                //Add the item to the results
+                string nextSubstring = input.Substring(idx, endIdxCurrent - idx + 1);
+                if (nextSubstring.Length > 0)
+                    list.Add(new Tuple<int, string>(idx, nextSubstring));
+
+                //Get the next index to continue string traversal
+                idx = nextop.loc + nextop.op.Length;
+            }
+
+            return list;
         }
 
         /// <summary>
