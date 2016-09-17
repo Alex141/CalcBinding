@@ -11,7 +11,7 @@
 <!--    <iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl> -->
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>CalcBinding - small library providing Binding markup extension with path expressions directly in xaml</description>
-    <releaseNotes>first release</releaseNotes>
+    <releaseNotes>fix bug with exception in binding to readonly property with default mode. See Release Notes in github for important information about switching to this version </releaseNotes>
     <copyright>Copyright 2014</copyright>
     <tags>Xaml WPF Binding Expression</tags>
   </metadata>
