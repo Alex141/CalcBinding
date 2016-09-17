@@ -1,6 +1,6 @@
 # CalcBinding
 
-CalcBinding is an advanced Binding markup extension that allows you to write binding expressions directly in xaml, without custom converters. CalcBinding can automaticaly perfom bool to visibility convertion, inverse your expression and create two way binding, and more. CalcBinding makes binding expressions shorter and more user friendly. [Release notes](https://github.com/Alex141/CalcBinding#release-notes)
+CalcBinding is an advanced Binding markup extension that allows you to write binding expressions directly in xaml, without custom converters. CalcBinding can automaticaly perfom bool to visibility convertion, inverse your expression and more. CalcBinding makes binding expressions shorter and more user friendly. [Release notes](https://github.com/Alex141/CalcBinding#release-notes)
 
 ## Install
 
@@ -180,7 +180,7 @@ or just
 
 ##Automatic inverse binding expression
 
- If you have binding with expression consisting only of operators that have inversed operators, calcBinding attempt to generate inversed expression for you and create two way binding instead of one way binding. For example, if you have expression 'Path = (A + 5) / 3' inversed expression is 'source = Path * 3 - 5'.
+ If you have binding with expression consisting only of operators that have inversed operators and youe BindingMode = BindingMode.TwoWay, calcBinding attempts to generate inversed expression and use it in ConvertBack method in converter. For example, if you have expression 'Path = (A + 5) / 3' inversed expression is 'source = Path * 3 - 5'.
  
  CalcBinding supports inversing of many operators:
  ```
@@ -238,7 +238,7 @@ Output: exprStr = (a&&!(b)>0))?"example str 1":"example str 2 "
          varList = a:Boolean, b:Integer
 ```
 
-4 (In conveter) Compiling result string expression to delegate:
+4 (In converter) Compiling result string expression to delegate:
 ```C#
 Lambda compiledExpression = new Interpreter().Parse(exprStr, varList);
 ```
@@ -291,6 +291,16 @@ Yes, you can, but with setting RelativeSource property, see [example](https://gi
 3. In path expression you can't use any .Net classes except of Math class.
 
 #Release notes
+
+## version 2.2.5.2
+
+* fix defect with exception in binding to readonly properties with BindingMode.Default (#41) (thanks to maurosampietro and earthengine!)
+
+Possible problems of switching to this version from older versions:
+In older versions CalcBinding creates Binding with BindingMode.TwoWay by default. In new version Binding is created with BindingMode.Default by default (which is more right and standart Binding is doing quite so). Mode = Default means that each DependencyProperty can manage personally in which mode it should be translated. For example, DefaultMode of TextBox.Text is TwoWay, but Label.Content, TextBox.Visibility - OneWay. 
+If you used in you applications TwoWay Binding with DependencyProperty that has DefaultMode = BindingMode.OneWay and you didn't specify Mode=TwoWay in xaml so you need to do it in this version for same work.
+
+example:
 
 ## version 2.2.5.1
 
