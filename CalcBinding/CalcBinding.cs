@@ -28,9 +28,12 @@ namespace CalcBinding
         }
         private FalseToVisibility falseToVisibility = FalseToVisibility.Collapsed;
 
-        public Binding() { }
+        public Binding() 
+        {
+            Mode = BindingMode.Default;
+        }
 
-        public Binding(String path)
+        public Binding(String path):this()
         {
             Path = path;
         }
@@ -399,6 +402,7 @@ namespace CalcBinding
         //     using System.Windows.DependencyProperty.GetMetadata(System.Type) and then
         //     check the Boolean value of the System.Windows.FrameworkPropertyMetadata.BindsTwoWayByDefault
         //     property.
+        [DefaultValue(BindingMode.Default)]
         public BindingMode Mode { get; set; }
         //
         // Summary:
