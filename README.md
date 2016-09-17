@@ -297,10 +297,19 @@ Yes, you can, but with setting RelativeSource property, see [example](https://gi
 * fix defect with exception in binding to readonly properties with BindingMode.Default (#41) (thanks to maurosampietro and earthengine!)
 
 Possible problems of switching to this version from older versions:
+
 In older versions CalcBinding creates Binding with BindingMode.TwoWay by default. In new version Binding is created with BindingMode.Default by default (which is more right and standart Binding is doing quite so). Mode = Default means that each DependencyProperty can manage personally in which mode it should be translated. For example, DefaultMode of TextBox.Text is TwoWay, but Label.Content, TextBox.Visibility - OneWay. 
 If you used in you applications TwoWay Binding with DependencyProperty that has DefaultMode = BindingMode.OneWay and you didn't specify Mode=TwoWay in xaml so you need to do it in this version for same work.
 
-example:
+example.
+```xml
+<Button Content="TargetButton" Visibility="{c:Binding !HasPrivileges}"/>
+```
+In older version it creates BindingMode.TwoWay binding, in new version it creates BindingMode.Default, which translated by Label.Visibility in BindingMode.OneWayMode. If you need to stay on BindingMode.TwoWay then just specify it:
+
+```xml
+<Button Content="TargetButton" Visibility="{c:Binding !HasPrivileges, Mode=TwoWay}"/>
+```
 
 ## version 2.2.5.1
 
