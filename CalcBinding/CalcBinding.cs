@@ -189,22 +189,19 @@ namespace CalcBinding
         }
 
         /// <summary>
-        /// Find and return all sourceProperties pathes in Path string
+        /// Find all sourceProperties pathes in Path string
         /// </summary>
         /// <param name="normPath"></param>
         /// <returns>List of pathes and its start positions</returns>
         private List<Tuple<String, List<int>>> GetSourcePropertiesPathes(string normPath)
         {
-            var operators = new [] 
-            { 
-                "(", ")", "+", "-", "*", "/", "%", "^", "&&", "||", 
-                "&", "|", "?", ":", "<=", ">=", "<", ">", "==", "!=", "!", "," 
-            };
+            var propertyPathAnalyzer = new PropertyPathAnalyzer();
 
+            var pathes = propertyPathAnalyzer.GetPathes(normPath);
             // temporary solution of problem: all string content shouldn't be parsed. Solution - remove strings from sourcePath.
             //todo: better solution is to use parser PARSER!!
 
-            var pathsList = GetPathes(normPath, operators);
+            //var pathsList = GetPathes(normPath, operators);
 
             //detect all start positions
             
@@ -218,33 +215,33 @@ namespace CalcBinding
             // not other symbols. So, following code perform this check 
 
             //may be that task solved by using PARSER!
-            var pathIndexList = pathsList
-                .Select(path => new Tuple<string, List<int>>(path, new List<int>()))
-                .ToList();
+            //var pathIndexList = pathsList
+            //    .Select(path => new Tuple<string, List<int>>(path, new List<int>()))
+            //    .ToList();
 
-            foreach (var path in pathIndexList)
-            {
-                var indexes = Regex.Matches(normPath, path.Item1).Cast<Match>().Select(m => m.Index).ToList();
+            //foreach (var path in pathIndexList)
+            //{
+            //    var indexes = Regex.Matches(normPath, path.Item1).Cast<Match>().Select(m => m.Index).ToList();
 
-                foreach (var index in indexes)
-                {
-                    bool startPosIsOperator = index == 0;
+            //    foreach (var index in indexes)
+            //    {
+            //        bool startPosIsOperator = index == 0;
 
-                    foreach (var op in operators)
-                        if (index >= op.Length && normPath.Substring(index - op.Length, op.Length) == op)
-                            startPosIsOperator = true;
+            //        foreach (var op in operators)
+            //            if (index >= op.Length && normPath.Substring(index - op.Length, op.Length) == op)
+            //                startPosIsOperator = true;
 
-                    bool endPosIsOperator = index + path.Item1.Length == normPath.Length;
+            //        bool endPosIsOperator = index + path.Item1.Length == normPath.Length;
 
-                    foreach (var op in operators)
-                        if (index + path.Item1.Length <= normPath.Length - op.Length && normPath.Substring(index + path.Item1.Length, op.Length) == op)
-                            endPosIsOperator = true;
+            //        foreach (var op in operators)
+            //            if (index + path.Item1.Length <= normPath.Length - op.Length && normPath.Substring(index + path.Item1.Length, op.Length) == op)
+            //                endPosIsOperator = true;
 
-                    if (startPosIsOperator && endPosIsOperator)
-                        path.Item2.Add(index);
-                }
-            }
-            return pathIndexList;
+            //        if (startPosIsOperator && endPosIsOperator)
+            //            path.Item2.Add(index);
+            //    }
+            //}
+            //return pathIndexList;
         }
 
         /// <summary>
