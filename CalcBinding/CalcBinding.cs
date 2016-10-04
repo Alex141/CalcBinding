@@ -43,7 +43,8 @@ namespace CalcBinding
             var targetPropertyType = GetPropertyType(serviceProvider);
             var normalizedPath = NormalizePath(Path);
             var sourcePropertiesPathesWithPositions = GetSourcePropertiesPathes(normalizedPath);
-            var expressionTemplate = GetExpressionTemplate(normalizedPath, sourcePropertiesPathesWithPositions);
+            Dictionary<string, PathToken> enumParameters;
+            var expressionTemplate = GetExpressionTemplate(normalizedPath, sourcePropertiesPathesWithPositions, out enumParameters);
 
             var mathConverter = new CalcConverter
             {
@@ -156,28 +157,52 @@ namespace CalcBinding
         /// <param name="path"></param>
         /// <param name="pathes"></param>
         /// <returns></returns>
-        private string GetExpressionTemplate(string path, List<Tuple<string, List<int>>> pathes)
+        private string GetExpressionTemplate(string path, List<PathToken> properties, out Dictionary<string, PathToken> enumParameters)
         {
             var result = "";
             var sourceIndex = 0;
+            var propIndex = 0;
+            var enumIndex = 0;
+
+            enumParameters = new Dictionary<string,PathToken>();
+            var propertiesGroups = properties.GroupBy(p => p.Id).ToList();
 
             while (sourceIndex < path.Length)
             {
                 var replaced = false;
-                for (int index = 0; index < pathes.Count; index++)
+                for (int index = 0; index < propertiesGroups.Count(); index++)
                 {
-                    var replace = index.ToString("{0}");
-                    var positions = pathes[index].Item2;
-                    var sourcePropertyPath = pathes[index].Item1;
+                    var propGroup = propertiesGroups[index];
+                    var propId = propGroup.Key;
+                    var targetProp = propGroup.FirstOrDefault(token => token.Start == sourceIndex);
 
-                    if (positions.Contains(sourceIndex))
+                    if (targetProp != null)
                     {
-                        result += replace;
-                        sourceIndex += sourcePropertyPath.Length;
-                        replaced = true;
-                        break;
+                        var propPath = propId.Value;
+
+                        if (propId.PathType == PathTokenType.Property || propId.PathType == PathTokenType.StaticProperty)
+                        {
+                            var replace = (propIndex++).ToString("{0}");
+
+                            result += replace;
+                            sourceIndex += propPath.Length;
+                            replaced = true;
+                        }
+                        else if (propId.PathType == PathTokenType.Enum)
+                        {
+                            var enumTypeName = (enumIndex++).ToString("Enum{0}");
+                            enumParameters.Add(enumTypeName, propGroup.First());
+                            var replace = enumTypeName + "." + string.Join(".", targetProp.MembersList);
+
+                            result += replace;
+                            sourceIndex += propPath.Length;
+                            replaced = true;
+                        }
+                        if (replaced)
+                            break;
                     }
                 }
+
                 if (!replaced)
                 {
                     result += path[sourceIndex];
@@ -193,11 +218,13 @@ namespace CalcBinding
         /// </summary>
         /// <param name="normPath"></param>
         /// <returns>List of pathes and its start positions</returns>
-        private List<Tuple<String, List<int>>> GetSourcePropertiesPathes(string normPath)
+        private List<PathToken> GetSourcePropertiesPathes(string normPath)
         {
             var propertyPathAnalyzer = new PropertyPathAnalyzer();
 
             var pathes = propertyPathAnalyzer.GetPathes(normPath);
+
+            return pathes;
             // temporary solution of problem: all string content shouldn't be parsed. Solution - remove strings from sourcePath.
             //todo: better solution is to use parser PARSER!!
 
@@ -244,47 +271,47 @@ namespace CalcBinding
             //return pathIndexList;
         }
 
-        /// <summary>
-        /// Returns all strings that are pathes
-        /// </summary>
-        /// <param name="path"></param>
-        /// <param name="operators"></param>
-        /// <returns></returns>
-        private List<string> GetPathes(string path, string[] operators)
-        {
-            var substrings = path.Split(new[] { "\"" }, StringSplitOptions.None);
+        ///// <summary>
+        ///// Returns all strings that are pathes
+        ///// </summary>
+        ///// <param name="path"></param>
+        ///// <param name="operators"></param>
+        ///// <returns></returns>
+        //private List<string> GetPathes(string path, string[] operators)
+        //{
+        //    var substrings = path.Split(new[] { "\"" }, StringSplitOptions.None);
 
-            if (substrings.Length > 0)
-            {
-                var pathWithoutStringsBuilder = new StringBuilder();
-                for (int i = 0; i < substrings.Length; i++)
-                {
-                    if (i % 2 == 0)
-                        pathWithoutStringsBuilder.Append(substrings[i]);
-                    else
-                        pathWithoutStringsBuilder.Append("\"\"");
-                }
+        //    if (substrings.Length > 0)
+        //    {
+        //        var pathWithoutStringsBuilder = new StringBuilder();
+        //        for (int i = 0; i < substrings.Length; i++)
+        //        {
+        //            if (i % 2 == 0)
+        //                pathWithoutStringsBuilder.Append(substrings[i]);
+        //            else
+        //                pathWithoutStringsBuilder.Append("\"\"");
+        //        }
 
-                path = pathWithoutStringsBuilder.ToString();
-            }
+        //        path = pathWithoutStringsBuilder.ToString();
+        //    }
 
-            var matches = path.Split(operators, StringSplitOptions.RemoveEmptyEntries).Distinct();
+        //    var matches = path.Split(operators, StringSplitOptions.RemoveEmptyEntries).Distinct();
 
-            // detect all pathes
-            var pathsList = new List<string>();
+        //    // detect all pathes
+        //    var pathsList = new List<string>();
 
-            foreach (var match in matches)
-            {
-                if (!isDouble(match) && !match.Contains("\""))
-                {
-                    // math detection
-                    if (!Regex.IsMatch(match, @"Math.\w+\(\w+\)") && !Regex.IsMatch(match, @"Math.\w+"))
-                        if (match != "null")
-                            pathsList.Add(match);
-                }
-            }
-            return pathsList;
-        }
+        //    foreach (var match in matches)
+        //    {
+        //        if (!isDouble(match) && !match.Contains("\""))
+        //        {
+        //            // math detection
+        //            if (!Regex.IsMatch(match, @"Math.\w+\(\w+\)") && !Regex.IsMatch(match, @"Math.\w+"))
+        //                if (match != "null")
+        //                    pathsList.Add(match);
+        //        }
+        //    }
+        //    return pathsList;
+        //}
 
         /// <summary>
         /// Return true, is string can be converted to Double type, and false otherwise

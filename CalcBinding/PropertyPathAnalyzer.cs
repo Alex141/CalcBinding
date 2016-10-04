@@ -236,21 +236,46 @@ namespace CalcBinding
 
     public class PathToken
     {
-        public readonly PathTokenType PathType { get; private set; }
+        public PathTokenType PathType { get { return Id.PathType; } }
 
-        public uint Start { get; private set; }
+        public string Value { get { return Id.Value; } }
 
-        public uint End { get; private set; }
+        public readonly PathTokenId Id { get; private set; }
 
-        public string Value { get; private set; }
+        public int Start { get; private set; }
+
+        public int End { get; private set; }
 
         public string ClassName { get; private set; }
 
         public IEnumerable<string> MembersList { get; private set; }
 
-        public PathToken(PathTokenType pathType)
+        /// <summary>
+        /// Type of Enum if PathToken represents enum path, e.g. MyEnum.MyValue, and null otherwise
+        /// </summary>
+        public readonly Type EnumType { get; private set; }
+
+        public PathToken(PathTokenType pathType, string value)
+        {
+            Id = new PathTokenId(pathType, value);
+        }
+
+        public PathToken (Type enumType, string value)
+        {
+            EnumType = enumType;
+            Id = new PathTokenId(PathTokenType.Enum, value);
+        }
+    }
+
+    public class PathTokenId
+    {
+        public readonly PathTokenType PathType { get; private set; }
+        public readonly string Value { get; private set; }
+
+        public PathTokenId(PathTokenType pathType, string value)
         {
             PathType = pathType;
+            Value = value;
         }
     }
 
