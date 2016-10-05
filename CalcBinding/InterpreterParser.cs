@@ -1,4 +1,5 @@
 ﻿using DynamicExpresso;
+using System.Collections.Generic;
 
 namespace CalcBinding
 {
@@ -14,6 +15,11 @@ namespace CalcBinding
         public Lambda Parse(string expressionText, Parameter[] parameters)
         {
             return interpreter.Parse(expressionText, parameters);
+        }
+
+        public void SetReference(IEnumerable<ReferenceType> referencedTypes)
+        {
+            interpreter.Reference(referencedTypes);
         }
     }
 }

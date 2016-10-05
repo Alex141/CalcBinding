@@ -7,7 +7,7 @@ namespace CalcBinding
 {
     public class PropertyPathAnalyzer
     {
-        private const string[] operators = new[] 
+        private string[] operators = new [] 
             { 
                 "(", ")", "+", "-", "*", "/", "%", "^", "&&", "||", 
                 "&", "|", "?", ":", "<=", ">=", "<", ">", "==", "!=", "!", "," 

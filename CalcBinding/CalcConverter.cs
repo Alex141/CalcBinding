@@ -24,6 +24,8 @@ namespace CalcBinding
         public bool StringFormatDefined { get; set; }
 
         private FalseToVisibility falseToVisibility = FalseToVisibility.Collapsed;
+        private Dictionary<string, PathToken> enumParameters;
+
         public FalseToVisibility FalseToVisibility 
         {
             get { return falseToVisibility; }
@@ -32,23 +34,26 @@ namespace CalcBinding
 
         #region Init
 
-        public CalcConverter() : this(new InterpreterParser()) { }
+        public CalcConverter() : this(null, null) { }
 
-        public CalcConverter(IExpressionParser parser)
-        {
-            this.parser = parser;        
-        }
+        public CalcConverter(IExpressionParser parser):this(parser, null){ }
 
-        public CalcConverter(FalseToVisibility falseToVisibility)
-        {
-            FalseToVisibility = falseToVisibility;
-        }
+        public CalcConverter(Dictionary<string, PathToken> enumParameters):this(null, enumParameters) { }
 
-        public CalcConverter(FalseToVisibility falseToVisibility, IExpressionParser parser)
+        public CalcConverter(IExpressionParser parser, Dictionary<string, PathToken> enums)
         {
-            FalseToVisibility = falseToVisibility;
+            //todo: remake this questionable solution - to initialize null parameters, in view point if parser = null - is mistake in client code.
+            // solution was done because I didn't want to duplicate initization
+            if (parser == null)
+                parser = new InterpreterParser();
+
             this.parser = parser;
-        } 
+
+            if (parser != null && enums != null && enums.Any())
+            {
+                parser.SetReference(enums.Select(ep => new ReferenceType(ep.Key, ep.Value.EnumType)));
+            }
+        }
 
         #endregion
 
@@ -235,7 +240,7 @@ namespace CalcBinding
         /// <returns></returns>
         private string GetVariableName(int i)
         {
-            return new string( new[] { (Char)(i + 'a') });
+            return String.Format("p{0}", i);
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)

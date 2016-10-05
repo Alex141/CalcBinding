@@ -42,21 +42,22 @@ namespace CalcBinding
         {
             var targetPropertyType = GetPropertyType(serviceProvider);
             var normalizedPath = NormalizePath(Path);
-            var sourcePropertiesPathesWithPositions = GetSourcePropertiesPathes(normalizedPath);
+            var pathes = GetSourcePathes(normalizedPath);
             Dictionary<string, PathToken> enumParameters;
-            var expressionTemplate = GetExpressionTemplate(normalizedPath, sourcePropertiesPathesWithPositions, out enumParameters);
+            var expressionTemplate = GetExpressionTemplate(normalizedPath, pathes, out enumParameters);
 
-            var mathConverter = new CalcConverter
+            var mathConverter = new CalcConverter(enumParameters)
             {
                 FalseToVisibility = FalseToVisibility,
-                StringFormatDefined = StringFormat != null
+                StringFormatDefined = StringFormat != null,
             };
 
             BindingBase resBinding;
 
-            if (sourcePropertiesPathesWithPositions.Count() == 1)
+            if (pathes.Count() == 1)
             {
-                var binding = new System.Windows.Data.Binding(sourcePropertiesPathesWithPositions.Single().Item1)
+                // todo: can enums be binded ? What if one value is Enum?
+                var binding = new System.Windows.Data.Binding()
                 {
                     Mode = Mode,
                     NotifyOnSourceUpdated = NotifyOnSourceUpdated,
@@ -71,6 +72,7 @@ namespace CalcBinding
 #endif
                 };
 
+                binding.Path = new PropertyPath(pathes.Single().PathId.Value);
                 if (Source != null)
                     binding.Source = Source;
 
@@ -115,20 +117,25 @@ namespace CalcBinding
                 if (StringFormat != null)
                     mBinding.StringFormat = StringFormat;
 
-                foreach (var sourcePropertyPathWithPositions in sourcePropertiesPathesWithPositions)
+                foreach (var path in pathes)
                 {
-                    var binding = new System.Windows.Data.Binding(sourcePropertyPathWithPositions.Item1);
+                    if (path.PathId.PathType == PathTokenType.Property || path.PathId.PathType == PathTokenType.StaticProperty)
+                    {
+                        var binding = new System.Windows.Data.Binding();
 
-                    if (Source != null)
-                        binding.Source = Source;
+                        binding.Path = new PropertyPath(path.PathId.Value);
 
-                    if (ElementName != null)
-                        binding.ElementName = ElementName;
+                        if (Source != null)
+                            binding.Source = Source;
 
-                    if (RelativeSource != null)
-                        binding.RelativeSource = RelativeSource;
+                        if (ElementName != null)
+                            binding.ElementName = ElementName;
 
-                    mBinding.Bindings.Add(binding);
+                        if (RelativeSource != null)
+                            binding.RelativeSource = RelativeSource;
+
+                        mBinding.Bindings.Add(binding);
+                    }
                 }
 
                 resBinding = mBinding;
@@ -157,7 +164,7 @@ namespace CalcBinding
         /// <param name="path"></param>
         /// <param name="pathes"></param>
         /// <returns></returns>
-        private string GetExpressionTemplate(string path, List<PathToken> properties, out Dictionary<string, PathToken> enumParameters)
+        private string GetExpressionTemplate(string path, List<PathAppearances> properties, out Dictionary<string, PathToken> enumParameters)
         {
             var result = "";
             var sourceIndex = 0;
@@ -165,16 +172,15 @@ namespace CalcBinding
             var enumIndex = 0;
 
             enumParameters = new Dictionary<string,PathToken>();
-            var propertiesGroups = properties.GroupBy(p => p.Id).ToList();
 
             while (sourceIndex < path.Length)
             {
                 var replaced = false;
-                for (int index = 0; index < propertiesGroups.Count(); index++)
+                for (int index = 0; index < properties.Count(); index++)
                 {
-                    var propGroup = propertiesGroups[index];
-                    var propId = propGroup.Key;
-                    var targetProp = propGroup.FirstOrDefault(token => token.Start == sourceIndex);
+                    var propGroup = properties[index];
+                    var propId = propGroup.PathId;
+                    var targetProp = propGroup.Pathes.FirstOrDefault(token => token.Start == sourceIndex);
 
                     if (targetProp != null)
                     {
@@ -191,7 +197,7 @@ namespace CalcBinding
                         else if (propId.PathType == PathTokenType.Enum)
                         {
                             var enumTypeName = (enumIndex++).ToString("Enum{0}");
-                            enumParameters.Add(enumTypeName, propGroup.First());
+                            enumParameters.Add(enumTypeName, propGroup.Pathes.First());
                             var replace = enumTypeName + "." + string.Join(".", targetProp.MembersList);
 
                             result += replace;
@@ -218,13 +224,15 @@ namespace CalcBinding
         /// </summary>
         /// <param name="normPath"></param>
         /// <returns>List of pathes and its start positions</returns>
-        private List<PathToken> GetSourcePropertiesPathes(string normPath)
+        private List<PathAppearances> GetSourcePathes(string normPath)
         {
             var propertyPathAnalyzer = new PropertyPathAnalyzer();
 
             var pathes = propertyPathAnalyzer.GetPathes(normPath);
 
-            return pathes;
+            var propertiesGroups = pathes.GroupBy(p => p.Id).Select(p => new PathAppearances(p.Key, p.ToList())).ToList();
+
+            return propertiesGroups;
             // temporary solution of problem: all string content shouldn't be parsed. Solution - remove strings from sourcePath.
             //todo: better solution is to use parser PARSER!!
 
@@ -564,5 +572,18 @@ namespace CalcBinding
         public string StringFormat { get; set; }
 
 	    #endregion    
+
+        class PathAppearances
+        {
+            public readonly PathTokenId PathId { get; private set; }
+
+            public readonly IEnumerable<PathToken> Pathes { get; private set; }
+
+            public PathAppearances(PathTokenId id, List<PathToken> pathes)
+            {
+                PathId = id;
+                Pathes = pathes;
+            }
+        }
     }
 }
