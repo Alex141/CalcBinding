@@ -89,6 +89,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CalcConverterTests.cs" />
     <Compile Include="CalcBindingSystemTests.cs" />
+    <Compile Include="PropertyPathAnalyzerTests.cs" />
     <Compile Include="ReadOnlySourcePropertiesTests.cs" />
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release'">

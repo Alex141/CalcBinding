@@ -7,20 +7,34 @@ namespace CalcBinding
 {
     public class PropertyPathAnalyzer
     {
-        private string[] operators = new [] 
+        public static string[] UnknownDelimiters = new [] 
             { 
                 "(", ")", "+", "-", "*", "/", "%", "^", "&&", "||", 
-                "&", "|", "?", ":", "<=", ">=", "<", ">", "==", "!=", "!", "," 
+                "&", "|", "?", "<=", ">=", "<", ">", "==", "!=", "!", "," 
             };
+
+        public static string[] KnownDelimiters = new[]
+            {
+                ".", ":"
+            };
+
+        private static string[] delimiters;
 
         private int _position;
         private State _state;
+        private string _str;
+
+        static PropertyPathAnalyzer()
+        {
+            delimiters = KnownDelimiters.Concat(UnknownDelimiters).ToArray();
+        }
 
         public List<PathToken> GetPathes(string normPath)
         {
             _state = State.Initial;
             _position = 0;
             _pathTokens = new List<PathToken>();
+            _str = normPath;
 
             do
             {
@@ -43,7 +57,50 @@ namespace CalcBinding
 
         private Token ReadNextToken()
         {
-            throw new NotImplementedException();
+            // nested parser?
+
+            while (UnknownDelimiters.Contains(_str[_position].ToString()))
+            {
+                _position++;
+
+                var delimToken = ReadKnownDelimiter();
+                if (delimToken != null)
+                    return delimToken;
+            }
+
+            // we read word
+            var startPosition = _position;
+
+            while (!delimiters.Contains(_str[_position].ToString()))
+            {
+                _position++;
+                if (_position > _str.Length - 1)
+                    break;
+            }
+
+            var word = _str.Substring(startPosition, _position - startPosition);
+
+            return new Token(TokenType.Identifier, word);
+        }
+
+        private Token ReadKnownDelimiter()
+        {
+            if (_position > _str.Length - 1)
+                return new Token(TokenType.Empty, string.Empty);
+
+            if (_str[_position] == '.')
+            {
+                _position++;
+                return new Token(TokenType.Dot, _str[_position].ToString());
+            }
+
+            if (_str[_position] == ':')
+            {
+                _position++;
+                return new Token(TokenType.Colon, _str[_position].ToString());
+            }
+
+            return null;
         }
 
         private bool NextStep()
