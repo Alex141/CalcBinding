@@ -38,9 +38,9 @@ namespace CalcBinding
 
         public CalcConverter(IExpressionParser parser):this(parser, null){ }
 
-        public CalcConverter(Dictionary<string, PathToken> enumParameters):this(null, enumParameters) { }
+        public CalcConverter(Dictionary<string, EnumToken> enumParameters):this(null, enumParameters) { }
 
-        public CalcConverter(IExpressionParser parser, Dictionary<string, PathToken> enums)
+        public CalcConverter(IExpressionParser parser, Dictionary<string, EnumToken> enums)
         {
             //todo: remake this questionable solution - to initialize null parameters, in view point if parser = null - is mistake in client code.
             // solution was done because I didn't want to duplicate initization
@@ -51,7 +51,7 @@ namespace CalcBinding
 
             if (parser != null && enums != null && enums.Any())
             {
-                parser.SetReference(enums.Select(ep => new ReferenceType(ep.Key, ep.Value.EnumType)));
+                parser.SetReference(enums.Select(ep => new ReferenceType(ep.Key, ep.Value.Enum)));
             }
         }
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows.Markup;
 
 namespace CalcBinding
 {
@@ -26,18 +27,19 @@ namespace CalcBinding
         private string _str;
 
         private List<PathToken> _pathTokens;
-        private string namespaceIdentifier;
-        private string classIdentifier;
-        private List<string> propertyPathIdentifiers;
-        private string _lastIdentifier;
+        private Token namespaceIdentifier;
+        private Token classIdentifier;
+        private List<Token> propertyPathIdentifiers;
+        private Token _lastIdentifier;
 
         static PropertyPathAnalyzer()
         {
             delimiters = KnownDelimiters.Concat(UnknownDelimiters).ToArray();
         }
 
-        public List<PathToken> GetPathes(string normPath)
+        public List<PathToken> GetPathes(string normPath, IXamlTypeResolver typeResolver)
         {
+            _typeResolver = typeResolver;
             _state = State.Initial;
             _position = 0;
             _pathTokens = new List<PathToken>();
@@ -79,12 +81,13 @@ namespace CalcBinding
                 _position++;
                 if (token != null || symbol.IsEnd)
                 {
-                    return token ?? Token.Empty;
+                    return token ?? Token.Empty(_position);
                 }
             }
         }
 
         private int _identifierStartPos;
+        private IXamlTypeResolver _typeResolver;
 
         private Token ReadToken(Symbol symbol)
         {
@@ -93,10 +96,10 @@ namespace CalcBinding
                 case SubState.Initial: 
                     
                     if (symbol == '.')
-                        return Token.Dot;
+                        return Token.Dot(_position);
                     
                     if (symbol == ':')
-                        return Token.Colon;
+                        return Token.Colon(_position);
 
                     if (symbol == '"')
                     {
@@ -105,7 +108,7 @@ namespace CalcBinding
                     }
 
                     if (symbol.IsEnd)
-                        return Token.Empty;
+                        return Token.Empty(_position);
 
                     if (UnknownDelimiters.Contains(symbol))
                     {
@@ -119,7 +122,7 @@ namespace CalcBinding
                 case SubState.Identifier:
                     if (symbol.IsEnd || delimiters.Contains(symbol))
                     {
-                        var identifier = new Token(TokenType.Identifier, _str.Substring(_identifierStartPos, _position - _identifierStartPos));
+                        var identifier = Token.Identifier(_str.Substring(_identifierStartPos, _position - _identifierStartPos), _identifierStartPos, _position);
 
                         _subState = SubState.Initial;
                         return identifier;
@@ -145,57 +148,7 @@ namespace CalcBinding
             }
 
         }
-            // nested parser?
-
-        //    while (UnknownDelimiters.Contains(_str[_position].ToString()))
-        //    {
-        //        _position++;
-
-        //        var delimToken = ReadKnownDelimiter();
-        //        if (delimToken != null)
-        //            return delimToken;
-        //    }
-
-        //    // we read word
-        //    var startPosition = _position;
-
-        //    while (!delimiters.Contains(_str[_position].ToString()))
-        //    {
-        //        _position++;
-        //        if (_position > _str.Length - 1)
-        //            break;
-        //    }
-
-        //    var word = _str.Substring(startPosition, _position - startPosition);
-
-        //    return new Token(TokenType.Identifier, word);
-        //}
-
-        //private Token ReadKnownDelimiter()
-        //{
-        //    if (_position > _str.Length - 1)
-        //        return new Token(TokenType.Empty, string.Empty);
-
-        //    if (_str[_position] == '.')
-        //    {
-        //        _position++;
-        //        return new Token(TokenType.Dot, _str[_position].ToString());
-        //    }
-
-        //    if (_str[_position] == ':')
-        //    {
-        //        _position++;
-        //        return new Token(TokenType.Colon, _str[_position].ToString());
-        //    }
-
-        //    return null;
-        //}
-
-        //private bool NextStep()
-        //{
-        //    return NextStep(ReadNextToken());
-        //}
-
+            
         private bool NextStep(Token token)
         {
             switch (_state)
@@ -204,12 +157,13 @@ namespace CalcBinding
                     {
                         if (token.IsIdentifier && token.Value == "Math")
                         {
+                            _lastIdentifier = token;
                             _state = State.MathClass;
                             return true;
                         }
                         else if (token.IsIdentifier)
                         {
-                            _lastIdentifier = token.Value;
+                            _lastIdentifier = token;
                             _state = State.Identifier;
                             return true;
                         }
@@ -223,7 +177,10 @@ namespace CalcBinding
 
                             if (token.IsIdentifier)
                             {
-                                // здесь надо вывести мат. класс
+                                // math member output
+                                var mathToken = new MathToken(_lastIdentifier.Start, token.End, token.Value);
+                                _pathTokens.Add(mathToken);
+
                                 _state = State.Initial;
                                 return true;
                             }
@@ -234,13 +191,13 @@ namespace CalcBinding
                     {
                         if (token.IsColon)
                         {
-                            namespaceIdentifier = token.Value;
+                            namespaceIdentifier = token;
 
                             token = ReadNextToken();
 
                             if (token.IsIdentifier)
                             {
-                                classIdentifier = token.Value;
+                                classIdentifier = token;
 
                                 token = ReadNextToken();
 
@@ -260,8 +217,8 @@ namespace CalcBinding
                         else
                         {
                             propertyPathIdentifiers.Add(_lastIdentifier);
-                            _pathTokens.Add(new PathToken(PathTokenType.Property, ))
-                            // здесь надо выводить PropertyPath от первого символа в initial до token.Start - 1
+                            // property path output
+                            _pathTokens.Add(new PropertyPathToken(token.Start, token.End, propertyPathIdentifiers.Select(i => i.Value)));
                             propertyPathIdentifiers.Clear();
                             _state = State.Initial;
                             return true;
@@ -272,17 +229,31 @@ namespace CalcBinding
                     {
                         if (token.IsIdentifier)
                         {
+                            _lastIdentifier = token;
                             token = ReadNextToken();
 
                             if (token.IsDot)
                             {
-                                propertyPathIdentifiers.Add(token.Value);
+                                propertyPathIdentifiers.Add(token);
                                 // state unchanged
                                 return true;
                             }
                             else
                             {
-                                //здесь надо выводить enum или static property в зависимости от набранных токенов и определения типа
+                                PathToken pathToken;
+                                Type enumType;
+                                string typeFullName = substr(namespaceIdentifier.Start, _lastIdentifier.End);
+                                if (propertyPathIdentifiers.Count == 1 && ((enumType = TakeEnum(typeFullName)) != null))
+                                {
+                                    // enum output
+                                    var enumMember = propertyPathIdentifiers.Single();
+                                    pathToken = new EnumToken(namespaceIdentifier.Start, enumMember.End, enumType, enumMember.Value);
+                                }
+                                else
+                                {
+                                    //static property path output
+                                    pathToken = new StaticPropertyPathToken(namespaceIdentifier.Start, _lastIdentifier.End, classIdentifier.Value, propertyPathIdentifiers.Select(i => i.Value));
+                                }
                                 propertyPathIdentifiers.Clear();
                                 _state = State.Initial;
                                 return true;
@@ -303,7 +274,8 @@ namespace CalcBinding
                             }
                             else
                             {
-                                // здесь надо выводить PropertyPath от первого символа до token.Start - 1
+                                // property path output
+                                _pathTokens.Add(new PropertyPathToken(token.Start, token.End, propertyPathIdentifiers.Select(i => i.Value)));
                                 propertyPathIdentifiers.Clear();
                                 _state = State.Initial;
                                 return true;
@@ -314,6 +286,26 @@ namespace CalcBinding
                 default:
                     throw new NotSupportedException(String.Format("PropertyPathAnalyzer: State {0} is not supported", _state));
             }
+        }
+
+        private string substr(int start, int end)
+        {
+            return _str.Substring(start, end - start);
+        }
+
+        /// <summary>
+        /// Found out whether xaml namespace:class is enum class or not. If yes, return enum type, otherwise - null 
+        /// </summary>
+        /// <param name="namespace"></param>
+        /// <param name="class"></param>
+        /// <returns></returns>
+        private Type TakeEnum(string fullTypeName)
+        {
+            var @type = _typeResolver.Resolve(fullTypeName);
+
+            if (@type != null && @type.IsEnum)
+                return @type;
+            return null;
         }
 
         #region Nested types
@@ -344,9 +336,9 @@ namespace CalcBinding
 
         class Token
         {
-            public readonly TokenType TokenType { get; private set; }
+            public TokenType TokenType { get; private set; }
 
-            public readonly string Value { get; private set; }
+            public string Value { get; private set; }
 
             public static Token Empty(int position)
             {
@@ -429,12 +421,12 @@ namespace CalcBinding
                 IsEnd = false;
             }
 
-            public implicit operator Symbol(Char c)
+            public static implicit operator Symbol(Char c)
             {
                 return new Symbol(c);
             }
 
-            public implicit operator Char(Symbol symbol)
+            public static implicit operator Char(Symbol symbol)
             {
                 if (symbol.IsEnd)
                     throw new NotSupportedException("Symbol to char: End symbol couldn't be translated to char");
@@ -442,7 +434,7 @@ namespace CalcBinding
                 return symbol._c;
             }
 
-            public implicit operator String(Symbol symbol)
+            public static implicit operator String(Symbol symbol)
             {
                 return new String(new []{(Char)symbol});
             }
@@ -453,6 +445,14 @@ namespace CalcBinding
                     return false;
 
                 return symbol._c == c;
+            }
+
+            public static bool operator !=(Symbol symbol, Char c)
+            {
+                if (symbol.IsEnd)
+                    return true;
+
+                return symbol._c != c;
             }
         }
         #endregion
@@ -474,16 +474,16 @@ namespace CalcBinding
     public class PropertyPathToken:PathToken
     {
         public IEnumerable<string> Properties { get; private set; }
-        public PropertyPathToken(int start, int end, List<string> properties):base(start, end)
+        public PropertyPathToken(int start, int end, IEnumerable<string> properties):base(start, end)
         {
-            Properties = properties;
+            Properties = properties.ToList();
         }
     }
 
     public class StaticPropertyPathToken:PropertyPathToken
     {
         public string Class { get; private set; }
-        public StaticPropertyPathToken(int start, int end, string @class, List<string> properties):base(start, end, properties)
+        public StaticPropertyPathToken(int start, int end, string @class, IEnumerable<string> properties):base(start, end, properties)
         {
             Class = @class;
         }
@@ -492,9 +492,12 @@ namespace CalcBinding
     public class EnumToken:PathToken
     {
         public Type Enum { get; private set; }
-        public EnumToken(int start, int end, Type @enum):base(start, end)
+        public string EnumMember { get; private set; }
+
+        public EnumToken(int start, int end, Type @enum, string enumMember):base(start, end)
         {
             Enum = @enum;
+            EnumMember = enumMember;
         }
     }
 

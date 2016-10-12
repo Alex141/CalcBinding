@@ -41,8 +41,11 @@ namespace CalcBinding
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
             var targetPropertyType = GetPropertyType(serviceProvider);
+            var typeResolver = (IXamlTypeResolver)serviceProvider.GetService(typeof(IXamlTypeResolver));
+
             var normalizedPath = NormalizePath(Path);
-            var pathes = GetSourcePathes(normalizedPath);
+            var pathes = GetSourcePathes(normalizedPath, typeResolver);
+            
             Dictionary<string, PathToken> enumParameters;
             var expressionTemplate = GetExpressionTemplate(normalizedPath, pathes, out enumParameters);
 
@@ -224,11 +227,11 @@ namespace CalcBinding
         /// </summary>
         /// <param name="normPath"></param>
         /// <returns>List of pathes and its start positions</returns>
-        private List<PathAppearances> GetSourcePathes(string normPath)
+        private List<PathAppearances> GetSourcePathes(string normPath, IXamlTypeResolver typeResolver)
         {
             var propertyPathAnalyzer = new PropertyPathAnalyzer();
 
-            var pathes = propertyPathAnalyzer.GetPathes(normPath);
+            var pathes = propertyPathAnalyzer.GetPathes(normPath, typeResolver);
 
             var propertiesGroups = pathes.GroupBy(p => p.Id).Select(p => new PathAppearances(p.Key, p.ToList())).ToList();
 
@@ -575,9 +578,9 @@ namespace CalcBinding
 
         class PathAppearances
         {
-            public readonly PathTokenId PathId { get; private set; }
+            public PathTokenId PathId { get; private set; }
 
-            public readonly IEnumerable<PathToken> Pathes { get; private set; }
+            public IEnumerable<PathToken> Pathes { get; private set; }
 
             public PathAppearances(PathTokenId id, List<PathToken> pathes)
             {
