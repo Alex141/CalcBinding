@@ -29,5 +29,11 @@ namespace Tests.Mocks
 
             return interpreter.Parse(expressionText, parameters);
         }
+
+
+        public void SetReference(IEnumerable<ReferenceType> referencedTypes)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

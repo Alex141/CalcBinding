@@ -24,7 +24,6 @@ namespace CalcBinding
         public bool StringFormatDefined { get; set; }
 
         private FalseToVisibility falseToVisibility = FalseToVisibility.Collapsed;
-        private Dictionary<string, PathToken> enumParameters;
 
         public FalseToVisibility FalseToVisibility 
         {
@@ -38,9 +37,9 @@ namespace CalcBinding
 
         public CalcConverter(IExpressionParser parser):this(parser, null){ }
 
-        public CalcConverter(Dictionary<string, EnumToken> enumParameters):this(null, enumParameters) { }
+        public CalcConverter(Dictionary<string, Type> enumParameters):this(null, enumParameters) { }
 
-        public CalcConverter(IExpressionParser parser, Dictionary<string, EnumToken> enums)
+        public CalcConverter(IExpressionParser parser, Dictionary<string, Type> enums)
         {
             //todo: remake this questionable solution - to initialize null parameters, in view point if parser = null - is mistake in client code.
             // solution was done because I didn't want to duplicate initization
@@ -51,7 +50,7 @@ namespace CalcBinding
 
             if (parser != null && enums != null && enums.Any())
             {
-                parser.SetReference(enums.Select(ep => new ReferenceType(ep.Key, ep.Value.Enum)));
+                parser.SetReference(enums.Select(ep => new ReferenceType(ep.Key, ep.Value)));
             }
         }
 

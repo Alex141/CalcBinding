@@ -21,19 +21,20 @@ namespace CalcBinding
         /// <summary>
         /// False to visibility. Default: False = Collapsed
         /// </summary>
-        public FalseToVisibility FalseToVisibility 
+        public FalseToVisibility FalseToVisibility
         {
             get { return falseToVisibility; }
             set { falseToVisibility = value; }
         }
         private FalseToVisibility falseToVisibility = FalseToVisibility.Collapsed;
 
-        public Binding() 
+        public Binding()
         {
             Mode = BindingMode.Default;
         }
 
-        public Binding(String path):this()
+        public Binding(String path)
+            : this()
         {
             Path = path;
         }
@@ -45,8 +46,8 @@ namespace CalcBinding
 
             var normalizedPath = NormalizePath(Path);
             var pathes = GetSourcePathes(normalizedPath, typeResolver);
-            
-            Dictionary<string, PathToken> enumParameters;
+
+            Dictionary<string, Type> enumParameters;
             var expressionTemplate = GetExpressionTemplate(normalizedPath, pathes, out enumParameters);
 
             var mathConverter = new CalcConverter(enumParameters)
@@ -143,19 +144,19 @@ namespace CalcBinding
 
                 resBinding = mBinding;
             }
-            
+
             return resBinding.ProvideValue(serviceProvider);
         }
 
         private Type GetPropertyType(IServiceProvider serviceProvider)
         {
             //provider of target object and it's property
-            var targetProvider = (IProvideValueTarget) serviceProvider
-                .GetService(typeof (IProvideValueTarget));
+            var targetProvider = (IProvideValueTarget)serviceProvider
+                .GetService(typeof(IProvideValueTarget));
 
             if (targetProvider.TargetProperty is DependencyProperty)
             {
-                return ((DependencyProperty) targetProvider.TargetProperty).PropertyType;
+                return ((DependencyProperty)targetProvider.TargetProperty).PropertyType;
             }
 
             return targetProvider.TargetProperty.GetType();
@@ -167,14 +168,19 @@ namespace CalcBinding
         /// <param name="path"></param>
         /// <param name="pathes"></param>
         /// <returns></returns>
-        private string GetExpressionTemplate(string path, List<PathAppearances> properties, out Dictionary<string, PathToken> enumParameters)
+        private string GetExpressionTemplate(string path, List<PathAppearances> properties, out Dictionary<string, Type> enumParameters)
         {
             var result = "";
             var sourceIndex = 0;
             var propIndex = 0;
             var enumIndex = 0;
 
-            enumParameters = new Dictionary<string,PathToken>();
+            var passedProps = new Dictionary<PathTokenId, string>();
+            var enumNames = new Dictionary<PathTokenId, string>();
+
+            enumParameters = new Dictionary<string, Type>();
+
+            //pathes = pathes.OrderBy(p => p.Start).ToList();
 
             while (sourceIndex < path.Length)
             {
@@ -191,7 +197,16 @@ namespace CalcBinding
 
                         if (propId.PathType == PathTokenType.Property || propId.PathType == PathTokenType.StaticProperty)
                         {
-                            var replace = (propIndex++).ToString("{0}");
+                            string replace = null;
+                            if (passedProps.ContainsKey(propId))
+                            {
+                                replace = passedProps[propId];
+                            }
+                            else
+                            {
+                                replace = (passedProps.Count+1).ToString("{0}");
+                                passedProps.Add(propId, replace);
+                            }
 
                             result += replace;
                             sourceIndex += propPath.Length;
@@ -199,9 +214,21 @@ namespace CalcBinding
                         }
                         else if (propId.PathType == PathTokenType.Enum)
                         {
-                            var enumTypeName = (enumIndex++).ToString("Enum{0}");
-                            enumParameters.Add(enumTypeName, propGroup.Pathes.First());
-                            var replace = enumTypeName + "." + string.Join(".", targetProp.MembersList);
+                            var enumPath = propGroup.Pathes.First() as EnumToken;
+
+                            string enumTypeName = null;
+                            if (enumNames.ContainsKey(propId))
+                            {
+                                enumTypeName = enumNames[propId];
+                            }
+                            else
+                            {
+                                enumTypeName = (enumNames.Count + 1).ToString("Enum{0}");
+                                enumNames.Add(propId, enumTypeName);
+                                enumParameters.Add(enumTypeName, enumPath.Enum);
+                            }
+
+                            var replace = string.Join(".", enumTypeName, enumPath.EnumMember);
 
                             result += replace;
                             sourceIndex += propPath.Length;
@@ -242,7 +269,7 @@ namespace CalcBinding
             //var pathsList = GetPathes(normPath, operators);
 
             //detect all start positions
-            
+
             //what problem this code solves:
             //for examle, we have Path = Math.Abs(M) + M, where M - source property.
             //We found that M - source property name, but we don't know positions of M.
@@ -512,7 +539,7 @@ namespace CalcBinding
         //     false.
         [DefaultValue(false)]
         public bool ValidatesOnDataErrors { get; set; }
-        
+
         // Summary:
         //     Gets or sets a value that indicates whether to include the System.Windows.Controls.ExceptionValidationRule.
         //
@@ -521,7 +548,7 @@ namespace CalcBinding
         //     false.
         [DefaultValue(false)]
         public bool ValidatesOnExceptions { get; set; }
- 
+
 #if NET45
         //
         // Summary:
@@ -574,7 +601,7 @@ namespace CalcBinding
         [DefaultValue("")]
         public string StringFormat { get; set; }
 
-	    #endregion    
+        #endregion
 
         class PathAppearances
         {
