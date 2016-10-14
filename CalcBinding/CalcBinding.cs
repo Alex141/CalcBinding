@@ -16,7 +16,7 @@ namespace CalcBinding
     /// </summary>
     public class Binding : MarkupExtension
     {
-        public String Path { get; set; }
+        public PropertyPath Path { get; set; }
 
         /// <summary>
         /// False to visibility. Default: False = Collapsed
@@ -36,7 +36,7 @@ namespace CalcBinding
         public Binding(String path)
             : this()
         {
-            Path = path;
+            Path = new PropertyPath(path);
         }
 
         public override object ProvideValue(IServiceProvider serviceProvider)
@@ -44,7 +44,7 @@ namespace CalcBinding
             var targetPropertyType = GetPropertyType(serviceProvider);
             var typeResolver = (IXamlTypeResolver)serviceProvider.GetService(typeof(IXamlTypeResolver));
 
-            var normalizedPath = NormalizePath(Path);
+            var normalizedPath = NormalizePath(Path.Path);
             var pathes = GetSourcePathes(normalizedPath, typeResolver);
 
             Dictionary<string, Type> enumParameters;
@@ -76,7 +76,7 @@ namespace CalcBinding
 #endif
                 };
 
-                binding.Path = new PropertyPath(pathes.Single().PathId.Value);
+                binding.Path = new PropertyPath("(" + pathes.Single().PathId.Value + ")");
                 if (Source != null)
                     binding.Source = Source;
 

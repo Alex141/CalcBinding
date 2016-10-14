@@ -442,7 +442,7 @@ namespace Tests
 
             var calcBinding1 = new CalcBinding.Binding("(A+B)>10");
 
-            var bindingExpression1 = calcBinding1.ProvideValue(new ServiceProviderMock(dataTrigger1, typeof(DataTrigger).GetProperty("Binding")));
+            var bindingExpression1 = calcBinding1.ProvideValue(new ServiceProviderMock(dataTrigger1, typeof(DataTrigger).GetProperty("Binding"), null));
 
             dataTrigger1.Binding = bindingExpression1 as BindingBase;
 
@@ -456,7 +456,7 @@ namespace Tests
 
             var calcBinding2 = new CalcBinding.Binding("(A+B)<=10");
 
-            var bindingExpression2 = calcBinding2.ProvideValue(new ServiceProviderMock(dataTrigger2, typeof(DataTrigger).GetProperty("Binding")));
+            var bindingExpression2 = calcBinding2.ProvideValue(new ServiceProviderMock(dataTrigger2, typeof(DataTrigger).GetProperty("Binding"), null));
 
             dataTrigger2.Binding = bindingExpression2 as BindingBase;
 

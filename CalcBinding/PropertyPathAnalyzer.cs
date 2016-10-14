@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Windows.Markup;
@@ -44,7 +45,9 @@ namespace CalcBinding
             _position = 0;
             _pathTokens = new List<PathToken>();
             _str = normPath;
+            propertyPathIdentifiers = new List<Token>();
 
+            Trace.WriteLine(string.Format("PropertyPathAnalyzer.GetPathes: start read {0} ", normPath));
             do
             {
                 var startTokenPosition = _position;
@@ -66,6 +69,9 @@ namespace CalcBinding
 
             } while (true);
 
+            Trace.WriteLine(string.Format("PropertyPathAnalyzer.GetPathes: end read {0} ", normPath));
+            Trace.WriteLine(string.Format("PropertyPathAnalyzer.GetPathes: tokens: {0}", String.Join("", _pathTokens.Select(pt => string.Format("\n{0} ({1})", pt.Id.Value, pt.Id.PathType)))));
+
             return _pathTokens;
         }
 
@@ -78,11 +84,13 @@ namespace CalcBinding
                 Symbol symbol = _position < _str.Length ? (Symbol)_str[_position] : Symbol.End;
                 var token = ReadToken(symbol);
 
-                _position++;
                 if (token != null || symbol.IsEnd)
                 {
-                    return token ?? Token.Empty(_position);
+                    var resultToken = token ?? Token.Empty(_position);
+                    Trace.WriteLine(string.Format("PropertyPathAnalyzer: read {0} ({1})", resultToken.Value, resultToken.TokenType));
+                    return resultToken;
                 }
+                _position++;
             }
         }
 
@@ -93,13 +101,19 @@ namespace CalcBinding
         {
             switch (_subState)
             {
-                case SubState.Initial: 
-                    
+                case SubState.Initial:
+
                     if (symbol == '.')
+                    {
+                        _position++;
                         return Token.Dot(_position);
-                    
+                    }
+
                     if (symbol == ':')
+                    {
+                        _position++;
                         return Token.Colon(_position);
+                    }
 
                     if (symbol == '"')
                     {
@@ -167,6 +181,9 @@ namespace CalcBinding
                             _state = State.Identifier;
                             return true;
                         }
+                        else if (token.IsEmpty)
+                            return true;
+
                         return false;
                     }
                 case State.MathClass:
@@ -191,7 +208,7 @@ namespace CalcBinding
                     {
                         if (token.IsColon)
                         {
-                            namespaceIdentifier = token;
+                            namespaceIdentifier = _lastIdentifier;
 
                             token = ReadNextToken();
 
@@ -229,12 +246,13 @@ namespace CalcBinding
                     {
                         if (token.IsIdentifier)
                         {
+                            propertyPathIdentifiers.Add(token);
                             _lastIdentifier = token;
+
                             token = ReadNextToken();
 
                             if (token.IsDot)
                             {
-                                propertyPathIdentifiers.Add(token);
                                 // state unchanged
                                 return true;
                             }
@@ -242,7 +260,7 @@ namespace CalcBinding
                             {
                                 PathToken pathToken;
                                 Type enumType;
-                                string typeFullName = substr(namespaceIdentifier.Start, _lastIdentifier.End);
+                                string typeFullName = substr(namespaceIdentifier.Start, classIdentifier.End);
                                 if (propertyPathIdentifiers.Count == 1 && ((enumType = TakeEnum(typeFullName)) != null))
                                 {
                                     // enum output
@@ -254,6 +272,8 @@ namespace CalcBinding
                                     //static property path output
                                     pathToken = new StaticPropertyPathToken(namespaceIdentifier.Start, _lastIdentifier.End, namespaceIdentifier.Value, classIdentifier.Value, propertyPathIdentifiers.Select(i => i.Value));
                                 }
+                                _pathTokens.Add(pathToken);
+
                                 propertyPathIdentifiers.Clear();
                                 _state = State.Initial;
                                 return true;

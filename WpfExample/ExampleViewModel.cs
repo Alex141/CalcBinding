@@ -442,6 +442,45 @@ namespace WpfExample
         }
     }
 
+    public class StaticExampleClass
+    {
+        private static double staticA = 15;
+
+        public static double StaticA
+        {
+            get
+            {
+                return staticA;
+            }
+            set
+            {
+                staticA = value;
+                RaiseStaticPropertyChanged(() => StaticA);
+            }
+        }
+
+        //protected static void RaisePropertyChanged<T>(Expression<Func<T>> propertyExpression)
+        //{
+        //    if (PropertyChanged != null)
+        //    {
+        //        var propertyName = (propertyExpression.Body as MemberExpression).Member.Name;
+
+        //        PropertyChanged(null, new PropertyChangedEventArgs(propertyName));
+        //    }
+        //}
+        //public static event PropertyChangedEventHandler PropertyChanged;
+
+        public static event EventHandler<PropertyChangedEventArgs> StaticPropertyChanged;
+        public static void RaiseStaticPropertyChanged<T>(Expression<Func<T>> propertyExpression)
+        {
+            if (StaticPropertyChanged != null)
+            {
+                var propertyName = (propertyExpression.Body as MemberExpression).Member.Name;
+                StaticPropertyChanged(null, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+    }
+
     public static class TimeExtension
     {
         public static void TraceTime(this object obj, Action proc)

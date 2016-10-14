@@ -213,18 +213,14 @@ namespace CalcBinding
 
         private Lambda CompileExpression(List<Type> argumentsTypes, string expressionTemplate)
         {
-            for (int i = 0; i < argumentsTypes.Count(); i++)
-            {
-                expressionTemplate = expressionTemplate.Replace("{" + i + "}", GetVariableName(i));
-            }
-
             var parametersDefinition = new List<Parameter>();
-
-            for (var i = 0; i < argumentsTypes.Count(); i++)
+            
+            for (int i = 1; i <= argumentsTypes.Count(); i++)
             {
-                parametersDefinition.Add(
-                    new Parameter(GetVariableName(i), argumentsTypes[i])
-                );
+                var paramName = GetVariableName(i);
+                
+                expressionTemplate = expressionTemplate.Replace("{" + i + "}", paramName);
+                parametersDefinition.Add(new Parameter(paramName, argumentsTypes[i]));
             }
 
             var compiledExpression = parser.Parse(expressionTemplate, parametersDefinition.ToArray());

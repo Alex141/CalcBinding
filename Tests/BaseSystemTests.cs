@@ -18,72 +18,87 @@ namespace Tests
 
         public void StringAndObjectBindingAssert(string path, INotifyPropertyChanged source,
     Action sourcePropertySetter1, string targetValue1, object objTargetValue1,
-    Action sourcePropertySetter2, string targetValue2, object objTargetValue2)
+    Action sourcePropertySetter2, string targetValue2, object objTargetValue2,
+            Dictionary<string, Type> resolvedTypes = null)
         {
-            StringBindingAssert(path, source, sourcePropertySetter1, targetValue1, sourcePropertySetter2, targetValue2);
-            ObjectBindingAssert(path, source, sourcePropertySetter1, objTargetValue1, sourcePropertySetter2, objTargetValue2);
+            StringBindingAssert(path, source, sourcePropertySetter1, targetValue1, sourcePropertySetter2, targetValue2, resolvedTypes);
+            ObjectBindingAssert(path, source, sourcePropertySetter1, objTargetValue1, sourcePropertySetter2, objTargetValue2, resolvedTypes);
         }
 
         public void StringBindingAssert(CalcBinding.Binding calcBinding, INotifyPropertyChanged source,
             Action sourcePropertySetter1, string targetValue1,
-            Action sourcePropertySetter2, string targetValue2)
+            Action sourcePropertySetter2, string targetValue2,
+            Dictionary<string, Type> resolvedTypes = null)
         {
             var textBox = new TextBox();
-            BindingAssert(calcBinding, source, textBox, TextBox.TextProperty, () => textBox.Text, sourcePropertySetter1, targetValue1, sourcePropertySetter2, targetValue2);
+            BindingAssert(calcBinding, source, textBox, TextBox.TextProperty, () => textBox.Text, sourcePropertySetter1, targetValue1, sourcePropertySetter2, targetValue2, resolvedTypes);
         }
 
         public void StringBindingAssert(string path, INotifyPropertyChanged source,
             Action sourcePropertySetter1, string targetValue1,
-            Action sourcePropertySetter2, string targetValue2)
+            Action sourcePropertySetter2, string targetValue2,
+            Dictionary<string, Type> resolvedTypes = null)
         {
             var textBox = new TextBox();
-            BindingAssert(path, source, textBox, TextBox.TextProperty, () => textBox.Text, sourcePropertySetter1, targetValue1, sourcePropertySetter2, targetValue2);
+            BindingAssert(path, source, textBox, TextBox.TextProperty, () => textBox.Text, sourcePropertySetter1, targetValue1, sourcePropertySetter2, targetValue2, resolvedTypes);
         }
         public void ObjectBindingAssert(string path, INotifyPropertyChanged source,
                     Action sourcePropertySetter1, object targetValue1,
-                    Action sourcePropertySetter2, object targetValue2)
+                    Action sourcePropertySetter2, object targetValue2,
+                    Dictionary<string, Type> resolvedTypes = null
+        )
         {
-            LabelBindingAssert(path, source, sourcePropertySetter1, targetValue1, sourcePropertySetter2, targetValue2);
+            LabelBindingAssert(path, source, sourcePropertySetter1, targetValue1, sourcePropertySetter2, targetValue2, resolvedTypes);
         }
 
         public void LabelBindingAssert(string path, INotifyPropertyChanged source,
                     Action sourcePropertySetter1, object targetValue1,
-                    Action sourcePropertySetter2, object targetValue2)
+                    Action sourcePropertySetter2, object targetValue2,
+                    Dictionary<string, Type> resolvedTypes = null
+            )
         {
             var label = new Label();
-            BindingAssert(path, source, label, Label.ContentProperty, () => label.Content, sourcePropertySetter1, targetValue1, sourcePropertySetter2, targetValue2);
+            BindingAssert(path, source, label, Label.ContentProperty, () => label.Content, sourcePropertySetter1, targetValue1, sourcePropertySetter2, targetValue2, resolvedTypes);
         }
 
         public void VisibilityBindingAssert(CalcBinding.Binding calcBinding, INotifyPropertyChanged source,
                     Action sourcePropertySetter1, Visibility targetValue1,
-                    Action sourcePropertySetter2, Visibility targetValue2)
+                    Action sourcePropertySetter2, Visibility targetValue2,
+                    Dictionary<string, Type> resolvedTypes = null
+            )
         {
             var label = new Label();
-            BindingAssert(calcBinding, source, label, Label.VisibilityProperty, () => label.Visibility, sourcePropertySetter1, targetValue1, sourcePropertySetter2, targetValue2);
+            BindingAssert(calcBinding, source, label, Label.VisibilityProperty, () => label.Visibility, sourcePropertySetter1, targetValue1, sourcePropertySetter2, targetValue2, resolvedTypes);
         }
 
         public void VisibilityBindingAssert(string path, INotifyPropertyChanged source,
                     Action sourcePropertySetter1, Visibility targetValue1,
-                    Action sourcePropertySetter2, Visibility targetValue2)
+                    Action sourcePropertySetter2, Visibility targetValue2,
+                    Dictionary<string, Type> resolvedTypes = null
+            )
         {
             var label = new Label();
-            BindingAssert(path, source, label, Label.VisibilityProperty, () => label.Visibility, sourcePropertySetter1, targetValue1, sourcePropertySetter2, targetValue2);
+            BindingAssert(path, source, label, Label.VisibilityProperty, () => label.Visibility, sourcePropertySetter1, targetValue1, sourcePropertySetter2, targetValue2, resolvedTypes);
         }
 
         public void BoolBindingAssert(CalcBinding.Binding calcBinding, INotifyPropertyChanged source,
                     Action sourcePropertySetter1, bool targetValue1,
-                    Action sourcePropertySetter2, bool targetValue2)
+                    Action sourcePropertySetter2, bool targetValue2,
+                    Dictionary<string, Type> resolvedTypes = null
+            )
         {
             var checkbox = new CheckBox();
-            BindingAssert(calcBinding, source, checkbox, CheckBox.IsCheckedProperty, () => checkbox.IsChecked, sourcePropertySetter1, targetValue1, sourcePropertySetter2, targetValue2);
+            BindingAssert(calcBinding, source, checkbox, CheckBox.IsCheckedProperty, () => checkbox.IsChecked, sourcePropertySetter1, targetValue1, sourcePropertySetter2, targetValue2, resolvedTypes);
         }
 
         public void BoolBindingAssert(string path, INotifyPropertyChanged source,
                     Action sourcePropertySetter1, bool targetValue1,
-                    Action sourcePropertySetter2, bool targetValue2)
+                    Action sourcePropertySetter2, bool targetValue2,
+                    Dictionary<string, Type> resolvedTypes = null
+            )
         {
             var checkbox = new CheckBox();
-            BindingAssert(path, source, checkbox, CheckBox.IsCheckedProperty, () => checkbox.IsChecked, sourcePropertySetter1, targetValue1, sourcePropertySetter2, targetValue2);
+            BindingAssert(path, source, checkbox, CheckBox.IsCheckedProperty, () => checkbox.IsChecked, sourcePropertySetter1, targetValue1, sourcePropertySetter2, targetValue2, resolvedTypes);
         }
 
         public void BindingAssert<TTargetProperty>(
@@ -91,14 +106,15 @@ namespace Tests
             FrameworkElement targetObject, DependencyProperty targetProperty,
             Func<TTargetProperty> targetPropertyGetter,
             Action sourcePropertySetter1, TTargetProperty targetValue1,
-            Action sourcePropertySetter2, TTargetProperty targetValue2
+            Action sourcePropertySetter2, TTargetProperty targetValue2,
+            Dictionary<string, Type> resolvedTypes = null
             )
         {
             var calcBinding = new CalcBinding.Binding(path);
 
             BindingAssert(calcBinding, source, targetObject, targetProperty, targetPropertyGetter,
                 sourcePropertySetter1, targetValue1,
-                sourcePropertySetter2, targetValue2);
+                sourcePropertySetter2, targetValue2, resolvedTypes);
         }
 
         public void BindingAssert<TTargetProperty>(
@@ -106,14 +122,13 @@ namespace Tests
             FrameworkElement targetObject, DependencyProperty targetProperty,
             Func<TTargetProperty> targetPropertyGetter,
             Action sourcePropertySetter1, TTargetProperty targetValue1,
-            Action sourcePropertySetter2, TTargetProperty targetValue2
+            Action sourcePropertySetter2, TTargetProperty targetValue2,
+            Dictionary<string, Type> resolvedTypes = null
             )
         {
-            //var test = new ExampleViewModel();
-
             targetObject.DataContext = source;
 
-            var bindingExpression = calcBinding.ProvideValue(new ServiceProviderMock(targetObject, targetProperty));
+            var bindingExpression = calcBinding.ProvideValue(new ServiceProviderMock(targetObject, targetProperty, resolvedTypes));
 
             targetObject.SetValue(targetProperty, bindingExpression);
 
@@ -223,7 +238,7 @@ namespace Tests
         {
             targetObject.DataContext = source;
 
-            var bindingExpression = calcBinding.ProvideValue(new ServiceProviderMock(targetObject, targetProperty));
+            var bindingExpression = calcBinding.ProvideValue(new ServiceProviderMock(targetObject, targetProperty, null));
 
             targetObject.SetValue(targetProperty, bindingExpression);
 

@@ -3,25 +3,52 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Markup;
 
 namespace Tests.Mocks
 {
     public class ServiceProviderMock : IServiceProvider
     {
         ProvideValueTargetMock provideValueTargetMock;
+        IXamlTypeResolver xamlTypeResolverMock;
 
-        public ServiceProviderMock(object TargetObject, object TargetProperty)
+        public ServiceProviderMock(object TargetObject, object TargetProperty, Dictionary<string, Type> resolvedTypes)
         {
             provideValueTargetMock = new ProvideValueTargetMock
             {
                 TargetObject = TargetObject,
                 TargetProperty = TargetProperty
             };
+
+            xamlTypeResolverMock = new XamlTypeResolverMock(resolvedTypes);
         }
 
         public object GetService(Type serviceType)
         {
-            return provideValueTargetMock;
+            if (serviceType == typeof(IXamlTypeResolver))
+                return xamlTypeResolverMock;
+
+            if (serviceType == typeof(IProvideValueTarget))
+                return provideValueTargetMock;
+
+            throw new NotSupportedException("test doesn't support type " + serviceType.FullName);
+        }
+    }
+
+    public class XamlTypeResolverMock: IXamlTypeResolver
+    {
+        private Dictionary<string, Type> resolvedTypes;
+
+        public XamlTypeResolverMock(Dictionary<string, Type> resolvedTypes)
+        {
+            this.resolvedTypes = resolvedTypes == null ? new Dictionary<string, Type>() : resolvedTypes;
+        }
+        public Type Resolve(string qualifiedTypeName)
+        {
+            Type foundedType = null;
+            resolvedTypes.TryGetValue(qualifiedTypeName, out foundedType);
+
+            return foundedType;
         }
     }
 }
