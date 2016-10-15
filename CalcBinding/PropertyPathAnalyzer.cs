@@ -493,7 +493,7 @@ namespace CalcBinding
         }
     }
 
-    public class PropertyPathToken:PathToken
+    public class PropertyPathToken : PathToken
     {
         public IEnumerable<string> Properties { get; private set; }
 
@@ -507,7 +507,7 @@ namespace CalcBinding
         }
     }
 
-    public class StaticPropertyPathToken:PropertyPathToken
+    public class StaticPropertyPathToken : PropertyPathToken
     {
         public string Class { get; private set; }
         public string Namespace { get; private set; }
@@ -523,7 +523,7 @@ namespace CalcBinding
         }
     }
 
-    public class EnumToken:PathToken
+    public class EnumToken : PathToken
     {
         public Type Enum { get; private set; }
         public string EnumMember { get; private set; }
@@ -542,7 +542,7 @@ namespace CalcBinding
         }
     }
 
-    public class MathToken:PathToken
+    public class MathToken : PathToken
     {
         public string MathMember { get; private set; }
 

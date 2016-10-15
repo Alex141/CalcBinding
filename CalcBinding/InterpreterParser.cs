@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace CalcBinding
 {
-    public class InterpreterParser: IExpressionParser
+    public class InterpreterParser : IExpressionParser
     {
         Interpreter interpreter;
 

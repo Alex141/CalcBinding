@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,7 +8,7 @@ using System.Windows.Markup;
 
 namespace Tests.Mocks
 {
-    public class ServiceProviderMock : IServiceProvider
+    public class ServiceProviderMock : ITypeDescriptorContext
     {
         ProvideValueTargetMock provideValueTargetMock;
         IXamlTypeResolver xamlTypeResolverMock;
@@ -32,6 +33,31 @@ namespace Tests.Mocks
                 return provideValueTargetMock;
 
             throw new NotSupportedException("test doesn't support type " + serviceType.FullName);
+        }
+
+        public IContainer Container
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public object Instance
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public void OnComponentChanged()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool OnComponentChanging()
+        {
+            throw new NotImplementedException();
+        }
+
+        public PropertyDescriptor PropertyDescriptor
+        {
+            get { throw new NotImplementedException(); }
         }
     }
 

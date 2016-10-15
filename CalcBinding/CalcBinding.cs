@@ -16,7 +16,10 @@ namespace CalcBinding
     /// </summary>
     public class Binding : MarkupExtension
     {
-        public PropertyPath Path { get; set; }
+        // We cannot use PropertyPath instead of string (such as standart Binding) because transformation from xaml value string to Property path 
+        // is doing automatically by PropertyPathConverter and result PropertyPath object could have form, that cannot retranslate to normal string.
+        // e.g.: (local:MyStaticVM.Prop) -> PropertyPath.Path = (0), Converted to string = MyStaticVM.Prop (but we need to analyze static class with xaml namespace prefix)
+        public string Path { get; set; }
 
         /// <summary>
         /// False to visibility. Default: False = Collapsed
@@ -36,15 +39,16 @@ namespace CalcBinding
         public Binding(String path)
             : this()
         {
-            Path = new PropertyPath(path);
+            Path = path;
         }
 
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
             var targetPropertyType = GetPropertyType(serviceProvider);
             var typeResolver = (IXamlTypeResolver)serviceProvider.GetService(typeof(IXamlTypeResolver));
+            var typeDescriptor = serviceProvider as ITypeDescriptorContext;
 
-            var normalizedPath = NormalizePath(Path.Path);
+            var normalizedPath = NormalizePath(Path);
             var pathes = GetSourcePathes(normalizedPath, typeResolver);
 
             Dictionary<string, Type> enumParameters;
@@ -76,7 +80,17 @@ namespace CalcBinding
 #endif
                 };
 
-                binding.Path = new PropertyPath("(" + pathes.Single().PathId.Value + ")");
+                var pathId = pathes.Single().PathId;
+                // we need to use convert from string for support of static properties
+                var pathValue = pathId.Value;
+
+                if (pathId.PathType == PathTokenType.StaticProperty)
+                {
+                    pathValue = string.Format("({0})", pathValue);  // need to use brackets for Static property recognition in standart binding
+                }
+                var resPath = (PropertyPath)new PropertyPathConverter().ConvertFromString(typeDescriptor, pathValue);
+                binding.Path = resPath;
+
                 if (Source != null)
                     binding.Source = Source;
 
@@ -90,7 +104,10 @@ namespace CalcBinding
                     binding.StringFormat = StringFormat;
 
                 // we don't use converter if binding is trivial - {0}, except type convertion from bool to visibility
-                if (expressionTemplate != "{0}" || targetPropertyType == typeof(Visibility))
+
+                //todo: use more smart recognition for template (with analysing brackets ({1}) any count )
+                // trivial binding, CalcBinding converter is not needed
+                if ((expressionTemplate != "{0}" && expressionTemplate != "({0})") || targetPropertyType == typeof(Visibility))
                 {
                     binding.Converter = mathConverter;
                     binding.ConverterParameter = expressionTemplate;
@@ -127,7 +144,11 @@ namespace CalcBinding
                     {
                         var binding = new System.Windows.Data.Binding();
 
-                        binding.Path = new PropertyPath(path.PathId.Value);
+                        // we need to use convert from string for support of static properties
+                        var pathValue = path.PathId.Value;
+                        var resPath = (PropertyPath)new PropertyPathConverter().ConvertFromString(typeDescriptor, pathValue);
+
+                        binding.Path = resPath;
 
                         if (Source != null)
                             binding.Source = Source;
@@ -204,7 +225,7 @@ namespace CalcBinding
                             }
                             else
                             {
-                                replace = (passedProps.Count+1).ToString("{0}");
+                                replace = (passedProps.Count).ToString("{0}");
                                 passedProps.Add(propId, replace);
                             }
 
@@ -223,7 +244,7 @@ namespace CalcBinding
                             }
                             else
                             {
-                                enumTypeName = (enumNames.Count + 1).ToString("Enum{0}");
+                                enumTypeName = GetEnumName(enumNames.Count);
                                 enumNames.Add(propId, enumTypeName);
                                 enumParameters.Add(enumTypeName, enumPath.Enum);
                             }
@@ -247,6 +268,12 @@ namespace CalcBinding
             }
 
             return result;
+        }
+
+        private string GetEnumName(int i)
+        {
+            // Enum1, Enum2, etc
+            return string.Format("Enum{0}", ++i);
         }
 
         /// <summary>

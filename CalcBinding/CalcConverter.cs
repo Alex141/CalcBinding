@@ -35,9 +35,9 @@ namespace CalcBinding
 
         public CalcConverter() : this(null, null) { }
 
-        public CalcConverter(IExpressionParser parser):this(parser, null){ }
+        public CalcConverter(IExpressionParser parser) : this(parser, null) { }
 
-        public CalcConverter(Dictionary<string, Type> enumParameters):this(null, enumParameters) { }
+        public CalcConverter(Dictionary<string, Type> enumParameters) : this(null, enumParameters) { }
 
         public CalcConverter(IExpressionParser parser, Dictionary<string, Type> enums)
         {
@@ -215,7 +215,7 @@ namespace CalcBinding
         {
             var parametersDefinition = new List<Parameter>();
             
-            for (int i = 1; i <= argumentsTypes.Count(); i++)
+            for (int i = 0; i < argumentsTypes.Count(); i++)
             {
                 var paramName = GetVariableName(i);
                 
@@ -235,7 +235,8 @@ namespace CalcBinding
         /// <returns></returns>
         private string GetVariableName(int i)
         {
-            return String.Format("p{0}", i);
+            //p1 p2 etc
+            return String.Format("p{0}", ++i);
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
