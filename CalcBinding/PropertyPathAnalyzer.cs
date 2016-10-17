@@ -50,18 +50,13 @@ namespace CalcBinding
             Trace.WriteLine(string.Format("PropertyPathAnalyzer.GetPathes: start read {0} ", normPath));
             do
             {
-                var startTokenPosition = _position;
-
                 var token = ReadNextToken();
-
-                var endTokenPosition = _position;
-
                 var res = NextStep(token);
 
                 if (!res)
                 {
                     throw new NotSupportedException(String.Format("PropertyPathAnalyzer: unsupported token '{0}', start = {1} end = {2}", 
-                        token.Value, startTokenPosition, endTokenPosition));
+                        token.Value, token.Start, token.End));
                 }
 
                 if (token.IsEmpty)
