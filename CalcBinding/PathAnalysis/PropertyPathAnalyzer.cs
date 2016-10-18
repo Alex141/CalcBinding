@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Markup;
 
-namespace CalcBinding
+namespace CalcBinding.PathAnalysis
 {
     public class PropertyPathAnalyzer
     {
-        public static string[] UnknownDelimiters = new [] 
+        #region private fields
+        public static string[] UnknownDelimiters = new[] 
             { 
                 "(", ")", "+", "-", "*", "/", "%", "^", "&&", "||", 
                 "&", "|", "?", "<=", ">=", "<", ">", "==", "!=", "!", "," 
@@ -33,10 +35,22 @@ namespace CalcBinding
         private List<Token> propertyPathIdentifiers;
         private Token _lastIdentifier;
 
+        private int _identifierStartPos;
+        private IXamlTypeResolver _typeResolver;
+        #endregion
+
+
+        #region Static constructor
+
         static PropertyPathAnalyzer()
         {
             delimiters = KnownDelimiters.Concat(UnknownDelimiters).ToArray();
-        }
+        } 
+
+        #endregion
+
+
+        #region Parser cycle
 
         public List<PathToken> GetPathes(string normPath, IXamlTypeResolver typeResolver)
         {
@@ -55,7 +69,7 @@ namespace CalcBinding
 
                 if (!res)
                 {
-                    throw new NotSupportedException(String.Format("PropertyPathAnalyzer: unsupported token '{0}', start = {1} end = {2}", 
+                    throw new NotSupportedException(String.Format("PropertyPathAnalyzer: unsupported token '{0}', start = {1} end = {2}",
                         token.Value, token.Start, token.End));
                 }
 
@@ -70,9 +84,172 @@ namespace CalcBinding
             return _pathTokens;
         }
 
+        private bool NextStep(Token token)
+        {
+            switch (_state)
+            {
+                case State.Initial:
+                    {
+                        if (token.IsIdentifier && token.Value == "Math")
+                        {
+                            _lastIdentifier = token;
+                            _state = State.MathClass;
+                            return true;
+                        }
+                        else if (token.IsIdentifier)
+                        {
+                            _lastIdentifier = token;
+                            _state = State.Identifier;
+                            return true;
+                        }
+                        else if (token.IsEmpty)
+                            return true;
+
+                        return false;
+                    }
+                case State.MathClass:
+                    {
+                        if (token.IsDot)
+                        {
+                            token = ReadNextToken();
+
+                            if (token.IsIdentifier)
+                            {
+                                // math member output
+                                var mathToken = new MathToken(_lastIdentifier.Start, token.End, token.Value);
+
+                                TraceToken(mathToken);
+                                _pathTokens.Add(mathToken);
+
+                                _state = State.Initial;
+                                return true;
+                            }
+                        }
+                        return false;
+                    }
+                case State.Identifier:
+                    {
+                        if (token.IsColon)
+                        {
+                            namespaceIdentifier = _lastIdentifier;
+
+                            token = ReadNextToken();
+
+                            if (token.IsIdentifier)
+                            {
+                                classIdentifier = token;
+
+                                token = ReadNextToken();
+
+                                if (token.IsDot)
+                                {
+                                    _state = State.StaticPropPathDot;
+                                    return true;
+                                }
+                            }
+                        }
+                        else if (token.IsDot)
+                        {
+                            propertyPathIdentifiers.Add(_lastIdentifier);
+                            _state = State.PropPathDot;
+                            return true;
+                        }
+                        else
+                        {
+                            propertyPathIdentifiers.Add(_lastIdentifier);
+                            var firstIdentifier = propertyPathIdentifiers.First();
+                            // property path output
+                            var propPathToken = new PropertyPathToken(firstIdentifier.Start, _lastIdentifier.End, propertyPathIdentifiers.Select(i => i.Value));
+                            TraceToken(propPathToken);
+                            _pathTokens.Add(propPathToken);
+                            propertyPathIdentifiers.Clear();
+                            _state = State.Initial;
+                            return true;
+                        }
+                        return false;
+                    }
+                case State.StaticPropPathDot:
+                    {
+                        if (token.IsIdentifier)
+                        {
+                            propertyPathIdentifiers.Add(token);
+                            _lastIdentifier = token;
+
+                            token = ReadNextToken();
+
+                            if (token.IsDot)
+                            {
+                                // state unchanged
+                                return true;
+                            }
+                            else
+                            {
+                                PathToken pathToken;
+                                Type enumType;
+                                string typeFullName = SubStr(namespaceIdentifier.Start, classIdentifier.End);
+                                if (propertyPathIdentifiers.Count == 1 && ((enumType = TakeEnum(typeFullName)) != null))
+                                {
+                                    // enum output
+                                    var enumMember = propertyPathIdentifiers.Single();
+                                    pathToken = new EnumToken(namespaceIdentifier.Start, enumMember.End, namespaceIdentifier.Value, enumType, enumMember.Value);
+                                }
+                                else
+                                {
+                                    //static property path output
+                                    pathToken = new StaticPropertyPathToken(namespaceIdentifier.Start, _lastIdentifier.End, namespaceIdentifier.Value, classIdentifier.Value, propertyPathIdentifiers.Select(i => i.Value));
+                                }
+                                TraceToken(pathToken);
+                                _pathTokens.Add(pathToken);
+
+                                propertyPathIdentifiers.Clear();
+                                _state = State.Initial;
+                                return true;
+                            }
+                        }
+                        return false;
+                    }
+                case State.PropPathDot:
+                    {
+                        if (token.IsIdentifier)
+                        {
+                            token = ReadNextToken();
+
+                            if (token.IsDot)
+                            {
+                                // state unchanged
+                                return true;
+                            }
+                            else
+                            {
+                                // property path output
+                                var propPathToken = new PropertyPathToken(token.Start, token.End, propertyPathIdentifiers.Select(i => i.Value));
+                                TraceToken(propPathToken);
+                                _pathTokens.Add(propPathToken);
+                                propertyPathIdentifiers.Clear();
+                                _state = State.Initial;
+                                return true;
+                            }
+                        }
+                        return false;
+                    }
+                default:
+                    throw new NotSupportedException(String.Format("PropertyPathAnalyzer: State {0} is not supported", _state));
+            }
+        }
+
+        private void TraceToken(PathToken token)
+        {
+            Trace.WriteLine(string.Format("PropertyPathAnalyzer: read {0} ({1}) ({2}-{3})", token.Id.Value, token.Id.PathType, token.Start, token.End));
+        }
+
+        #endregion
+
+
+        #region SubParser cycle
+
         private Token ReadNextToken()
         {
-           _subState = SubState.Initial;
+            _subState = SubState.Initial;
 
             while (true)
             {
@@ -88,9 +265,6 @@ namespace CalcBinding
                 _position++;
             }
         }
-
-        private int _identifierStartPos;
-        private IXamlTypeResolver _typeResolver;
 
         private Token ReadToken(Symbol symbol)
         {
@@ -131,7 +305,7 @@ namespace CalcBinding
                 case SubState.Identifier:
                     if (symbol.IsEnd || delimiters.Contains(symbol))
                     {
-                        var identifier = Token.Identifier(_str.Substring(_identifierStartPos, _position - _identifierStartPos), _identifierStartPos, _position);
+                        var identifier = Token.Identifier(SubStr(_identifierStartPos, _position - 1), _identifierStartPos, _position - 1);
 
                         _subState = SubState.Initial;
                         return identifier;
@@ -157,155 +331,15 @@ namespace CalcBinding
             }
 
         }
-            
-        private bool NextStep(Token token)
+
+        #endregion
+
+
+        #region Help methods
+
+        private string SubStr(int start, int end)
         {
-            switch (_state)
-            {
-                case State.Initial:
-                    {
-                        if (token.IsIdentifier && token.Value == "Math")
-                        {
-                            _lastIdentifier = token;
-                            _state = State.MathClass;
-                            return true;
-                        }
-                        else if (token.IsIdentifier)
-                        {
-                            _lastIdentifier = token;
-                            _state = State.Identifier;
-                            return true;
-                        }
-                        else if (token.IsEmpty)
-                            return true;
-
-                        return false;
-                    }
-                case State.MathClass:
-                    {
-                        if (token.IsDot)
-                        {
-                            token = ReadNextToken();
-
-                            if (token.IsIdentifier)
-                            {
-                                // math member output
-                                var mathToken = new MathToken(_lastIdentifier.Start, token.End, token.Value);
-                                _pathTokens.Add(mathToken);
-
-                                _state = State.Initial;
-                                return true;
-                            }
-                        }
-                        return false;
-                    }
-                case State.Identifier:
-                    {
-                        if (token.IsColon)
-                        {
-                            namespaceIdentifier = _lastIdentifier;
-
-                            token = ReadNextToken();
-
-                            if (token.IsIdentifier)
-                            {
-                                classIdentifier = token;
-
-                                token = ReadNextToken();
-
-                                if (token.IsDot)
-                                {
-                                    _state = State.StaticPropPathDot;
-                                    return true;
-                                }
-                            }
-                        }
-                        else if (token.IsDot)
-                        {
-                            propertyPathIdentifiers.Add(_lastIdentifier);
-                            _state = State.PropPathDot;
-                            return true;
-                        }
-                        else
-                        {
-                            propertyPathIdentifiers.Add(_lastIdentifier);
-                            // property path output
-                            _pathTokens.Add(new PropertyPathToken(token.Start, token.End, propertyPathIdentifiers.Select(i => i.Value)));
-                            propertyPathIdentifiers.Clear();
-                            _state = State.Initial;
-                            return true;
-                        }
-                        return false;
-                    }
-                case State.StaticPropPathDot:
-                    {
-                        if (token.IsIdentifier)
-                        {
-                            propertyPathIdentifiers.Add(token);
-                            _lastIdentifier = token;
-
-                            token = ReadNextToken();
-
-                            if (token.IsDot)
-                            {
-                                // state unchanged
-                                return true;
-                            }
-                            else
-                            {
-                                PathToken pathToken;
-                                Type enumType;
-                                string typeFullName = substr(namespaceIdentifier.Start, classIdentifier.End);
-                                if (propertyPathIdentifiers.Count == 1 && ((enumType = TakeEnum(typeFullName)) != null))
-                                {
-                                    // enum output
-                                    var enumMember = propertyPathIdentifiers.Single();
-                                    pathToken = new EnumToken(namespaceIdentifier.Start, enumMember.End, namespaceIdentifier.Value, enumType, enumMember.Value);
-                                }
-                                else
-                                {
-                                    //static property path output
-                                    pathToken = new StaticPropertyPathToken(namespaceIdentifier.Start, _lastIdentifier.End, namespaceIdentifier.Value, classIdentifier.Value, propertyPathIdentifiers.Select(i => i.Value));
-                                }
-                                _pathTokens.Add(pathToken);
-
-                                propertyPathIdentifiers.Clear();
-                                _state = State.Initial;
-                                return true;
-                            }
-                        }
-                        return false;
-                    }
-                case State.PropPathDot:
-                    {
-                        if (token.IsIdentifier)
-                        {
-                            token = ReadNextToken();
-
-                            if (token.IsDot)
-                            {
-                                // state unchanged
-                                return true;
-                            }
-                            else
-                            {
-                                // property path output
-                                _pathTokens.Add(new PropertyPathToken(token.Start, token.End, propertyPathIdentifiers.Select(i => i.Value)));
-                                propertyPathIdentifiers.Clear();
-                                _state = State.Initial;
-                                return true;
-                            }
-                        }
-                        return false;
-                    }
-                default:
-                    throw new NotSupportedException(String.Format("PropertyPathAnalyzer: State {0} is not supported", _state));
-            }
-        }
-
-        private string substr(int start, int end)
-        {
-            return _str.Substring(start, end - start);
+            return _str.Substring(start, end - start + 1);
         }
 
         /// <summary>
@@ -321,7 +355,10 @@ namespace CalcBinding
             if (@type != null && @type.IsEnum)
                 return @type;
             return null;
-        }
+        } 
+
+        #endregion
+
 
         #region Nested types
 
@@ -407,8 +444,8 @@ namespace CalcBinding
                 }
             }
 
-            public  int Start { get; private set; }
-            public  int End { get; private set; }
+            public int Start { get; private set; }
+            public int End { get; private set; }
 
             private Token(TokenType type, string value, int startPosition, int endPosition)
             {
@@ -417,7 +454,7 @@ namespace CalcBinding
                 Start = startPosition;
                 End = endPosition;
             }
-        } 
+        }
 
         class Symbol
         {
@@ -451,7 +488,7 @@ namespace CalcBinding
 
             public static implicit operator String(Symbol symbol)
             {
-                return new String(new []{(Char)symbol});
+                return new String(new[] { (Char)symbol });
             }
 
             public static bool operator ==(Symbol symbol, Char c)
@@ -470,134 +507,7 @@ namespace CalcBinding
                 return symbol._c != c;
             }
         }
+
         #endregion
-    }
-
-    public abstract class PathToken
-    {
-        public int Start { get; private set; }
-
-        public int End { get; private set; }
-
-        public abstract PathTokenId Id { get; }
-
-        protected PathToken (int start, int end)
-        {
-            Start = start;
-            End = end;
-        }
-    }
-
-    public class PropertyPathToken : PathToken
-    {
-        public IEnumerable<string> Properties { get; private set; }
-
-        private PathTokenId id;
-        public override PathTokenId Id { get { return id; } }
-
-        public PropertyPathToken(int start, int end, IEnumerable<string> properties):base(start, end)
-        {
-            Properties = properties.ToList();
-            id = new PathTokenId(PathTokenType.Property, String.Join(".", Properties));
-        }
-    }
-
-    public class StaticPropertyPathToken : PropertyPathToken
-    {
-        public string Class { get; private set; }
-        public string Namespace { get; private set; }
-
-        private PathTokenId id;
-        public override PathTokenId Id { get { return id; } }
-
-        public StaticPropertyPathToken(int start, int end, string @namespace, string @class, IEnumerable<string> properties):base(start, end, properties)
-        {
-            Class = @class;
-            Namespace = @namespace;
-            id = new PathTokenId(PathTokenType.StaticProperty,String.Format("{0}:{1}.{2}", Namespace, Class, String.Join(".", Properties)));
-        }
-    }
-
-    public class EnumToken : PathToken
-    {
-        public Type Enum { get; private set; }
-        public string EnumMember { get; private set; }
-        public string Namespace { get; private set; }
-
-        private PathTokenId id;
-        public override PathTokenId Id { get { return id; } }
-
-        public EnumToken(int start, int end, string @namespace, Type @enum, string enumMember):base(start, end)
-        {
-            Enum = @enum;
-            EnumMember = enumMember;
-            Namespace = @namespace;
-
-            id = new PathTokenId(PathTokenType.StaticProperty, String.Format("{0}:{1}.{2}", Namespace, @enum.Name, EnumMember));
-        }
-    }
-
-    public class MathToken : PathToken
-    {
-        public string MathMember { get; private set; }
-
-        private PathTokenId id;
-        public override PathTokenId Id { get { return id; } }
-
-        public MathToken(int start, int end, string mathMember):base(start, end)
-        {
-            MathMember = mathMember;
-            id = new PathTokenId(PathTokenType.StaticProperty, String.Join(".", "Math", MathMember));
-        }
-    }
-
-    public class PathTokenId
-    {
-        public PathTokenType PathType { get; private set; }
-        public string Value { get; private set; }
-
-        public PathTokenId(PathTokenType pathType, string value)
-        {
-            PathType = pathType;
-            Value = value;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj == null)
-                return false;
-
-            var o = obj as PathTokenId;
-
-            if (o == null)
-                return false;
-
-            return (o.PathType == PathType && o.Value == Value);
-        }
-
-        public override int GetHashCode()
-        {
-            return Value.GetHashCode() ^ PathType.GetHashCode();
-        }
-    }
-
-    public enum PathTokenType
-    {
-        /// <summary>
-        /// Math, e.g. Math.Sin, Math.PI
-        /// </summary>
-        Math,
-        /// <summary>
-        /// Usual propertyPath, e.g. Name, Caption, Models.Count
-        /// </summary>
-        Property,
-        /// <summary>
-        /// Static propertyPatj, e.g. local:MyStaticVM.MyProp
-        /// </summary>
-        StaticProperty,
-        /// <summary>
-        /// Enum, e.g. local:MyEnum.MyValue
-        /// </summary>
-        Enum
     }
 }

@@ -77,9 +77,10 @@
     <Compile Include="InterpreterParser.cs" />
     <Compile Include="Inversion\InverseExceptions.cs" />
     <Compile Include="Inversion\Inverter.cs" />
+    <Compile Include="PathAnalysis\PropertyPathAnalyzer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Inversion\TwoKeysDictionary.cs" />
-    <Compile Include="PropertyPathAnalyzer.cs" />
+    <Compile Include="PathAnalysis\Tokens.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

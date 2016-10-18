@@ -1,4 +1,5 @@
 ﻿using CalcBinding;
+using CalcBinding.PathAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -26,23 +27,23 @@ namespace Tests
         [TestMethod]
         public void PropertyPathTokensTest()
         {
-            AssertPropertyPathes("MyProp", null, new PropertyPathToken(0, 5, new [] {"MyProp"}));
-            AssertPropertyPathes("MyProp+5.4", null, new PropertyPathToken(0, 5, new[] { "MyProp" }));
-            AssertPropertyPathes("5+MyProp", null, new PropertyPathToken(0, 5, new[] { "MyProp" }));
-            AssertPropertyPathes("MyProp.Nested", null, new PropertyPathToken(0, 12, new[] { "MyProp", "Nested" }));
-            AssertPropertyPathes("MyProp.Nested4+10-2.6", null, new PropertyPathToken(0, 12, new[] { "MyProp", "Nested4" }));
+            //AssertPropertyPathes("MyProp", null, new PropertyPathToken(0, 5, new [] {"MyProp"}));
+            //AssertPropertyPathes("MyProp+5.4", null, new PropertyPathToken(0, 5, new[] { "MyProp" }));
+            //AssertPropertyPathes("5+MyProp", null, new PropertyPathToken(0, 5, new[] { "MyProp" }));
+            //AssertPropertyPathes("MyProp.Nested", null, new PropertyPathToken(0, 12, new[] { "MyProp", "Nested" }));
+            //AssertPropertyPathes("MyProp.Nested4+10-2.6", null, new PropertyPathToken(0, 12, new[] { "MyProp", "Nested4" }));
 
-            AssertPropertyPathes("MyProp.Nested5.N1estedNeste5d+5", null, new PropertyPathToken(0, 28, new[] { "MyProp", "Nested5", "N1estedNeste5d" }));
-            AssertPropertyPathes("MyProp+MyOtherProp+2", null, 
-                new PropertyPathToken(0, 5, new[] { "MyProp" }),
-                new PropertyPathToken(7, 17, new[] { "MyOtherProp"})
-                );
-            AssertPropertyPathes("MyProp.N+Other.B+(Next.Next1.Next2)-MyProp.N+MyProp.M", null, 
+            //AssertPropertyPathes("MyProp.Nested5.N1estedNeste5d+5", null, new PropertyPathToken(0, 28, new[] { "MyProp", "Nested5", "N1estedNeste5d" }));
+            //AssertPropertyPathes("MyProp+MyOtherProp+2", null, 
+            //    new PropertyPathToken(0, 5, new[] { "MyProp" }),
+            //    new PropertyPathToken(7, 17, new[] { "MyOtherProp"})
+            //    );
+            AssertPropertyPathes("MyProp.N+Other+(Next.N5ext1._Next2)-MyProp+4.56-MyProp.N", null, 
                 new PropertyPathToken(0, 7, new[] { "MyProp", "N" }),
-                new PropertyPathToken(9, 15, new[] { "Other", "B" }),
-                new PropertyPathToken(18, 33, new[] { "Next", "Next1", "Next2" }),
-                new PropertyPathToken(36, 43, new[] { "MyProp", "N" }),
-                new PropertyPathToken(45, 52, new[] { "MyProp", "M" })
+                new PropertyPathToken(9, 15, new[] { "Other" }),
+                new PropertyPathToken(18, 34, new[] { "Next", "N5ext1", "_Next2" }),
+                new PropertyPathToken(37, 44, new[] { "MyProp", "N" }),
+                new PropertyPathToken(51, 59, new[] { "MyProp", "_M" })
                 );
 
         }
@@ -74,6 +75,12 @@ namespace Tests
         [TestMethod]
         public void InternatializationPathTokensTest()
         {
+        }
+
+        [TestMethod]
+        public void ParsingPathWithStringConstantsTest()
+        {
+
         }
 
         private void AssertPropertyPathes(string path, IXamlTypeResolver typeResolver, params PathToken[] expectedTokens)
