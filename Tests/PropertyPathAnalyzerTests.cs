@@ -3,6 +3,7 @@ using CalcBinding.PathAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -39,12 +40,12 @@ namespace Tests
         [TestMethod]
         public void StaticPropertyPathTokensTest()
         {
-            AssertPropertyPathes("local:MyClass.MyProp.N+local:MyClass.Other.B/(local:MyClass.Next.Next1.Next2)*local:MyClass.MyProp.N+local:MyClass.MyProp.M", null,
-            new StaticPropertyPathToken(0, 20, "local", "MyClass", new[] { "MyProp", "N" }),
-            new StaticPropertyPathToken(0, 20, "local", "MyClass", new[] { "MyProp", "Other", "B" }),
-            new StaticPropertyPathToken(0, 20, "local", "MyClass", new[] { "MyProp", "Next", "Next1", "Next2" }),
-            new StaticPropertyPathToken(0, 20, "local", "MyClass", new[] { "MyProp", "N" }),
-            new StaticPropertyPathToken(0, 20, "local", "MyClass", new[] { "MyProp", "M" })
+            AssertPropertyPathes("local:MyClass.MyProp.N^local:MyClass.Other.B/(local:MyClass.Next.Next1.Next24)*(4.34*local:MyClass.MyProp.N)+local:MyClass.MyProp.M-24", null,
+                new StaticPropertyPathToken(0, 21, "local", "MyClass", new[] { "MyProp", "N" }),
+                new StaticPropertyPathToken(23, 43, "local", "MyClass", new[] { "MyProp", "Other", "B" }),
+                new StaticPropertyPathToken(46, 78, "local", "MyClass", new[] { "MyProp", "Next", "Next1", "Next2" }),
+                new StaticPropertyPathToken(85, 106, "local", "MyClass", new[] { "MyProp", "N" }),
+                new StaticPropertyPathToken(109, 130, "local", "MyClass", new[] { "MyProp", "M" })
                 );
         }
 
@@ -75,7 +76,7 @@ namespace Tests
 
             var tokens = analyzer.GetPathes(path, typeResolver);
 
-            CollectionAssert.AreEqual(expectedTokens.ToList(), tokens);
+            CollectionAssert.AreEqual(expectedTokens.ToList(), tokens, new TestPathComparer());
         }
 
     }

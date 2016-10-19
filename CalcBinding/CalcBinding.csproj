@@ -78,9 +78,15 @@
     <Compile Include="Inversion\InverseExceptions.cs" />
     <Compile Include="Inversion\Inverter.cs" />
     <Compile Include="PathAnalysis\PropertyPathAnalyzer.cs" />
+    <Compile Include="PathAnalysis\Tokens\Abstract\Help\PathTokenId.cs" />
+    <Compile Include="PathAnalysis\Tokens\Abstract\Help\PathTokenType.cs" />
+    <Compile Include="PathAnalysis\Tokens\Realization\EnumToken.cs" />
+    <Compile Include="PathAnalysis\Tokens\Realization\MathToken.cs" />
+    <Compile Include="PathAnalysis\Tokens\Abstract\PathToken.cs" />
+    <Compile Include="PathAnalysis\Tokens\Realization\PropertyPathToken.cs" />
+    <Compile Include="PathAnalysis\Tokens\Realization\StaticPropertyPathToken.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Inversion\TwoKeysDictionary.cs" />
-    <Compile Include="PathAnalysis\Tokens.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
