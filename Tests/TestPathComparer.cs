@@ -27,7 +27,9 @@ namespace Tests
             if (ReferenceEquals(path1, null) || ReferenceEquals(path2, null))
                 return -1;
 
-            return (path1.GetType() == path1.GetType() && path1.Start == path1.Start && path1.End == path1.End && path1.Id.Equals(path1.Id)) ? 0 : -1;
+            var res = (path1.GetType() == path2.GetType() && path1.Start == path2.Start && path1.End == path2.End && path1.Id.Equals(path2.Id)) ? 0 : -1;
+
+            return res;
         }
     }
 }
