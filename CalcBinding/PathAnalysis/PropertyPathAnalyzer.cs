@@ -237,6 +237,7 @@ namespace CalcBinding.PathAnalysis
 
             if (@type != null && @type.IsEnum)
                 return @type;
+
             return null;
         }
 

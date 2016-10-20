@@ -10,6 +10,12 @@ namespace Tests
 {
     public class TestPathComparer : IComparer
     {
+        bool positionsCheck;
+        public TestPathComparer(bool positionsCheck)
+        {
+            this.positionsCheck = positionsCheck;
+        }
+
         public int Compare(object x, object y)
         {
             if (ReferenceEquals(x, null) && ReferenceEquals(y, null))
@@ -27,7 +33,10 @@ namespace Tests
             if (ReferenceEquals(path1, null) || ReferenceEquals(path2, null))
                 return -1;
 
-            var res = (path1.GetType() == path2.GetType() && path1.Start == path2.Start && path1.End == path2.End && path1.Id.Equals(path2.Id)) ? 0 : -1;
+            if (positionsCheck && (path1.Start != path2.Start || path1.End != path2.End))
+                return -1;
+
+            var res = (path1.GetType() == path2.GetType() && path1.Id.Equals(path2.Id)) ? 0 : -1;
 
             return res;
         }
