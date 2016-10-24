@@ -58,28 +58,47 @@ namespace CalcBinding.PathAnalysis
             var isChunk = false;
             List<Chunk> chunks = new List<Chunk>();
             int position = 0;
+            bool skip = false;
+            char skipTerminal = '\'';
 
             //throw new NotImplementedException("strings");
             do
             {
                 var c = position >= str.Length ? (char)0 : str[position];
 
-                var isDelim = UnknownDelimiters.Contains(c.ToString()) || c == 0;
-
-                if (isChunk)
+                // skip strings
+                if (skip)
                 {
-                    if (isDelim)
-                    {
-                        chunks.Add(new Chunk(SubStr(str, chunkStart, position - 1), chunkStart, position - 1));
-                        isChunk = false;
-                    }
+                    if (c == skipTerminal)
+                        skip = false;
                 }
                 else
                 {
-                    if (!isDelim)
+                    var isDelim = UnknownDelimiters.Contains(c.ToString()) || c == 0;
+
+                    if (isChunk)
                     {
-                        chunkStart = position;
-                        isChunk = true;
+                        if (isDelim)
+                        {
+                            chunks.Add(new Chunk(SubStr(str, chunkStart, position - 1), chunkStart, position - 1));
+                            isChunk = false;
+                        }
+                    }
+                    else
+                    {
+                        if (!isDelim)
+                        {
+                            if (c == '\"' || c == '\'')
+                            {
+                                skipTerminal = c;
+                                skip = true;
+                            }
+                            else
+                            {
+                                chunkStart = position;
+                                isChunk = true;
+                            }
+                        }
                     }
                 }
 

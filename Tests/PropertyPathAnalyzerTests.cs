@@ -97,8 +97,8 @@ namespace Tests
             );
 
             AssertPropertyPathes("1 > 0 ? (\"5\"+Local:Prop.P1): P2", resolver, true,
-                new StaticPropertyPathToken(15, 27, "Local", "Prop", new[] { "P1" }),
-                new PropertyPathToken(31, 32, new[] { "P2" })
+                new StaticPropertyPathToken(13, 25, "Local", "Prop", new[] { "P1" }),
+                new PropertyPathToken(29, 30, new[] { "P2" })
             );
             
             AssertPropertyPathes("1 > 0 ? (Local1:Class2.P4+Local:Prop.P1) : P2", resolver, true,
@@ -171,8 +171,14 @@ namespace Tests
         [TestMethod]
         public void ParsingPathWithStringConstantsTest()
         {
-            throw new NotImplementedException();
-            //"5:5", "local:MyProp.Nested", "'sdfsdf'"
+            var emptyResolver = new XamlTypeResolverMock(null);
+
+            AssertPropertyPathes("1 > 0 ? local:propiedad.icône : local:Класс.中國.český", emptyResolver, true,
+                            new StaticPropertyPathToken(8, 28, "local", "propiedad", new[] { "icône" }),
+                            new StaticPropertyPathToken(32, 51, "local", "Класс", new[] { "中國", "český" })
+                        );
+    
+            //"5:5", "local:MyProp.Nested", "'sdfsdf'", "'", "", '' more more..
         }
 
         private void AssertPropertyPathes(string path, IXamlTypeResolver typeResolver, bool positionsCheck, params PathToken[] expectedTokens)
