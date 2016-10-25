@@ -14,7 +14,7 @@ namespace CalcBinding.PathAnalysis
         public static string[] UnknownDelimiters = new[] 
             { 
                 "(", ")", "+", "-", "*", "/", "%", "^", "&&", "||", 
-                "&", "|", "?", "<=", ">=", "<", ">", "==", "!=", "!", ",", " "
+                "&", "|", "?", "<=", ">=", "<", ">", "==", "!=", "!", ",", " ", "="
             };
 
         public static string[] KnownDelimiters = new[]

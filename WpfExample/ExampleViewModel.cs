@@ -440,6 +440,20 @@ namespace WpfExample
                 RaisePropertyChanged(() => NameIsNull);
             }
         }
+
+        private char symbol;
+        public char Symbol
+        {
+            get
+            {
+                return symbol;
+            }
+            set
+            {
+                symbol = value;
+                RaisePropertyChanged(() => Symbol);
+            }
+        }
     }
 
     public class StaticExampleClass
@@ -456,6 +470,21 @@ namespace WpfExample
             {
                 staticA = value;
                 RaiseStaticPropertyChanged(() => StaticA);
+            }
+        }
+
+        private static string staticString = "";
+
+        public static string StaticString
+        {
+            get
+            {
+                return staticString;
+            }
+            set
+            {
+                staticString = value;
+                RaiseStaticPropertyChanged(() => StaticString);
             }
         }
 

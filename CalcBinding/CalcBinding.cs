@@ -440,21 +440,21 @@ namespace CalcBinding
             foreach (var pair in replaceDict)
                 normPath = normPath.Replace(pair.Key, pair.Value);
 
-            // delete all spaces out of user string
-            var i = 0;
-            var canDelete = true;
-            var res = "";
-            do
-            {
-                if (normPath[i] == '\"')
-                    canDelete = !canDelete;
+            //// delete all spaces out of user string
+            //var i = 0;
+            //var canDelete = true;
+            //var res = "";
+            //do
+            //{
+            //    if (normPath[i] == '\"')
+            //        canDelete = !canDelete;
 
-                if (normPath[i] != ' ' || !canDelete)
-                    res += normPath[i];
-            }
-            while (++i < normPath.Length);
+            //    if (normPath[i] != ' ' || !canDelete)
+            //        res += normPath[i];
+            //}
+            //while (++i < normPath.Length);
 
-            normPath = res;
+            //normPath = res;
 
             return normPath;
         }

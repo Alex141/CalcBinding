@@ -53,12 +53,15 @@ namespace Tests
         [TestMethod]
         public void EnumPropertyPathTokensTest()
         {
-            AssertPropertyPathes("(1 > 0) ? local:MyEnum : local:MyClass.P", null, true,
-                new StaticPropertyPathToken(0, 21, "local", "MyClass", new[] { "MyProp", "N" }),
-                new StaticPropertyPathToken(23, 43, "local", "MyClass", new[] { "MyProp", "Other", "B" }),
-                new StaticPropertyPathToken(46, 78, "local", "MyClass", new[] { "MyProp", "Next", "Next1", "Next2" }),
-                new StaticPropertyPathToken(85, 106, "local", "MyClass", new[] { "MyProp", "N" }),
-                new StaticPropertyPathToken(109, 130, "local", "MyClass", new[] { "MyProp", "M" })
+            var resolver = new XamlTypeResolverMock(new Dictionary<string, Type>()
+            {
+                {"local:Enum1", typeof(Enum1)},
+                {"local:Enum2", typeof(Enum2)},
+            });
+
+            AssertPropertyPathes("(1 > 0) ? local:MyClass.MyProp : local:MyClass.Prop", resolver, true,
+                new StaticPropertyPathToken(10, 29, "local", "MyClass", new[] { "MyProp" }),
+                new StaticPropertyPathToken(33, 50, "local", "MyClass", new[] { "Prop" })
             );
         }
 
@@ -173,12 +176,44 @@ namespace Tests
         {
             var emptyResolver = new XamlTypeResolverMock(null);
 
-            AssertPropertyPathes("1 > 0 ? local:propiedad.icône : local:Класс.中國.český", emptyResolver, true,
-                            new StaticPropertyPathToken(8, 28, "local", "propiedad", new[] { "icône" }),
-                            new StaticPropertyPathToken(32, 51, "local", "Класс", new[] { "中國", "český" })
+            AssertPropertyPathes("S + \"1\" + \"0\"", emptyResolver, true,
+                            new PropertyPathToken(0, 0, new[] { "S" })
                         );
-    
+
+            AssertPropertyPathes("S + \"local:MyClass.Property\" + \"0\"", emptyResolver, true,
+                              new PropertyPathToken(0, 0, new[] { "S" })
+                          );
+   
+            AssertPropertyPathes("S + \"'local:MyClass.Property'\" + \"0\"", emptyResolver, true,
+                                 new PropertyPathToken(0, 0, new[] { "S" })
+                             );
+
+            AssertPropertyPathes("S + \"'local:MyClass.Property\" + \"0\"", emptyResolver, true,
+                                 new PropertyPathToken(0, 0, new[] { "S" })
+                             );
+
+            AssertPropertyPathes("S + \"\" + \"0\"", emptyResolver, true,
+                                 new PropertyPathToken(0, 0, new[] { "S" })
+                             );      
             //"5:5", "local:MyProp.Nested", "'sdfsdf'", "'", "", '' more more..
+        }
+
+        [TestMethod]
+        public void ParsingPathWithCharConstantsTest()
+        {
+            var emptyResolver = new XamlTypeResolverMock(null);
+
+            AssertPropertyPathes("S + '1' + '0'", emptyResolver, true,
+                            new PropertyPathToken(0, 0, new[] { "S" })
+                        );
+
+            AssertPropertyPathes("S + ''", emptyResolver, true,
+                            new PropertyPathToken(0, 0, new[] { "S" })
+                        );
+
+            AssertPropertyPathes("S + '\"'", emptyResolver, true,
+                            new PropertyPathToken(0, 0, new[] { "S" })
+                        );
         }
 
         private void AssertPropertyPathes(string path, IXamlTypeResolver typeResolver, bool positionsCheck, params PathToken[] expectedTokens)

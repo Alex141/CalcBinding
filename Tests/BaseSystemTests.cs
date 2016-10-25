@@ -25,6 +25,15 @@ namespace Tests
             ObjectBindingAssert(path, source, sourcePropertySetter1, objTargetValue1, sourcePropertySetter2, objTargetValue2, resolvedTypes);
         }
 
+        public void StringAndObjectBindingAssert(CalcBinding.Binding calcBinding, INotifyPropertyChanged source,
+    Action sourcePropertySetter1, string targetValue1, object objTargetValue1,
+    Action sourcePropertySetter2, string targetValue2, object objTargetValue2,
+            Dictionary<string, Type> resolvedTypes = null)
+        {
+            StringBindingAssert(calcBinding, source, sourcePropertySetter1, targetValue1, sourcePropertySetter2, targetValue2, resolvedTypes);
+            ObjectBindingAssert(calcBinding, source, sourcePropertySetter1, objTargetValue1, sourcePropertySetter2, objTargetValue2, resolvedTypes);
+        }
+
         public void StringBindingAssert(CalcBinding.Binding calcBinding, INotifyPropertyChanged source,
             Action sourcePropertySetter1, string targetValue1,
             Action sourcePropertySetter2, string targetValue2,
@@ -42,6 +51,7 @@ namespace Tests
             var textBox = new TextBox();
             BindingAssert(path, source, textBox, TextBox.TextProperty, () => textBox.Text, sourcePropertySetter1, targetValue1, sourcePropertySetter2, targetValue2, resolvedTypes);
         }
+
         public void ObjectBindingAssert(string path, INotifyPropertyChanged source,
                     Action sourcePropertySetter1, object targetValue1,
                     Action sourcePropertySetter2, object targetValue2,
@@ -49,6 +59,15 @@ namespace Tests
         )
         {
             LabelBindingAssert(path, source, sourcePropertySetter1, targetValue1, sourcePropertySetter2, targetValue2, resolvedTypes);
+        }
+
+        public void ObjectBindingAssert(CalcBinding.Binding calcBinding, INotifyPropertyChanged source,
+                    Action sourcePropertySetter1, object targetValue1,
+                    Action sourcePropertySetter2, object targetValue2,
+                    Dictionary<string, Type> resolvedTypes = null
+        )
+        {
+            LabelBindingAssert(calcBinding, source, sourcePropertySetter1, targetValue1, sourcePropertySetter2, targetValue2, resolvedTypes);
         }
 
         public void LabelBindingAssert(string path, INotifyPropertyChanged source,
@@ -59,6 +78,16 @@ namespace Tests
         {
             var label = new Label();
             BindingAssert(path, source, label, Label.ContentProperty, () => label.Content, sourcePropertySetter1, targetValue1, sourcePropertySetter2, targetValue2, resolvedTypes);
+        }
+
+        public void LabelBindingAssert(CalcBinding.Binding calcBinding, INotifyPropertyChanged source,
+                    Action sourcePropertySetter1, object targetValue1,
+                    Action sourcePropertySetter2, object targetValue2,
+                    Dictionary<string, Type> resolvedTypes = null
+            )
+        {
+            var label = new Label();
+            BindingAssert(calcBinding, source, label, Label.ContentProperty, () => label.Content, sourcePropertySetter1, targetValue1, sourcePropertySetter2, targetValue2, resolvedTypes);
         }
 
         public void VisibilityBindingAssert(CalcBinding.Binding calcBinding, INotifyPropertyChanged source,

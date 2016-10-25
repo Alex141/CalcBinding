@@ -82,6 +82,7 @@
   <ItemGroup>
     <Compile Include="BaseSystemTests.cs" />
     <Compile Include="BoolToVisibilityConverterTests.cs" />
+    <Compile Include="StringTests.cs" />
     <Compile Include="TestPathComparer.cs" />
     <Compile Include="InverseTest.cs" />
     <Compile Include="Mocks\CompileTimesMockInterpreterParser.cs" />
