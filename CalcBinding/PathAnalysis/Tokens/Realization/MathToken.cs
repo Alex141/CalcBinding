@@ -17,7 +17,7 @@ namespace CalcBinding.PathAnalysis
             : base(start, end)
         {
             MathMember = mathMember;
-            id = new PathTokenId(PathTokenType.StaticProperty, String.Join(".", "Math", MathMember));
+            id = new PathTokenId(PathTokenType.Math, String.Join(".", "Math", MathMember));
         }
     }
 }

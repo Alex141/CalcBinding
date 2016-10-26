@@ -22,6 +22,11 @@ namespace CalcBinding.PathAnalysis
                 ".", ":"
             };
 
+        public static string[] keyWords = new[]
+            {
+                "null"
+            };
+
         private static string[] delimiters;
         private IXamlTypeResolver _typeResolver;
 
@@ -61,7 +66,6 @@ namespace CalcBinding.PathAnalysis
             bool skip = false;
             char skipTerminal = '\'';
 
-            //throw new NotImplementedException("strings");
             do
             {
                 var c = position >= str.Length ? (char)0 : str[position];
@@ -131,6 +135,12 @@ namespace CalcBinding.PathAnalysis
         private bool GetPath(Chunk chunk, out PathToken pathToken)
         {
             var str = (string)chunk.Value;
+
+            if (keyWords.Contains(str))
+            {
+                pathToken = null;
+                return false;
+            }
 
             var colonPos = str.IndexOf(':');
 

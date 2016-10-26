@@ -74,11 +74,15 @@ namespace CalcBinding
                 StringFormatDefined = StringFormat != null,
             };
 
+            var bindingPathes = pathes
+                .Where(p => p.PathId.PathType == PathTokenType.Property || 
+                            p.PathId.PathType == PathTokenType.StaticProperty).ToList();
+
             BindingBase resBinding;
 
-            if (pathes.Count() == 1)
+            if (bindingPathes.Count == 1)
             {
-                // todo: can enums be binded ? What if one value is Enum?
+                // todo: can enums be binded ? What if one value is Enum? bug..
                 var binding = new System.Windows.Data.Binding()
                 {
                     Mode = Mode,
@@ -94,7 +98,7 @@ namespace CalcBinding
 #endif
                 };
 
-                var pathId = pathes.Single().PathId;
+                var pathId = bindingPathes.Single().PathId;
                 // we need to use convert from string for support of static properties
                 var pathValue = pathId.Value;
 
@@ -152,29 +156,26 @@ namespace CalcBinding
                 if (StringFormat != null)
                     mBinding.StringFormat = StringFormat;
 
-                foreach (var path in pathes)
+                foreach (var path in bindingPathes)
                 {
-                    if (path.PathId.PathType == PathTokenType.Property || path.PathId.PathType == PathTokenType.StaticProperty)
-                    {
-                        var binding = new System.Windows.Data.Binding();
+                    var binding = new System.Windows.Data.Binding();
 
-                        // we need to use convert from string for support of static properties
-                        var pathValue = path.PathId.Value;
-                        var resPath = (PropertyPath)new PropertyPathConverter().ConvertFromString(typeDescriptor, pathValue);
+                    // we need to use convert from string for support of static properties
+                    var pathValue = path.PathId.Value;
+                    var resPath = (PropertyPath)new PropertyPathConverter().ConvertFromString(typeDescriptor, pathValue);
 
-                        binding.Path = resPath;
+                    binding.Path = resPath;
 
-                        if (Source != null)
-                            binding.Source = Source;
+                    if (Source != null)
+                        binding.Source = Source;
 
-                        if (ElementName != null)
-                            binding.ElementName = ElementName;
+                    if (ElementName != null)
+                        binding.ElementName = ElementName;
 
-                        if (RelativeSource != null)
-                            binding.RelativeSource = RelativeSource;
+                    if (RelativeSource != null)
+                        binding.RelativeSource = RelativeSource;
 
-                        mBinding.Bindings.Add(binding);
-                    }
+                    mBinding.Bindings.Add(binding);
                 }
 
                 resBinding = mBinding;
