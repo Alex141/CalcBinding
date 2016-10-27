@@ -473,6 +473,21 @@ namespace WpfExample
             }
         }
 
+        private static int staticB = -4;
+
+        public static int StaticB
+        {
+            get
+            {
+                return staticB;
+            }
+            set
+            {
+                staticB = value;
+                RaiseStaticPropertyChanged(() => StaticB);
+            }
+        }
+
         private static string staticString = "";
 
         public static string StaticString

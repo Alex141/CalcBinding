@@ -162,6 +162,12 @@ namespace CalcBinding
 
                     // we need to use convert from string for support of static properties
                     var pathValue = path.PathId.Value;
+
+                    if (path.PathId.PathType == PathTokenType.StaticProperty)
+                    {
+                        pathValue = string.Format("({0})", pathValue);  // need to use brackets for Static property recognition in standart binding
+                    }
+
                     var resPath = (PropertyPath)new PropertyPathConverter().ConvertFromString(typeDescriptor, pathValue);
 
                     binding.Path = resPath;
@@ -208,15 +214,11 @@ namespace CalcBinding
         {
             var result = "";
             var sourceIndex = 0;
-            var propIndex = 0;
-            var enumIndex = 0;
 
             var passedProps = new Dictionary<PathTokenId, string>();
             var enumNames = new Dictionary<PathTokenId, string>();
 
             enumParameters = new Dictionary<string, Type>();
-
-            //pathes = pathes.OrderBy(p => p.Start).ToList();
 
             while (sourceIndex < path.Length)
             {
@@ -305,103 +307,6 @@ namespace CalcBinding
             var propertiesGroups = pathes.GroupBy(p => p.Id).Select(p => new PathAppearances(p.Key, p.ToList())).ToList();
 
             return propertiesGroups;
-            // temporary solution of problem: all string content shouldn't be parsed. Solution - remove strings from sourcePath.
-            //todo: better solution is to use parser PARSER!!
-
-            //var pathsList = GetPathes(normPath, operators);
-
-            //detect all start positions
-
-            //what problem this code solves:
-            //for examle, we have Path = Math.Abs(M) + M, where M - source property.
-            //We found that M - source property name, but we don't know positions of M.
-            // If we call Path.Replace("M", "{0}"), we obtain expressionTemlate = "{0}ath.Abs({0}) + {0}"
-            // which is invalid, because we souldn't replace M when it is the part of other property name.
-            // So, foreach founded source property name we need to found all positions and foreaech of 
-            // these positions check - near source property path at founded positions must be OPERATORS
-            // not other symbols. So, following code perform this check 
-
-            //may be that task solved by using PARSER!
-            //var pathIndexList = pathsList
-            //    .Select(path => new Tuple<string, List<int>>(path, new List<int>()))
-            //    .ToList();
-
-            //foreach (var path in pathIndexList)
-            //{
-            //    var indexes = Regex.Matches(normPath, path.Item1).Cast<Match>().Select(m => m.Index).ToList();
-
-            //    foreach (var index in indexes)
-            //    {
-            //        bool startPosIsOperator = index == 0;
-
-            //        foreach (var op in operators)
-            //            if (index >= op.Length && normPath.Substring(index - op.Length, op.Length) == op)
-            //                startPosIsOperator = true;
-
-            //        bool endPosIsOperator = index + path.Item1.Length == normPath.Length;
-
-            //        foreach (var op in operators)
-            //            if (index + path.Item1.Length <= normPath.Length - op.Length && normPath.Substring(index + path.Item1.Length, op.Length) == op)
-            //                endPosIsOperator = true;
-
-            //        if (startPosIsOperator && endPosIsOperator)
-            //            path.Item2.Add(index);
-            //    }
-            //}
-            //return pathIndexList;
-        }
-
-        ///// <summary>
-        ///// Returns all strings that are pathes
-        ///// </summary>
-        ///// <param name="path"></param>
-        ///// <param name="operators"></param>
-        ///// <returns></returns>
-        //private List<string> GetPathes(string path, string[] operators)
-        //{
-        //    var substrings = path.Split(new[] { "\"" }, StringSplitOptions.None);
-
-        //    if (substrings.Length > 0)
-        //    {
-        //        var pathWithoutStringsBuilder = new StringBuilder();
-        //        for (int i = 0; i < substrings.Length; i++)
-        //        {
-        //            if (i % 2 == 0)
-        //                pathWithoutStringsBuilder.Append(substrings[i]);
-        //            else
-        //                pathWithoutStringsBuilder.Append("\"\"");
-        //        }
-
-        //        path = pathWithoutStringsBuilder.ToString();
-        //    }
-
-        //    var matches = path.Split(operators, StringSplitOptions.RemoveEmptyEntries).Distinct();
-
-        //    // detect all pathes
-        //    var pathsList = new List<string>();
-
-        //    foreach (var match in matches)
-        //    {
-        //        if (!isDouble(match) && !match.Contains("\""))
-        //        {
-        //            // math detection
-        //            if (!Regex.IsMatch(match, @"Math.\w+\(\w+\)") && !Regex.IsMatch(match, @"Math.\w+"))
-        //                if (match != "null")
-        //                    pathsList.Add(match);
-        //        }
-        //    }
-        //    return pathsList;
-        //}
-
-        /// <summary>
-        /// Return true, is string can be converted to Double type, and false otherwise
-        /// </summary>
-        /// <param name="match"></param>
-        /// <returns></returns>
-        private bool isDouble(string match)
-        {
-            double result;
-            return Double.TryParse(match, NumberStyles.Float, CultureInfo.InvariantCulture, out result);
         }
 
         /// <summary>
@@ -440,22 +345,6 @@ namespace CalcBinding
             var normPath = path;
             foreach (var pair in replaceDict)
                 normPath = normPath.Replace(pair.Key, pair.Value);
-
-            //// delete all spaces out of user string
-            //var i = 0;
-            //var canDelete = true;
-            //var res = "";
-            //do
-            //{
-            //    if (normPath[i] == '\"')
-            //        canDelete = !canDelete;
-
-            //    if (normPath[i] != ' ' || !canDelete)
-            //        res += normPath[i];
-            //}
-            //while (++i < normPath.Length);
-
-            //normPath = res;
 
             return normPath;
         }

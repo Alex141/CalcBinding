@@ -157,7 +157,12 @@ namespace Tests
         [TestMethod]
         public void MathPathTokensTest()
         {
-            throw new NotImplementedException();
+            AssertPropertyPathes("Math.PI+Math.Sin(45.5)*Math.Cos(Math.ATan(55))", null, true,
+                            new MathToken(0, 6, "PI"),
+                            new MathToken(8, 15, "Sin"),
+                            new MathToken(23, 30, "Cos"),
+                            new MathToken(32, 40, "ATan")
+                        );
         }
 
         [TestMethod]

@@ -16,6 +16,15 @@ namespace Tests
                 () => StaticExampleClass.StaticA = 20.34, "20.34", 20.34,
                 new Dictionary<string, Type>() { {"local:StaticExampleClass", typeof(StaticExampleClass) }}
             );
+
+            var binding = new CalcBinding.Binding();
+            binding.Path = "(local:StaticExampleClass.StaticA)";
+
+            StringAndObjectBindingAssert(binding, null,
+                () => StaticExampleClass.StaticA = 10, "10", (double)10,
+                () => StaticExampleClass.StaticA = 20.34, "20.34", 20.34,
+                new Dictionary<string, Type>() { { "local:StaticExampleClass", typeof(StaticExampleClass) } }
+            );
         }
 
         [TestMethod]
@@ -26,17 +35,38 @@ namespace Tests
                 () => StaticExampleClass.StaticA = 20.34, "20.34", 20.34,
                 new Dictionary<string, Type>() { { "local:StaticExampleClass", typeof(StaticExampleClass) } }
             );
+
+            var binding = new CalcBinding.Binding();
+            binding.Path = "local:StaticExampleClass.StaticA";
+
+            StringAndObjectBindingAssert(binding, null,
+                () => StaticExampleClass.StaticA = 10, "10", (double)10,
+                () => StaticExampleClass.StaticA = 20.34, "20.34", 20.34,
+                new Dictionary<string, Type>() { { "local:StaticExampleClass", typeof(StaticExampleClass) } }
+            );
         }
 
-        //todo: test for binding where Path property sets instead of transfer path as string to constructor
-
         [TestMethod]
-        public void MathStaticPropertyTest()
+        public void AlgebraicStaticPropertyTest()
         {
             StringAndObjectBindingAssert("local:StaticExampleClass.StaticA+5", null,
                 () => StaticExampleClass.StaticA = 10, "15", (double)15,
                 () => StaticExampleClass.StaticA = 20.34, "25.34", 25.34,
                 new Dictionary<string, Type>() { { "local:StaticExampleClass", typeof(StaticExampleClass) } }
+            );
+
+            StringAndObjectBindingAssert("local:StaticExampleClass.StaticA+local:StaticExampleClass.StaticB", null,
+                () => { StaticExampleClass.StaticA = 10.4; StaticExampleClass.StaticB = 2; }, "12.4", (double)12.4,
+                () => {StaticExampleClass.StaticA = 20.5; StaticExampleClass.StaticB = -20;}, "0.5", (double)0.5,
+                new Dictionary<string, Type>() { { "local:StaticExampleClass", typeof(StaticExampleClass) } }
+            );
+
+            var exampleViewModel = new ExampleViewModel();
+            
+            StringAndObjectBindingAssert("local:StaticExampleClass.StaticA-A", exampleViewModel,
+                () => { StaticExampleClass.StaticA = 10;    exampleViewModel.A = -4; }, "14", (double)14,
+                () => { StaticExampleClass.StaticA = 20.34; exampleViewModel.A = 8; }, "12.34", 12.34,
+                    new Dictionary<string, Type>() { { "local:StaticExampleClass", typeof(StaticExampleClass) } }
             );
         }
 
@@ -47,5 +77,7 @@ namespace Tests
         //readonly static property
 
         //static property without event (such as Brush) (peharps binding with flag oneWay)
+
+        //mixed test: Math + Char + String + Static + NonStatic + Enum
     }
 }

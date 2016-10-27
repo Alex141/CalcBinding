@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Markup;
+using System.Xaml;
 
 namespace Tests.Mocks
 {
@@ -12,6 +13,7 @@ namespace Tests.Mocks
     {
         ProvideValueTargetMock provideValueTargetMock;
         IXamlTypeResolver xamlTypeResolverMock;
+        bool useNullXamlSchemaContextProvider;
 
         public ServiceProviderMock(object TargetObject, object TargetProperty, Dictionary<string, Type> resolvedTypes)
         {
@@ -24,6 +26,12 @@ namespace Tests.Mocks
             xamlTypeResolverMock = new XamlTypeResolverMock(resolvedTypes);
         }
 
+        public ServiceProviderMock WithNullXamlSchemaContextProvider()
+        {
+            useNullXamlSchemaContextProvider = true;
+            return this;
+        }
+
         public object GetService(Type serviceType)
         {
             if (serviceType == typeof(IXamlTypeResolver))
@@ -31,6 +39,9 @@ namespace Tests.Mocks
 
             if (serviceType == typeof(IProvideValueTarget))
                 return provideValueTargetMock;
+
+            if (serviceType == typeof(IXamlSchemaContextProvider) && useNullXamlSchemaContextProvider)
+                return null;
 
             throw new NotSupportedException("test doesn't support type " + serviceType.FullName);
         }
