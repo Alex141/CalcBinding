@@ -21,7 +21,7 @@ namespace Tests
         {
             // we need to fix known delimeters array, as it binds to TokenType
 
-            CollectionAssert.AreEquivalent(new string[] { ".", ":" }, PropertyPathAnalyzer.KnownDelimiters);
+            CollectionAssert.AreEquivalent(new char[] { '.', ':' }, PropertyPathAnalyzer.KnownDelimiters);
 
             //":" - for TokenType.Colon, "." - for TokenType.Dot
         }

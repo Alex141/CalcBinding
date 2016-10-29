@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Media;
 using Tests.Mocks;
 
 namespace Tests
@@ -32,6 +33,17 @@ namespace Tests
         {
             StringBindingAssert(calcBinding, source, sourcePropertySetter1, targetValue1, sourcePropertySetter2, targetValue2, resolvedTypes);
             ObjectBindingAssert(calcBinding, source, sourcePropertySetter1, objTargetValue1, sourcePropertySetter2, objTargetValue2, resolvedTypes);
+        }
+
+        public void BrushBindingAssert(string path, INotifyPropertyChanged source,
+    Action sourcePropertySetter1, Brush targetValue1,
+    Action sourcePropertySetter2, Brush targetValue2,
+            Dictionary<string, Type> resolvedTypes = null)
+        {
+            var button = new Button();
+
+            BindingAssert(path, source, button, Button.BackgroundProperty, () => button.Background, sourcePropertySetter1, targetValue1, sourcePropertySetter2, targetValue2, resolvedTypes);
+
         }
 
         public void StringBindingAssert(CalcBinding.Binding calcBinding, INotifyPropertyChanged source,

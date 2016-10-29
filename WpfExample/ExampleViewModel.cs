@@ -184,7 +184,7 @@ namespace WpfExample
             }
         }
 
-        private int b = 4;
+        private int b = 15;
         public int B
         {
             get { return b; }

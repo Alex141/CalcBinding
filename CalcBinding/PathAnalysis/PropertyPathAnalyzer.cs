@@ -8,26 +8,34 @@ using System.Windows.Markup;
 
 namespace CalcBinding.PathAnalysis
 {
+    /// <summary>
+    /// Idea of parser: to detect right all entries of property pathes, static property pathes etc. without parsing language structures
+    /// For full validation of expression there need to write own analizer of C# lanquage whick could determine xaml names too...
+    /// </summary>
     public class PropertyPathAnalyzer
     {
         #region Private fields
-        public static string[] UnknownDelimiters = new[] 
+        public static char[] UnknownDelimiters = new[] 
             { 
-                "(", ")", "+", "-", "*", "/", "%", "^", "&&", "||", 
-                "&", "|", "?", "<=", ">=", "<", ">", "==", "!=", "!", ",", " ", "="
+                '(', ')', '+', '-', '*', '/', '%', '^', '&', '|', '?', '<', '>', '=', '!', ',', ' '
             };
 
-        public static string[] KnownDelimiters = new[]
+        public static char[] KnownDelimiters = new[]
             {
-                ".", ":"
+                '.', ':'
             };
 
-        public static string[] keyWords = new[]
+        public static string[] Keywords = new[]
             {
                 "null"
             };
 
-        private static string[] delimiters;
+        public static char[] QuoteTerminals = new[]
+            {
+                '\'', '"'
+            };
+
+        private static char[] delimiters;
         private IXamlTypeResolver _typeResolver;
 
         #endregion
@@ -37,7 +45,7 @@ namespace CalcBinding.PathAnalysis
 
         static PropertyPathAnalyzer()
         {
-            delimiters = KnownDelimiters.Concat(UnknownDelimiters).ToArray();
+            delimiters = KnownDelimiters.Concat(UnknownDelimiters).Concat(QuoteTerminals).ToArray();
         } 
 
         #endregion
@@ -78,7 +86,7 @@ namespace CalcBinding.PathAnalysis
                 }
                 else
                 {
-                    var isDelim = UnknownDelimiters.Contains(c.ToString()) || c == 0;
+                    var isDelim = UnknownDelimiters.Contains(c) || QuoteTerminals.Contains(c) || c == 0;
 
                     if (isChunk)
                     {
@@ -88,20 +96,22 @@ namespace CalcBinding.PathAnalysis
                             isChunk = false;
                         }
                     }
-                    else
+
+                    // dangerous code
+                    if (!isChunk)
                     {
-                        if (!isDelim)
+                        if (isDelim)
                         {
-                            if (c == '\"' || c == '\'')
+                            if (QuoteTerminals.Contains(c))
                             {
                                 skipTerminal = c;
                                 skip = true;
                             }
-                            else
-                            {
-                                chunkStart = position;
-                                isChunk = true;
-                            }
+                        }
+                        else
+                        {
+                            chunkStart = position;
+                            isChunk = true;
                         }
                     }
                 }
@@ -136,7 +146,7 @@ namespace CalcBinding.PathAnalysis
         {
             var str = (string)chunk.Value;
 
-            if (keyWords.Contains(str))
+            if (Keywords.Contains(str))
             {
                 pathToken = null;
                 return false;
@@ -196,11 +206,11 @@ namespace CalcBinding.PathAnalysis
 
             var firstChar = str[0];
 
-            if (Char.IsDigit(firstChar) || delimiters.Contains(firstChar.ToString()))
+            if (Char.IsDigit(firstChar) || delimiters.Contains(firstChar))
                 return false;
 
             for (int i = 1; i <= str.Length - 1; i++)
-                if (delimiters.Contains(str[i].ToString()))
+                if (delimiters.Contains(str[i]))
                     return false;
 
             return true;

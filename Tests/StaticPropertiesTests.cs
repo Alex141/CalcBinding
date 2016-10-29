@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WpfExample;
 using System.Collections.Generic;
+using System.Windows.Media;
 
 namespace Tests
 {
@@ -69,6 +70,31 @@ namespace Tests
                     new Dictionary<string, Type>() { { "local:StaticExampleClass", typeof(StaticExampleClass) } }
             );
         }
+
+        [TestMethod]
+        public void ReadonlyPropertiesTest()
+        {
+            var exampleViewModel = new ExampleViewModel();
+
+            BrushBindingAssert("(A>B) ? m:Brushes.White : m:Brushes.Black", exampleViewModel,
+                () => { exampleViewModel.A = 10; exampleViewModel.B = 15;}, Brushes.Black,
+                () => { exampleViewModel.A = 20; exampleViewModel.B = -2; }, Brushes.White,
+                new Dictionary<string, Type>() { { "m:Brushes", typeof(Brushes) } }
+            );
+        }
+
+        [TestMethod]
+        public void TernaryOperatorWithStringTest()
+        {
+            var exampleViewModel = new ExampleViewModel();
+
+            StringAndObjectBindingAssert("(A < B?'LightBlue when A < B':'Red when A >= B') ", exampleViewModel,
+                () => { exampleViewModel.A = 10; exampleViewModel.B = 15; }, "LightBlue when A < B", "LightBlue when A < B",
+                () => { exampleViewModel.A = 20; exampleViewModel.B = -2; }, "Red when A >= B", "Red when A >= B"
+            );
+        }
+
+        //test on bool to visibility + ternary + color
 
         // test for error when set binding to static property and source automatically??
 

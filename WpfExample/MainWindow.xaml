@@ -18,6 +18,9 @@
             <TabItem Header="Null properties support">
                 <local:FourthPage/>
             </TabItem>
+            <TabItem Header="Static properties and Enums">
+                <local:FifthPage/>
+            </TabItem>
         </TabControl>
     </Grid>
 </Window>
