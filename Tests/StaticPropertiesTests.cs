@@ -3,6 +3,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WpfExample;
 using System.Collections.Generic;
 using System.Windows.Media;
+using System.Windows;
+using System.Globalization;
 
 namespace Tests
 {
@@ -94,8 +96,94 @@ namespace Tests
             );
         }
 
-        //test on bool to visibility + ternary + color
+        [TestMethod]
+        public void TwoStaticPropertyPathesTest()
+        {
+            BrushBindingAssert("(local:StaticExampleClass.StaticA > 5?m:Brushes.White : m:Brushes.Black) ", null,
+                () => { StaticExampleClass.StaticA = 4; }, Brushes.Black,
+                () => { StaticExampleClass.StaticA = 10; }, Brushes.White,
+                new Dictionary<string, Type> 
+                { 
+                    {"local:StaticExampleClass", typeof(StaticExampleClass)},
+                    {"m:Brushes", typeof(Brushes)}
+                }
+            );
+        }
 
+        [TestMethod]
+        public void BoolToVisibilityTest()
+        {
+            VisibilityBindingAssert("local:StaticExampleClass.StaticA less 5", null,
+                () => { StaticExampleClass.StaticA = 4; }, Visibility.Visible,
+                () => { StaticExampleClass.StaticA = 10; }, Visibility.Collapsed,
+                new Dictionary<string, Type> 
+                { 
+                    {"local:StaticExampleClass", typeof(StaticExampleClass)},
+                }
+            );
+        }
+
+        [TestMethod]
+        public void UpdateSourceStaticPropertyTest()
+        {
+            StringAndObjectBindingBackAssert("local:StaticExampleClass.StaticA+5", null, () => StaticExampleClass.StaticA,
+                "10", "-2", 10, -2,
+                5d, -7d, new Dictionary<string, Type>
+                {
+                    {"local:StaticExampleClass", typeof(StaticExampleClass)}
+                });
+        }
+
+        [TestMethod]
+        public void MathWithStaticPropertyTest()
+        {
+            StringAndObjectBindingAssert("Math.Round(Math.Sin(local:StaticExampleClass.StaticB *Math.PI / 2.0))", null, 
+                () => { StaticExampleClass.StaticB = 1; }, "1", 1d,
+                () => { StaticExampleClass.StaticB = 6; }, "0", 0d,
+                new Dictionary<string, Type>
+                {
+                    {"local:StaticExampleClass", typeof(StaticExampleClass)}
+                });
+
+            StringAndObjectBindingAssert("Math.Round(Math.Cos(local:StaticExampleClass.StaticB *Math.PI / 2.0))", null,
+                () => { StaticExampleClass.StaticB = 3; }, "0", 0d,
+                () => { StaticExampleClass.StaticB = 4; }, "1", 1d,
+                new Dictionary<string, Type>
+                {
+                    {"local:StaticExampleClass", typeof(StaticExampleClass)}
+                });
+        }
+
+        [TestMethod]
+        public void MathTwoWayWithStaticPropertyTest()
+        {
+            StringAndObjectBindingBackAssert("Math.Sin(local:StaticExampleClass.StaticB/100.0)", null, () => StaticExampleClass.StaticB,
+                "0.5", "-0.9", 0.5, -0.9,
+                52, -111, new Dictionary<string, Type>
+                {
+                    {"local:StaticExampleClass", typeof(StaticExampleClass)}
+                });
+
+            StringAndObjectBindingBackAssert("Math.Cos(local:StaticExampleClass.StaticB/100.0)", null, () => StaticExampleClass.StaticB,
+                "0.5", "-0.9", 0.5, -0.9,
+                104, 269, new Dictionary<string, Type>
+                {
+                    {"local:StaticExampleClass", typeof(StaticExampleClass)}
+                });
+
+            //PI
+
+            var pi = Math.PI.ToString(CultureInfo.InvariantCulture);
+            StringAndObjectBindingBackAssert("Math.Pow(Math.PI,local:StaticExampleClass.StaticA)", null, () => StaticExampleClass.StaticA,
+                pi, "1", Double.Parse(pi, CultureInfo.InvariantCulture), 1,
+                0.999999999999999, 0.0, new Dictionary<string, Type>
+                {
+                    {"local:StaticExampleClass", typeof(StaticExampleClass)}
+                });
+        }
+
+        // also: Char - String (DifferQuotes), Enum, Complex. Check that Debug messages are deleted
+        
         // test for error when set binding to static property and source automatically??
 
         //test: visibility binds to static property bool (bug with (n*{1})n* recognition)

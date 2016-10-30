@@ -196,58 +196,67 @@ namespace Tests
         public void StringAndObjectBindingBackAssert(string path, INotifyPropertyChanged source, Func<object> sourcePropertyGetter,
             String stringTargetValue1, String stringTargetValue2,
             object objTargetValue1, object objTargetValue2,
-            object sourcePropertyValue1, object sourcePropertyValue2)
+            object sourcePropertyValue1, object sourcePropertyValue2,
+            Dictionary<string, Type> resolvedTypes = null)
         {
-            StringBindingBackAssert(path, source, sourcePropertyGetter, stringTargetValue1, stringTargetValue2, sourcePropertyValue1, sourcePropertyValue2);
-            ObjectBindingBackAssert(path, source, sourcePropertyGetter, objTargetValue1, objTargetValue2, sourcePropertyValue1, sourcePropertyValue2);
+            StringBindingBackAssert(path, source, sourcePropertyGetter, stringTargetValue1, stringTargetValue2, sourcePropertyValue1, sourcePropertyValue2, resolvedTypes);
+            ObjectBindingBackAssert(path, source, sourcePropertyGetter, objTargetValue1, objTargetValue2, sourcePropertyValue1, sourcePropertyValue2, resolvedTypes);
         }
 
         public void VisibilityBindingBackAssert(string path, INotifyPropertyChanged source, Func<object> sourcePropertyGetter,
             Visibility targetValue1, Visibility targetValue2,
-            object sourcePropertyValue1, object sourcePropertyValue2)
+            object sourcePropertyValue1, object sourcePropertyValue2,
+            Dictionary<string, Type> resolvedTypes = null)
         {
             var obj = new Label();
             BindingBackAssert(path, source, sourcePropertyGetter,
                 obj, Label.VisibilityProperty,
                 (targetValue) => obj.Visibility = targetValue,
                 targetValue1, targetValue2,
-                sourcePropertyValue1, sourcePropertyValue2, BindingMode.TwoWay);
+                sourcePropertyValue1, sourcePropertyValue2, BindingMode.TwoWay,
+                resolvedTypes);
         }
 
         public void BoolBindingBackAssert(string path, INotifyPropertyChanged source, Func<object> sourcePropertyGetter,
             bool targetValue1, bool targetValue2,
-            object sourcePropertyValue1, object sourcePropertyValue2)
+            object sourcePropertyValue1, object sourcePropertyValue2,
+            Dictionary<string, Type> resolvedTypes = null)
         {
             var obj = new CheckBox();
             BindingBackAssert(path, source, sourcePropertyGetter,
                 obj, CheckBox.IsCheckedProperty,
                 (targetValue) => obj.IsChecked = targetValue,
                 targetValue1, targetValue2,
-                sourcePropertyValue1, sourcePropertyValue2, BindingMode.Default);
+                sourcePropertyValue1, sourcePropertyValue2, BindingMode.Default,
+                resolvedTypes);
         }
 
         public void ObjectBindingBackAssert(string path, INotifyPropertyChanged source, Func<object> sourcePropertyGetter,
             object targetValue1, object targetValue2,
-            object sourcePropertyValue1, object sourcePropertyValue2)
+            object sourcePropertyValue1, object sourcePropertyValue2,
+            Dictionary<string, Type> resolvedTypes = null)
         {
             var obj = new Button();
             BindingBackAssert(path, source, sourcePropertyGetter,
                 obj, Button.ContentProperty,
                 (targetValue) => obj.Content = targetValue,
                 targetValue1, targetValue2,
-                sourcePropertyValue1, sourcePropertyValue2, BindingMode.TwoWay);
+                sourcePropertyValue1, sourcePropertyValue2, BindingMode.TwoWay,
+                resolvedTypes);
         }
 
         public void StringBindingBackAssert(string path, INotifyPropertyChanged source, Func<object> sourcePropertyGetter,
             String targetValue1, String targetValue2,
-            object sourcePropertyValue1, object sourcePropertyValue2)
+            object sourcePropertyValue1, object sourcePropertyValue2,
+            Dictionary<string, Type> resolvedTypes = null)
         {
             var obj = new TextBox();
             BindingBackAssert(path, source, sourcePropertyGetter,
                 obj, TextBox.TextProperty,
                 (targetValue) => obj.Text = targetValue,
                 targetValue1, targetValue2,
-                sourcePropertyValue1, sourcePropertyValue2, BindingMode.Default);
+                sourcePropertyValue1, sourcePropertyValue2, BindingMode.Default,
+                resolvedTypes);
         }
 
         public void BindingBackAssert<TTargetProperty>(
@@ -255,7 +264,8 @@ namespace Tests
     FrameworkElement targetObject, DependencyProperty targetProperty,
     Action<TTargetProperty> targetPropertySetter,
     TTargetProperty targetPropertyValue1, TTargetProperty targetPropertyValue2,
-    object sourcePropertyValue1, object sourcePropertyValue2, BindingMode mode)
+    object sourcePropertyValue1, object sourcePropertyValue2, BindingMode mode,
+            Dictionary<string, Type> resolvedTypes = null)
         {
             var calcBinding = new CalcBinding.Binding(path)
             {
@@ -266,7 +276,8 @@ namespace Tests
             BindingBackAssert(calcBinding, source, sourcePropertyGetter,
                 targetObject, targetProperty, targetPropertySetter,
                 targetPropertyValue1, targetPropertyValue2,
-                sourcePropertyValue1, sourcePropertyValue2);
+                sourcePropertyValue1, sourcePropertyValue2,
+                resolvedTypes);
         }
 
         public void BindingBackAssert<TTargetProperty>(
@@ -275,11 +286,12 @@ namespace Tests
     FrameworkElement targetObject, DependencyProperty targetProperty,
     Action<TTargetProperty> targetPropertySetter,
     TTargetProperty targetPropertyValue1, TTargetProperty targetPropertyValue2,
-    object sourcePropertyValue1, object sourcePropertyValue2)
+    object sourcePropertyValue1, object sourcePropertyValue2,
+            Dictionary<string, Type> resolvedTypes = null)
         {
             targetObject.DataContext = source;
 
-            var bindingExpression = calcBinding.ProvideValue(new ServiceProviderMock(targetObject, targetProperty, null));
+            var bindingExpression = calcBinding.ProvideValue(new ServiceProviderMock(targetObject, targetProperty, resolvedTypes));
 
             targetObject.SetValue(targetProperty, bindingExpression);
 
