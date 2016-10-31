@@ -182,7 +182,89 @@ namespace Tests
                 });
         }
 
-        // also: Char - String (DifferQuotes), Enum, Complex. Check that Debug messages are deleted
+        [TestMethod]
+        public void DefaultDifferQuotesIsFalseTest()
+        {
+            // default - DifferQuotes = false
+            var binding = new CalcBinding.Binding("A");
+            Assert.AreEqual(false, binding.DifferQuotes);
+
+            var exampleViewModel = new ExampleViewModel();
+
+            StringBindingAssert("Name + 'D'", exampleViewModel,
+                () => exampleViewModel.Name = "ABC", "ABCD",
+                () => exampleViewModel.Name = "A", "AD"
+            );
+
+            StringBindingAssert("Name + \"DEF\"", exampleViewModel,
+                () => exampleViewModel.Name = "ABC", "ABCDEF",
+                () => exampleViewModel.Name = "A", "ADEF"
+            );
+        }
+
+        [TestMethod]
+        public void DifferQuotesSettedToTrueTest()
+        {
+            var binding = new CalcBinding.Binding("Name + \"DEF\"");
+            binding.DifferQuotes = true;
+
+            var exampleViewModel = new ExampleViewModel();
+            StringBindingAssert(binding, exampleViewModel,
+                () => exampleViewModel.Name = "ABC", "ABCDEF",
+                () => exampleViewModel.Name = "A", "ADEF"
+            );
+
+            //detect char
+            binding = new CalcBinding.Binding("Name + 'D'");
+            binding.DifferQuotes = true;
+
+            StringBindingAssert(binding, exampleViewModel,
+                () => exampleViewModel.Name = "ABC", "",
+                () => exampleViewModel.Name = "A", ""
+            );
+        }
+
+        [TestMethod]
+        public void SingleQuotesInStringTest()
+        {
+            //detect single quotes
+            var binding = new CalcBinding.Binding("l:StaticExampleClass2.Name + \"'D'EF\"");
+            binding.DifferQuotes = true;
+
+            StringBindingAssert(binding, null,
+                () => StaticExampleClass.Name = "ABC", "ABC'D'EF",
+                () => StaticExampleClass.Name = "A", "A'D'EF", new Dictionary<string, Type>
+                {
+                    {"l:StaticExampleClass2", typeof(StaticExampleClass)}
+                }
+            );
+
+            binding = new CalcBinding.Binding("Name + \"D'EF\"");
+            binding.DifferQuotes = true;
+
+            var exampleViewModel = new ExampleViewModel();
+            StringBindingAssert(binding, exampleViewModel,
+                () => exampleViewModel.Name = "ABC", "ABCD'EF",
+                () => exampleViewModel.Name = "A", "AD'EF"
+            );
+        }
+
+        [TestMethod]
+        public void DoubleQuotesInCharTest()
+        {
+            var binding = new CalcBinding.Binding("local:StaticExampleClass.StaticChar == 'A' ? '4' : '\"'");
+            binding.DifferQuotes = true;
+
+            StringAndObjectBindingAssert(binding, null,
+                () => StaticExampleClass.StaticChar = 'D', "\"", '"',
+                () => StaticExampleClass.StaticChar = 'A', "4", '4', new Dictionary<string, Type>
+                {
+                    {"local:StaticExampleClass", typeof(StaticExampleClass)}
+                }
+            );
+
+        }
+        // also: Char - String (DifferQuotes)+, Enum, Complex. Check that Debug messages are deleted
         
         // test for error when set binding to static property and source automatically??
 

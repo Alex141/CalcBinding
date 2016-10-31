@@ -503,6 +503,37 @@ namespace WpfExample
             }
         }
 
+
+        private static Char staticChar = 'A';
+
+        public static Char StaticChar
+        {
+            get
+            {
+                return staticChar;
+            }
+            set
+            {
+                staticChar = value;
+                RaiseStaticPropertyChanged(() => StaticChar);
+            }
+        }
+
+        private static String name = "A";
+
+        public static String Name
+        {
+            get
+            {
+                return name;
+            }
+            set
+            {
+                name = value;
+                RaiseStaticPropertyChanged(() => Name);
+            }
+        }
+
         //protected static void RaisePropertyChanged<T>(Expression<Func<T>> propertyExpression)
         //{
         //    if (PropertyChanged != null)
