@@ -266,6 +266,10 @@ namespace Tests
         }
         // also: Char - String (DifferQuotes)+, Enum, Complex. Check that Debug messages are deleted
         
+        // binding to normal class with static property
+
+        // 2 ways of binding 
+
         // test for error when set binding to static property and source automatically??
 
         //test: visibility binds to static property bool (bug with (n*{1})n* recognition)

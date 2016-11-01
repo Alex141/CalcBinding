@@ -6,6 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace WpfExample
 {
@@ -454,6 +455,34 @@ namespace WpfExample
                 RaisePropertyChanged(() => Symbol);
             }
         }
+
+        private Enum2 enumValue;
+        public Enum2 EnumValue
+        {
+            get
+            {
+                return enumValue;
+            }
+            set
+            {
+                enumValue = value;
+                RaisePropertyChanged(() => EnumValue);
+            }
+        }
+
+        private Visibility visibility;
+        public Visibility Visibility
+        {
+            get
+            {
+                return visibility;
+            }
+            set
+            {
+                visibility = value;
+                RaisePropertyChanged(() => Visibility);
+            }
+        }
     }
 
     public class StaticExampleClass
@@ -534,6 +563,34 @@ namespace WpfExample
             }
         }
 
+        private static Enum2 enumValue;
+        public static Enum2 EnumValue
+        {
+            get
+            {
+                return enumValue;
+            }
+            set
+            {
+                enumValue = value;
+                RaiseStaticPropertyChanged(() => EnumValue);
+            }
+        }
+
+        private static Visibility visibility;
+        public static Visibility Visibility
+        {
+            get
+            {
+                return visibility;
+            }
+            set
+            {
+                visibility = value;
+                RaiseStaticPropertyChanged(() => Visibility);
+            }
+        }
+
         //protected static void RaisePropertyChanged<T>(Expression<Func<T>> propertyExpression)
         //{
         //    if (PropertyChanged != null)
@@ -565,5 +622,17 @@ namespace WpfExample
             proc();
             Trace.WriteLine(String.Format("timeSpan: {0}", timer.ElapsedMilliseconds));
         }
+    }
+
+    public enum Enum1
+    {
+        Value1,
+        Value2
+    }
+
+    public enum Enum2
+    {
+        Value1,
+        Value2
     }
 }

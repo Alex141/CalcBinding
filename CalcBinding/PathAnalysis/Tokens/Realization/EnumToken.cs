@@ -22,7 +22,7 @@ namespace CalcBinding.PathAnalysis
             EnumMember = enumMember;
             Namespace = @namespace;
 
-            id = new PathTokenId(PathTokenType.StaticProperty, String.Format("{0}:{1}.{2}", Namespace, @enum.Name, EnumMember));
+            id = new PathTokenId(PathTokenType.Enum, String.Format("{0}:{1}.{2}", Namespace, @enum.Name, EnumMember));
         }
     }
 }

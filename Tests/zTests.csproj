@@ -94,6 +94,7 @@
     <Compile Include="PropertyPathAnalyzerTests.cs" />
     <Compile Include="ReadOnlySourcePropertiesTests.cs" />
     <Compile Include="StaticPropertiesTests.cs" />
+    <Compile Include="EnumTests.cs" />
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release'">
     <Compile Include="Net45AndHigh\ExpectedExceptionEx.cs" />

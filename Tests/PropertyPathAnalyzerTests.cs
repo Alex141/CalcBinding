@@ -55,8 +55,8 @@ namespace Tests
         {
             var resolver = new XamlTypeResolverMock(new Dictionary<string, Type>()
             {
-                {"local:Enum1", typeof(Enum1)},
-                {"local:Enum2", typeof(Enum2)},
+                {"local:Enum1", typeof(ExampleEnum1)},
+                {"local:Enum2", typeof(ExampleEnum2)},
             });
 
             AssertPropertyPathes("(1 > 0) ? local:MyClass.MyProp : local:MyClass.Prop", resolver, true,
@@ -70,8 +70,8 @@ namespace Tests
         {
             var resolver = new XamlTypeResolverMock(new Dictionary<string,Type>()
             {
-                {"local:Enum1", typeof(Enum1)},
-                {"local:Enum2", typeof(Enum2)},
+                {"local:Enum1", typeof(ExampleEnum1)},
+                {"local:Enum2", typeof(ExampleEnum2)},
             });
 
             AssertPropertyPathes("(1 > 0) ? local:MyClass.MyProp : local:MyClass.Prop", resolver, true,
@@ -111,8 +111,8 @@ namespace Tests
             ); 
 
             AssertPropertyPathes("1 > 0 ? local:Enum1.Prop1 : local:Enum2.Prop2", resolver, true,
-                new EnumToken(8, 24, "local", typeof(Enum1), "Prop1"),
-                new EnumToken(28, 44, "local", typeof(Enum2), "Prop2")
+                new EnumToken(8, 24, "local", typeof(ExampleEnum1), "Prop1"),
+                new EnumToken(28, 44, "local", typeof(ExampleEnum2), "Prop2")
             );
         }
 
@@ -231,11 +231,12 @@ namespace Tests
         }
     }
 
-    public enum Enum1
+    public enum ExampleEnum1
     {
     }
 
-    public enum Enum2
+    public enum ExampleEnum2
     {
+        Value1
     }
 }
