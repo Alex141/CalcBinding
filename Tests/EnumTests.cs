@@ -53,8 +53,8 @@ namespace Tests
             var exampleViewModel = new ExampleViewModel();
             exampleViewModel.Visibility = Visibility.Hidden;
             StringAndObjectBindingAssert("EnumValue == local:Enum2.Value1 ? win:Visibility.Visible : Visibility", exampleViewModel,
-                () => exampleViewModel.EnumValue = Enum2.Value1, "Visibility.Visible", Visibility.Visible,
-                () => exampleViewModel.EnumValue = Enum2.Value2, "Visibility.Hidden", Visibility.Hidden, new Dictionary<string, Type>
+                () => exampleViewModel.EnumValue = Enum2.Value1, "Visible", Visibility.Visible,
+                () => exampleViewModel.EnumValue = Enum2.Value2, "Hidden", Visibility.Hidden, new Dictionary<string, Type>
                 {
                     {"win:Visibility", typeof(Visibility)},
                     {"local:Enum2", typeof(Enum2)}

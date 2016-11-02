@@ -268,6 +268,8 @@ namespace Tests
         
         // binding to normal class with static property
 
+        // tests on binding to one item (enum\static property\char\string)
+
         // 2 ways of binding 
 
         // test for error when set binding to static property and source automatically??

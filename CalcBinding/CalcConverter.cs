@@ -154,7 +154,8 @@ namespace CalcBinding
                 {
                     if (targetType == typeof(Visibility))
                     {
-                        result = new BoolToVisibilityConverter(FalseToVisibility)
+                        if (!(result is Visibility))
+                            result = new BoolToVisibilityConverter(FalseToVisibility)
                                         .Convert(result, targetType, null, culture);
                     }
 
