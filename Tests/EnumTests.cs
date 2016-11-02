@@ -111,5 +111,26 @@ namespace Tests
                 }
             );
         }
+
+        [TestMethod]
+        public void BindingToSingleEnumTest()
+        {
+            // Usual
+            var exampleViewModel = new ExampleViewModel();
+
+            StringAndObjectBindingAssert("EnumValue", exampleViewModel,
+                () => exampleViewModel.EnumValue = Enum2.Value1, "Value1", Enum2.Value1,
+                () => exampleViewModel.EnumValue = Enum2.Value2, "Value2", Enum2.Value2
+            );
+
+            // Static
+            StringAndObjectBindingAssert("local:StaticExampleClass.EnumValue", null,
+                () => StaticExampleClass.EnumValue = Enum2.Value1, "Value1", Enum2.Value1,
+                () => StaticExampleClass.EnumValue = Enum2.Value2, "Value2", Enum2.Value2, new Dictionary<string, Type>
+                {
+                    {"local:StaticExampleClass", typeof(StaticExampleClass)},
+                }
+            );
+        }
     }
 }

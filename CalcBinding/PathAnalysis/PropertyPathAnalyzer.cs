@@ -57,7 +57,7 @@ namespace CalcBinding.PathAnalysis
         {
             _typeResolver = typeResolver;
 
-            Trace.WriteLine(string.Format("PropertyPathAnalyzer.GetPathes: start read {0} ", normPath));
+            Debug.WriteLine(string.Format("PropertyPathAnalyzer.GetPathes: start read {0} ", normPath));
 
             var chunks = GetChunks(normPath);
             var pathes = GetPathes(chunks);
@@ -282,7 +282,7 @@ namespace CalcBinding.PathAnalysis
 
         private void TracePath(PathToken path)
         {
-            Trace.WriteLine(string.Format("PropertyPathAnalyzer: read {0} ({1}) ({2}-{3})", path.Id.Value, path.Id.PathType, path.Start, path.End));
+            Debug.WriteLine(string.Format("PropertyPathAnalyzer: read {0} ({1}) ({2}-{3})", path.Id.Value, path.Id.PathType, path.Start, path.End));
         }
 
         #endregion
