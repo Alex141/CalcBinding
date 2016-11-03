@@ -50,6 +50,16 @@ namespace Tests
         }
 
         [TestMethod]
+        public void BindingToStaticClassTest()
+        {
+            StringAndObjectBindingAssert("local:StaticStaticClass.StaticA", null,
+                () => StaticStaticClass.StaticA = 10, "10", (double)10,
+                () => StaticStaticClass.StaticA = 20.34, "20.34", 20.34,
+                new Dictionary<string, Type>() { { "local:StaticStaticClass", typeof(StaticStaticClass) } }
+            );
+        }
+
+        [TestMethod]
         public void AlgebraicStaticPropertyTest()
         {
             StringAndObjectBindingAssert("local:StaticExampleClass.StaticA+5", null,
@@ -264,14 +274,17 @@ namespace Tests
             );
 
         }
-        // also: Char - String (DifferQuotes)+, Enum, Complex. Check that Debug messages are deleted
+
+        [TestMethod]
+        public void BindingToStaticPropertyThatRaisePersonalEventTest()
+        {
+            StringAndObjectBindingAssert("local:StaticExampleClass.StaticAWithPersonalEvent", null,
+                () => StaticExampleClass.StaticAWithPersonalEvent = 10, "10", (double)10,
+                () => StaticExampleClass.StaticAWithPersonalEvent = 20.34, "20.34", 20.34,
+                new Dictionary<string, Type>() { { "local:StaticExampleClass", typeof(StaticExampleClass) } }
+            );           
+        }
         
-        // binding to normal class with static property
-
-        // tests on binding to one item (enum\static property\char\string)
-
-        // 2 ways of binding 
-
         // test for error when set binding to static property and source automatically??
 
         //test: visibility binds to static property bool (bug with (n*{1})n* recognition)

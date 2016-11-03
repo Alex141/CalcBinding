@@ -591,16 +591,52 @@ namespace WpfExample
             }
         }
 
-        //protected static void RaisePropertyChanged<T>(Expression<Func<T>> propertyExpression)
-        //{
-        //    if (PropertyChanged != null)
-        //    {
-        //        var propertyName = (propertyExpression.Body as MemberExpression).Member.Name;
+        public static event EventHandler<PropertyChangedEventArgs> StaticPropertyChanged;
+        public static void RaiseStaticPropertyChanged<T>(Expression<Func<T>> propertyExpression)
+        {
+            if (StaticPropertyChanged != null)
+            {
+                var propertyName = (propertyExpression.Body as MemberExpression).Member.Name;
+                StaticPropertyChanged(null, new PropertyChangedEventArgs(propertyName));
+            }
+        }
 
-        //        PropertyChanged(null, new PropertyChangedEventArgs(propertyName));
-        //    }
-        //}
-        //public static event PropertyChangedEventHandler PropertyChanged;
+        private static double staticAWithPersonalEvent = 15;
+
+        public static double StaticAWithPersonalEvent
+        {
+            get
+            {
+                return staticAWithPersonalEvent;
+            }
+            set
+            {
+                staticAWithPersonalEvent = value;
+
+                if (StaticAWithPersonalEventChanged != null)
+                    StaticAWithPersonalEventChanged(null, EventArgs.Empty);
+            }
+        }
+
+        public static event EventHandler StaticAWithPersonalEventChanged;
+    }
+
+    public static class StaticStaticClass
+    {
+        private static double staticA = 15;
+
+        public static double StaticA
+        {
+            get
+            {
+                return staticA;
+            }
+            set
+            {
+                staticA = value;
+                RaiseStaticPropertyChanged(() => StaticA);
+            }
+        }
 
         public static event EventHandler<PropertyChangedEventArgs> StaticPropertyChanged;
         public static void RaiseStaticPropertyChanged<T>(Expression<Func<T>> propertyExpression)
