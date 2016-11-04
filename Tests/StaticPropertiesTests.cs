@@ -294,12 +294,5 @@ namespace Tests
                 new Dictionary<string, Type>() { { "local:StaticExampleClass", typeof(StaticExampleClass) } }
             );
         }
-
-
-        //readonly static property
-
-        //static property without event (such as Brush) (peharps binding with flag oneWay)
-
-        //mixed test: Math + Char + String + Static + NonStatic + Enum
     }
 }
