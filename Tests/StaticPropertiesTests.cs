@@ -284,10 +284,17 @@ namespace Tests
                 new Dictionary<string, Type>() { { "local:StaticExampleClass", typeof(StaticExampleClass) } }
             );           
         }
-        
-        // test for error when set binding to static property and source automatically??
 
-        //test: visibility binds to static property bool (bug with (n*{1})n* recognition)
+        [TestMethod]
+        public void BindingVisibilityToStaticBoolTest()
+        {
+            VisibilityBindingAssert("local:StaticExampleClass.StaticBool", null,
+                () => StaticExampleClass.StaticBool = true, Visibility.Visible,
+                () => StaticExampleClass.StaticBool = false, Visibility.Collapsed,
+                new Dictionary<string, Type>() { { "local:StaticExampleClass", typeof(StaticExampleClass) } }
+            );
+        }
+
 
         //readonly static property
 

@@ -591,6 +591,31 @@ namespace WpfExample
             }
         }
 
+        private static bool staticBool = false;
+
+        public static bool StaticBool
+        {
+            get
+            {
+                return staticBool;
+            }
+            set
+            {
+                staticBool = value;
+                RaiseStaticPropertyChanged(() => StaticBool);
+            }
+        }
+
+        private static String readOnlyName = "ReadonlyName";
+
+        public static String ReadOnlyName
+        {
+            get
+            {
+                return readOnlyName;
+            }
+        }
+
         public static event EventHandler<PropertyChangedEventArgs> StaticPropertyChanged;
         public static void RaiseStaticPropertyChanged<T>(Expression<Func<T>> propertyExpression)
         {

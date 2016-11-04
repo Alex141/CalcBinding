@@ -108,6 +108,28 @@ namespace Tests
                 (double)10, (double)10);
         }
 
+        [TestMethod]
+        public void BindingLabelContentToStaticReadonlyPropertyWithoutSettingModeSuccessTest()
+        {
+            var metadata = Label.ContentProperty.GetMetadata(typeof(Label));
+            Assert.IsInstanceOfType(metadata, typeof(FrameworkPropertyMetadata), "Metadata of Label should be FrameworkMetadata");
+            Assert.AreEqual(false, (metadata as FrameworkPropertyMetadata).BindsTwoWayByDefault);
+
+            var calcBinding = new CalcBinding.Binding("local:StaticExampleClass.ReadOnlyName")
+            {
+                UpdateSourceTrigger = System.Windows.Data.UpdateSourceTrigger.PropertyChanged
+            };
+
+            var source = new ExampleViewModel();
+            var element = new Label();
+
+            BindingBackAssert(calcBinding, null, () => StaticExampleClass.ReadOnlyName,
+                element, Label.ContentProperty, (string s) => element.Content = s,
+                "10", "100",
+                "ReadonlyName", "ReadonlyName",
+                new Dictionary<string, Type>() { { "local:StaticExampleClass", typeof(StaticExampleClass) } });
+        }
+
         #endregion
 
 
@@ -213,6 +235,35 @@ namespace Tests
                 element, TextBox.TextProperty, (string s) => element.Text = s,
                 "10", "100",
                 (double)10, (double)100);
+        }
+
+
+#if NET45
+        [ExpectedExceptionEx(exceptionType: typeof(InvalidOperationException), hResult: -2146233079)]
+#else
+        [ExpectedException(exceptionType: typeof(InvalidOperationException))]
+#endif
+        [TestMethod]
+        public void BindingTextBoxToStaticReadonlyPropertyWithDefaultModeFailsTest()
+        {
+            var metadata = TextBox.TextProperty.GetMetadata(typeof(TextBox));
+            Assert.IsInstanceOfType(metadata, typeof(FrameworkPropertyMetadata), "Metadata of TextBox should be FrameworkMetadata");
+            Assert.AreEqual(true, (metadata as FrameworkPropertyMetadata).BindsTwoWayByDefault);
+
+            var calcBinding = new CalcBinding.Binding("local:StaticExampleClass.ReadOnlyName")
+            {
+                UpdateSourceTrigger = System.Windows.Data.UpdateSourceTrigger.PropertyChanged,
+                Mode = BindingMode.Default
+            };
+
+            var source = new ExampleViewModel();
+            var element = new TextBox();
+
+            BindingBackAssert(calcBinding, null, () => StaticExampleClass.ReadOnlyName,
+                element, TextBox.TextProperty, (string s) => element.Text = s,
+                "10", "100",
+                "10", "100",
+                new Dictionary<string, Type>() { { "local:StaticExampleClass", typeof(StaticExampleClass) } });
         }
 
         #endregion
