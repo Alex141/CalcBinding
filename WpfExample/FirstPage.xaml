@@ -22,7 +22,7 @@
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <GroupBox Header="Pathes" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
+        <GroupBox Header="Properties" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
@@ -48,7 +48,7 @@
                 </StackPanel>
             </Grid>
         </GroupBox>
-        <GroupBox Header="Math" Grid.Row="1" Grid.Column="0">
+        <GroupBox Header="Algebraic" Grid.Row="1" Grid.Column="0">
             <StackPanel>
                 <DockPanel>
                     <Label Content="A+B+C="/>

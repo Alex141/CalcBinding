@@ -483,6 +483,38 @@ namespace WpfExample
                 RaisePropertyChanged(() => Visibility);
             }
         }
+
+        public bool IsEnumEqualsValue1
+        {
+            get
+            {
+                return EnumValue == Enum2.Value1;
+            }
+            set
+            {
+                if (value)
+                {
+                    EnumValue = Enum2.Value1;
+                    RaisePropertyChanged(() => IsEnumEqualsValue1);
+                }
+            }
+        }
+
+        public bool IsEnumEqualsValue2
+        {
+            get
+            {
+                return EnumValue == Enum2.Value2;
+            }
+            set
+            {
+                if (value)
+                {
+                    EnumValue = Enum2.Value2;
+                    RaisePropertyChanged(() => IsEnumEqualsValue2);
+                }
+            }
+        }
     }
 
     public class StaticExampleClass
