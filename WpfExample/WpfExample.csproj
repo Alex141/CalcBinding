@@ -59,6 +59,8 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -76,6 +78,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Dictionary1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="FifthPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -83,6 +89,10 @@
     <Page Include="FourthPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="SixthPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ThirdPage.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -104,11 +114,20 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="CustomControl1.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CustomControl1.Designer.cs">
+      <DependentUpon>CustomControl1.cs</DependentUpon>
+    </Compile>
     <Compile Include="FifthPage.xaml.cs">
       <DependentUpon>FifthPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="FourthPage.xaml.cs">
       <DependentUpon>FourthPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SixthPage.xaml.cs">
+      <DependentUpon>SixthPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="ThirdPage.xaml.cs">
       <DependentUpon>ThirdPage.xaml</DependentUpon>

@@ -1,0 +1,32 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:c="clr-namespace:CalcBinding;assembly=CalcBinding"
+                    xmlns:local="clr-namespace:WpfExample"
+                    >
+    <DataTemplate x:Key="dt">
+        <WrapPanel>
+            <TextBlock Text="Name: " />
+            <TextBlock Text="{c:Binding Path=(Name + \'1234\')}" FontWeight="Bold" />
+            <TextBlock Text=", " />
+            <TextBlock Text="Age: " />
+            <!--<TextBlock Text="{Binding Age}" FontWeight="Bold" />-->
+            <TextBlock Text=" (" />
+            <!--<TextBlock Text="{Binding Mail}" TextDecorations="Underline" Foreground="Blue" Cursor="Hand" />-->
+            <TextBlock Text=")" />
+        </WrapPanel>
+    </DataTemplate>
+
+    <local:StringConverter x:Key="stringConverter"/>
+    <DataTemplate x:Key="dt2">
+        <WrapPanel>
+            <TextBlock Text="Name: " />
+            <TextBlock Text="{Binding Name, Converter={StaticResource ResourceKey=stringConverter}}" FontWeight="Bold" />
+            <TextBlock Text=", " />
+            <TextBlock Text="Age: " />
+            <!--<TextBlock Text="{Binding Age}" FontWeight="Bold" />-->
+            <TextBlock Text=" (" />
+            <!--<TextBlock Text="{Binding Mail}" TextDecorations="Underline" Foreground="Blue" Cursor="Hand" />-->
+            <TextBlock Text=")" />
+        </WrapPanel>
+    </DataTemplate>
+</ResourceDictionary>

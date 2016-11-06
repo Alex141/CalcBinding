@@ -56,8 +56,15 @@ namespace CalcBinding
             Path = path;
         }
 
+        static int hits = 0;
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
+            if (Path == "(Name + '1234')")
+            {
+                hits++;
+                Console.WriteLine("Binding hits = " + hits);
+            }
+
             var targetPropertyType = GetPropertyType(serviceProvider);
             var typeResolver = (IXamlTypeResolver)serviceProvider.GetService(typeof(IXamlTypeResolver));
             var typeDescriptor = serviceProvider as ITypeDescriptorContext;

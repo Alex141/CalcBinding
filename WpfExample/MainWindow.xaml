@@ -5,7 +5,7 @@
         Title="CalcBindingExample" 
         Height="440" Width="490">
     <Grid>
-        <TabControl>
+        <TabControl SelectedIndex="5">
             <TabItem Header="Algebra and logic">
                 <local:FirstPage/>
             </TabItem>
@@ -21,6 +21,9 @@
             <TabItem Header="Static properties and Enums">
                 <local:FifthPage/>
             </TabItem>
+            <TabItem Header="Perfomance &amp; cache">
+                <local:SixthPage/>
+            </TabItem>            
         </TabControl>
     </Grid>
 </Window>

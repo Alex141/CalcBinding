@@ -1,0 +1,38 @@
+﻿<UserControl x:Class="WpfExample.SixthPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:c="clr-namespace:CalcBinding;assembly=CalcBinding"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <ResourceDictionary Source="Dictionary1.xaml"/>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Button Content="Fill" VerticalAlignment="Top" HorizontalAlignment="Left" Grid.Row="0" Click="Button_Click_2" />
+        <Button Content="Generate" VerticalAlignment="Top" HorizontalAlignment="Left" Click="Button_Click" Grid.Row="1" />
+            <!--<DataGrid ItemsSource="{c:Binding Items}" AutoGenerateColumns="False">
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{c:Binding Path=(Name+\'1234\')}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    --><!--<DataGridTextColumn Binding="{c:Binding Path=(Name+\'1234\')}"/>--><!--
+                </DataGrid.Columns>-->
+        <ListView ItemsSource="{c:Binding Items}" ItemTemplate="{Binding Source={StaticResource ResourceKey=dt}}"  Grid.Row="2"/>
+        <Button Content="Generate" VerticalAlignment="Top" HorizontalAlignment="Left" Grid.Row="3" Click="Button_Click_1"/>
+            <!--</DataGrid>-->
+        <ListView ItemsSource="{c:Binding Items2}" ItemTemplate="{Binding Source={StaticResource ResourceKey=dt2}}"  Grid.Row="4"/>
+    </Grid>
+</UserControl>

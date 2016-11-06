@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
@@ -7,6 +8,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Data;
 
 namespace WpfExample
 {
@@ -515,6 +517,158 @@ namespace WpfExample
                 }
             }
         }
+
+        ObservableCollection<GridItemViewModel> items;
+        public ObservableCollection<GridItemViewModel> Items
+        {
+            get
+            {
+                return items;
+            }
+            set
+            {
+                items = value;
+                RaisePropertyChanged(() => Items);
+            }
+        }
+
+        ObservableCollection<GridItemViewModel> items2;
+        public ObservableCollection<GridItemViewModel> Items2
+        {
+            get
+            {
+                return items2;
+            }
+            set
+            {
+                items2 = value;
+                RaisePropertyChanged(() => Items2);
+            }
+        }
+
+        public ObservableCollection<GridItemViewModel> FillItems(int count)
+        {
+            var random = new Random();
+
+            var newItems = new List<GridItemViewModel>(count);
+
+            for (int i = 0; i < count; i++)
+            {
+                var newItem = new GridItemViewModel
+                {
+                    A = random.Next(10000),
+                    B = random.NextDouble() * 10000,
+                    Name = GetRandomString(random, 10),
+                    EnumValue = GetRandomEnum<Enum1>(random),
+                    B1 = GetRandomBool(random),
+                    B2 = GetRandomBool(random),
+
+                };
+
+                newItems.Add(newItem);
+            }
+
+            return new ObservableCollection<GridItemViewModel>(newItems);
+        }
+
+        private T GetRandomEnum<T>(Random random)
+        {
+            var values = Enum.GetValues(typeof(T));
+
+            var value = values.GetValue(random.Next(values.Length));
+
+            return (T)value;
+        }
+
+        private bool GetRandomBool(Random random)
+        {
+            return random.Next(2) == 1;
+        }
+
+        private string GetRandomString(Random random, int length)
+        {
+            var str = "";
+
+            for (int i = 0; i < length; i++)
+            {
+                var c = (char)('a' + random.Next(26));
+
+                str += c;
+            }
+            return str;
+        }
+    }
+
+    public class GridItemViewModel:BaseViewModel
+    {
+        private int a = 10;
+        public int A
+        {
+            get { return a; }
+            set
+            {
+                a = value;
+                RaisePropertyChanged(() => A);
+            }
+        }
+
+        private double b = 10;
+        public double B
+        {
+            get { return b; }
+            set
+            {
+                b = value;
+                RaisePropertyChanged(() => B);
+            }
+        }
+
+        private String name = "";
+        public String Name
+        {
+            get { return name; }
+            set
+            {
+                name = value;
+                RaisePropertyChanged(() => Name);
+            }
+        }
+
+        private Enum1 enumValue;
+        public Enum1 EnumValue
+        {
+            get
+            {
+                return enumValue;
+            }
+            set
+            {
+                enumValue = value;
+                RaisePropertyChanged(() => EnumValue);
+            }
+        }
+
+        private bool b1;
+        public bool B1
+        {
+            get { return b1; }
+            set
+            {
+                b1 = value;
+                RaisePropertyChanged(() => B1);
+            }
+        }
+
+        private bool b2;
+        public bool B2
+        {
+            get { return b2; }
+            set
+            {
+                b2 = value;
+                RaisePropertyChanged(() => B2);
+            }
+        }
     }
 
     public class StaticExampleClass
@@ -727,5 +881,18 @@ namespace WpfExample
     {
         Value1,
         Value2
+    }
+
+    public class StringConverter:IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return value.ToString() + "1234";
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
