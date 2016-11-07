@@ -36,7 +36,7 @@ Following example shows xaml snippets with standart Binding and with CalcBinding
 
 ### Key features:
 
-1. One or **many** source properties in Path with many available operators: [paragraph](https://github.com/Alex141/CalcBinding#release-notes)
+1. One or **many** source properties in Path with many available operators ([description](https://github.com/Alex141/CalcBinding#release-notes)):
 
   ```xml
   <Label Content="{c:Binding A*0.5+(B/C - B%C) }" />
@@ -44,7 +44,7 @@ Following example shows xaml snippets with standart Binding and with CalcBinding
   ```xml
   <c:Binding 'A and B or C' />
   ```
-2. Properties and methods of class **System.Math** in Path: [paragraph](https://github.com/Alex141/CalcBinding#release-notes)
+2. Properties and methods of class **System.Math** in Path: ([description](https://github.com/Alex141/CalcBinding#release-notes))
 
   ```xml
   <TextBox Text="{c:Binding 'Math.Sin(Math.Cos(A))'}"/>
