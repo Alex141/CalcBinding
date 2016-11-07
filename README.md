@@ -69,7 +69,7 @@ Following example shows xaml snippets with standart Binding and with CalcBinding
   ```xml
   <TextBox Text="{c:Binding '(EnumValue == local:CustomEnum.Value1 ? 10 : 20)'}"/>
   ```
-6. Automatic two way convertion of bool binding expression to Visibility and back if target property has that type:
+6. Automatic two way convertion of bool expression to Visibility and back if target property has such type:
 
   ```xml 
   <Button Visibility="{c:Binding IsChecked}" /> 
