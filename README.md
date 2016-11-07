@@ -12,7 +12,7 @@ PM> Install-Package CalcBinding
 ## Overview
 Following example shows xaml snippets with standart Binding and with CalcBinding in very simple case:
 
-## Before:
+#### Before:
 
 ```xml
 <Label>
@@ -28,13 +28,13 @@ Following example shows xaml snippets with standart Binding and with CalcBinding
 
 (without MyCustomConveter declaration and referencing to it in xaml)
 
-## After:
+#### After:
 
 ```xml
 <Label Content="{c:Binding A+B+C }" />
 ```
 
-## Key features:
+### Key features:
 
 1. One or many source properties in Path with many available operators: (link)
 
@@ -49,14 +49,14 @@ Following example shows xaml snippets with standart Binding and with CalcBinding
   ```xml
   <TextBox Text="{c:Binding 'Math.Sin(Math.Cos(A))'}"/>
   ```
-3. Automatic inversion of binding expression if it's possible: (link)
+3. **Automatic inversion** of binding expression if it's possible: (link)
 
   ```xml
   <TextBox Text = "{c:Binding 'Math.Sin(A*2)-5'}">
   ```
   Expression "A = Math.ASin(Path + 5) / 2" will be created automatically
 
-4. One or many static properties in Path:
+4. One or many **static properties** in Path:
 
   ```xml
   <TextBox Text="{c:Binding 'local:StaticClass.Prop1 + local:OtherStaticClass.PropB + PropC'}"
@@ -64,12 +64,12 @@ Following example shows xaml snippets with standart Binding and with CalcBinding
   ```xml
   <Button Background="{c:Binding '(A > B ? media:Brushes.LightBlue : media:Brushes.White)'}"/>
   ```
-5. Enum types like constants or source properties in Path:
+5. **Enum** types like constants or source properties in Path:
 
   ```xml
   <TextBox Text="{c:Binding '(EnumValue == local:CustomEnum.Value1 ? 10 : 20)'}"/>
   ```
-6. Automatic two way convertion of bool expression to Visibility and back if target property has such type:
+6. Automatic two way convertion of **bool** expression **to Visibility** and back if target property has such type:
 
   ```xml 
   <Button Visibility="{c:Binding IsChecked}" /> 
