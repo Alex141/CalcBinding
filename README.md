@@ -36,7 +36,7 @@ Following example shows xaml snippets with standart Binding and with CalcBinding
 
 ### Key features:
 
-1. One or **many** source properties in Path with many available operators ([description](https://github.com/Alex141/CalcBinding#release-notes)):
+1. One or **many** source properties in Path with many available operators: [description](https://github.com/Alex141/CalcBinding#release-notes)
 
   ```xml
   <Label Content="{c:Binding A*0.5+(B/C - B%C) }" />
@@ -44,7 +44,7 @@ Following example shows xaml snippets with standart Binding and with CalcBinding
   ```xml
   <c:Binding 'A and B or C' />
   ```
-2. Properties and methods of class **System.Math** in Path: ([description](https://github.com/Alex141/CalcBinding#release-notes))
+2. Properties and methods of class **System.Math** in Path: [description](https://github.com/Alex141/CalcBinding#release-notes)
 
   ```xml
   <TextBox Text="{c:Binding 'Math.Sin(Math.Cos(A))'}"/>
@@ -56,7 +56,7 @@ Following example shows xaml snippets with standart Binding and with CalcBinding
   ```
   Expression "A = Math.ASin(Path + 5) / 2" will be created automatically
 
-4. One or **many static properties** in Path: [paragraph](https://github.com/Alex141/CalcBinding#release-notes)
+4. One or **many static properties** in Path: [description](https://github.com/Alex141/CalcBinding#release-notes)
 
   ```xml
   <TextBox Text="{c:Binding 'local:StaticClass.Prop1 + local:OtherStaticClass.PropB + PropC'}"
@@ -64,19 +64,19 @@ Following example shows xaml snippets with standart Binding and with CalcBinding
   ```xml
   <Button Background="{c:Binding '(A > B ? media:Brushes.LightBlue : media:Brushes.White)'}"/>
   ```
-5. **Enum** types like constants or source properties in Path: [paragraph](https://github.com/Alex141/CalcBinding#release-notes)
+5. **Enum** types like constants or source properties in Path: [description](https://github.com/Alex141/CalcBinding#release-notes)
 
   ```xml
   <TextBox Text="{c:Binding '(EnumValue == local:CustomEnum.Value1 ? 10 : 20)'}"/>
   ```
-6. Automatic two way convertion of **bool** expression **to Visibility** and back if target property has such type: [paragraph](https://github.com/Alex141/CalcBinding#release-notes)
+6. Automatic two way convertion of **bool** expression **to Visibility** and back if target property has such type: [description](https://github.com/Alex141/CalcBinding#release-notes)
 
   ```xml 
   <Button Visibility="{c:Binding IsChecked}" /> 
   <Button Visibility="{c:Binding !IsChecked}" /> 
   <Button Visibility="{c:Binding IsChecked, FalseToVisibility=Hidden}" />
   ```
-7. **Other features** such as single\double quotes recognition, string and char constants support [paragraph](https://github.com/Alex141/CalcBinding#release-notes)
+7. **Other features** such as single\double quotes recognition, string and char constants support: [description](https://github.com/Alex141/CalcBinding#release-notes)
 
 # Documentation
 
