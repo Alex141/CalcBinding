@@ -1,6 +1,6 @@
 # CalcBinding
 
-CalcBinding is an advanced Binding markup extension that allows you to write binding expressions directly in xaml, without custom converters. CalcBinding can automaticaly perfom bool to visibility convertion, inverse your expression and more. CalcBinding makes binding expressions shorter and more user friendly. [Release notes](https://github.com/Alex141/CalcBinding#release-notes)
+CalcBinding is an advanced Binding markup extension that allows you to write calculated binding expressions in xaml, without custom converters. CalcBinding can automaticaly perfom bool to visibility convertion, inverse your expression and more. CalcBinding makes binding expressions shorter and more user-friendly. [Release notes](https://github.com/Alex141/CalcBinding#release-notes)
 
 ## Install
 
@@ -33,97 +33,35 @@ Following examples show xaml snippets with standart Binding and with CalcBinding
 ```xml
 <Label Content="{c:Binding A+B+C }" />
 ```
-
-## Before:
-
-```xml
-<Label>
-  <Label.Content>
-    <MultiBinding Conveter={x:StaticResource MyCustomConverter2}> 
-    <Binding A/> 
-    <Binding B/> 
-    <Binding C/> 
-    </MultiBinding> 
-  </Label.Content>
-</Label> 
-```
-
-(without MyCustomConveter declaration and referencing to it in xaml)
-
-## After:
+## And more:
 
 ```xml
 <Label Content="{c:Binding A*0.5+(B/C - B%C) }" />
 ```
-## Before:
-
-```xml
-<MultiBinding Conveter={x:StaticResource MyCustomConverter3}> 
-    <Binding A/> 
-    <Binding B/> 
-    <Binding C/> 
-</MultiBinding> 
-```
-
-(without MyCustomConveter declaration and referencing to it in xaml)
-
-## After:
+## And more:
 
 ```xml
 <c:Binding 'A and B or C' />
 ```
 
-## Before:
-
-```xml
-<Button Visibility="{Binding IsFull Converter={x:StaticResource BoolToVisibilityConveter}}" /> 
-<Button Visibility="{Binding IsFull Converter={x:StaticResource NegativeBoolToVisibilityConveter}}" />
-```
-or
-```xml 
-<Button Visibility="{Binding IsChecked Converter={x:StaticResource HiddenBoolToVisibilityConveter}}" />
-```
-## After: 
+## And more:
 
 ```xml 
 <Button Visibility="{c:Binding IsChecked}" /> 
 <Button Visibility="{c:Binding !IsChecked}" /> 
 ```
-or
 ```xml 
 <Button Visibility="{c:Binding IsChecked, FalseToVisibility=Hidden}" />
 ```
- CalcBinding determines Visibility target type and converts bool to visibility automaticaly for you
- 
-## Before (Automatic inverse example):
-```xml
-<TextBox Text = "{Binding Path=A, Conveter={x:StaticResource MyMathConverter}">
-```
 
-```C#
-public class MyMathConverter : IValueConverter
-{
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-          var source = (int)value;
-          return Math.Sin(source*2)-5;
-        }
-        
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {        
-          var res = Double.Parse(value);
-          return (int)(Math.Asin(res + 5) / 2);
-        }
-}
-```
+## Summary list of your capabilities with CalcBinding:
 
-## After:
-```xml
-<TextBox Text = "{c:Binding 'Math.Sin(A*2)-5'}">
-```
-
- CalcBinding automaticaly inverse your expression (only for Binding not for MultiBinding) and create two way binding. If all of operators that consist your expression have inversed operators, your expression will be automaticaly inversed and binding will be two way: from source to dependency property and from dependency propery to source too.
-
+1. Use in Path property of binding **one or many source properties pathes** with big list of available **operators** (link)
+2. Use properties and methods of class **System.Math** in Path (link)
+3. Write one expression of two way binding - **inversed expression** will be calculated automatically of it is possible (link)
+4. Use binding to many **static properties** of different classes in Path simultaniosly
+5. Use custom and system **Enum** types - like constants or source properties
+6. Write **bool** expression in Path even if you binds **to Visibility** target property - convertion will be added automatically
 
 
 # Documentation
@@ -179,6 +117,36 @@ or just
 ```
 
 ##Automatic inverse binding expression
+
+## Before (Automatic inverse example):
+
+```xml
+<TextBox Text = "{Binding Path=A, Conveter={x:StaticResource MyMathConverter}">
+```
+
+```C#
+public class MyMathConverter : IValueConverter
+{
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+          var source = (int)value;
+          return Math.Sin(source*2)-5;
+        }
+        
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {        
+          var res = Double.Parse(value);
+          return (int)(Math.Asin(res + 5) / 2);
+        }
+}
+```
+
+## After:
+```xml
+<TextBox Text = "{c:Binding 'Math.Sin(A*2)-5'}">
+```
+
+ CalcBinding automaticaly inverse your expression (only for Binding not for MultiBinding) and create two way binding. If all of operators that consist your expression have inversed operators, your expression will be automaticaly inversed and binding will be two way: from source to dependency property and from dependency propery to source too.
 
  If you have binding with expression consisting only of operators that have inversed operators and youe BindingMode = BindingMode.TwoWay, calcBinding attempts to generate inversed expression and use it in ConvertBack method in converter. For example, if you have expression 'Path = (A + 5) / 3' inversed expression is 'source = Path * 3 - 5'.
  
