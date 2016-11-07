@@ -36,7 +36,7 @@ Following example shows xaml snippets with standart Binding and with CalcBinding
 
 ### Key features:
 
-1. One or many source properties in Path with many available operators: (link)
+1. One or **many** source properties in Path with many available operators: (link)
 
   ```xml
   <Label Content="{c:Binding A*0.5+(B/C - B%C) }" />
@@ -56,7 +56,7 @@ Following example shows xaml snippets with standart Binding and with CalcBinding
   ```
   Expression "A = Math.ASin(Path + 5) / 2" will be created automatically
 
-4. One or many **static properties** in Path:
+4. One or **many static properties** in Path:
 
   ```xml
   <TextBox Text="{c:Binding 'local:StaticClass.Prop1 + local:OtherStaticClass.PropB + PropC'}"
@@ -76,7 +76,7 @@ Following example shows xaml snippets with standart Binding and with CalcBinding
   <Button Visibility="{c:Binding !IsChecked}" /> 
   <Button Visibility="{c:Binding IsChecked, FalseToVisibility=Hidden}" />
   ```
-7. Other features such as single\double quotes recognition, string and char constants support
+7. **Other features** such as single\double quotes recognition, string and char constants support
 
 # Documentation
 
