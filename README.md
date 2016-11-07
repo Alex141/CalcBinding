@@ -37,6 +37,7 @@ Following example shows xaml snippets with standart Binding and with CalcBinding
 ## Key features:
 
 1. One or many source properties in Path with many available operators: (link)
+
   ```xml
   <Label Content="{c:Binding A*0.5+(B/C - B%C) }" />
   ```
@@ -44,33 +45,37 @@ Following example shows xaml snippets with standart Binding and with CalcBinding
   <c:Binding 'A and B or C' />
   ```
 2. Properties and methods of class **System.Math** in Path: (link)
-```xml
-<TextBox Text="{c:Binding 'Math.Sin(Math.Cos(A))'}"/>
-```
+
+  ```xml
+  <TextBox Text="{c:Binding 'Math.Sin(Math.Cos(A))'}"/>
+  ```
 3. Automatic inversion of binding expression if it's possible: (link)
 
-```xml
-<TextBox Text = "{c:Binding 'Math.Sin(A*2)-5'}">
-```
-Expression "A = Math.ASin(Path + 5) / 2" will be created automatically
+  ```xml
+  <TextBox Text = "{c:Binding 'Math.Sin(A*2)-5'}">
+  ```
+  Expression "A = Math.ASin(Path + 5) / 2" will be created automatically
 
 4. One or many static properties in Path:
-```xml
-<TextBox Text="{c:Binding 'local:StaticClass.Prop1 + local:OtherStaticClass.PropB + PropC'}"
-```
-```xml
-<Button Background="{c:Binding '(A > B ? media:Brushes.LightBlue : media:Brushes.White)'}"/>
-```
+
+  ```xml
+  <TextBox Text="{c:Binding 'local:StaticClass.Prop1 + local:OtherStaticClass.PropB + PropC'}"
+  ```
+  ```xml
+  <Button Background="{c:Binding '(A > B ? media:Brushes.LightBlue : media:Brushes.White)'}"/>
+  ```
 5. Enum types like constants or source properties in Path:
-```xml
-<TextBox Text="{c:Binding '(EnumValue == local:CustomEnum.Value1 ? 10 : 20)'}"/>
-```
+
+  ```xml
+  <TextBox Text="{c:Binding '(EnumValue == local:CustomEnum.Value1 ? 10 : 20)'}"/>
+  ```
 6. Automatic two way convertion of bool binding expression to Visibility and back if target property has that type:
-```xml 
-<Button Visibility="{c:Binding IsChecked}" /> 
-<Button Visibility="{c:Binding !IsChecked}" /> 
-<Button Visibility="{c:Binding IsChecked, FalseToVisibility=Hidden}" />
-```
+
+  ```xml 
+  <Button Visibility="{c:Binding IsChecked}" /> 
+  <Button Visibility="{c:Binding !IsChecked}" /> 
+  <Button Visibility="{c:Binding IsChecked, FalseToVisibility=Hidden}" />
+  ```
 7. Other features such as single\double quotes recognition, string and char constants support
 
 # Documentation
