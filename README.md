@@ -36,7 +36,7 @@ Following example shows xaml snippets with standart Binding and with CalcBinding
 
 ### Key features:
 
-1. One or **many** source properties in Path with many available operators: [description](https://github.com/Alex141/CalcBinding#release-notes)
+1. One or **many** source properties in Path with many available operators: [description](https://github.com/Alex141/CalcBinding#Source properties and operators)
 
   ```xml
   <Label Content="{c:Binding A*0.5+(B/C - B%C) }" />
@@ -80,6 +80,8 @@ Following example shows xaml snippets with standart Binding and with CalcBinding
 
 # Documentation
 
+## Source properties and operators
+
 You can write any mathematic, logical and string expressions, that contains pathes (as variables), strings, digits, all method of class Math (sin, cos, PI etc) and following operators:
 
 ```
@@ -87,7 +89,7 @@ You can write any mathematic, logical and string expressions, that contains path
 ```
 Examples of supporting binding expressions:
 
-##Math 
+##Algebraic 
 ```xml
 <TextBox Text="{c:Binding A+B+C}"/>
 <TextBox Text="{c:Binding A-B-C}"/>
@@ -106,6 +108,12 @@ Examples of supporting binding expressions:
 <TextBox Text="{c:Binding (IsChecked || !IsFull)}"/>
 ```
 
+## Math Class
+```xml
+<TextBox Text="{c:Binding Math.Sin(A*Math.PI/180), StringFormat={}{0:n5}}"/>
+<TextBox Text="{c:Binding A*Math.PI}" />
+
+```
 ##Visibility
 bool to visibility two ways convertion runs automaticly:
 
@@ -123,12 +131,7 @@ or just
 <TextBox Text="{c:Binding (IsMan?\'Mr\':\'Ms\') + \' \' + Surname + \' \' + Name}"/>
 ```
 
-##Math Class
-```xml
-<TextBox Text="{c:Binding Math.Sin(A*Math.PI/180), StringFormat={}{0:n5}}"/>
-<TextBox Text="{c:Binding A*Math.PI}" />
 
-```
 
 ##Automatic inverse binding expression
 
