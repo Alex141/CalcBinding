@@ -49,7 +49,7 @@ Following example shows xaml snippets with standart Binding and with CalcBinding
   ```xml
   <TextBox Text="{c:Binding 'Math.Sin(Math.Cos(A))'}"/>
   ```
-3. **Automatic inversion** of binding expression if it's possible: [paragraph](https://github.com/Alex141/CalcBinding#release-notes)
+3. **Automatic inversion** of binding expression if it's possible: [description](https://github.com/Alex141/CalcBinding#release-notes)
 
   ```xml
   <TextBox Text = "{c:Binding 'Math.Sin(A*2)-5'}">
