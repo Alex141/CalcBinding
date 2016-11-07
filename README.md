@@ -10,7 +10,7 @@ PM> Install-Package CalcBinding
 ```
 
 ## Overview
-Following examples show xaml snippets with standart Binding and with CalcBinding:
+Following example shows xaml snippets with standart Binding and with CalcBinding in very simple case:
 
 ## Before:
 
@@ -33,36 +33,42 @@ Following examples show xaml snippets with standart Binding and with CalcBinding
 ```xml
 <Label Content="{c:Binding A+B+C }" />
 ```
-## And more:
 
+## List of CalcBinding capabilities:
+
+1. Use in Path property of binding **one or many source properties pathes** with big list of available **operators**: (link)
 ```xml
 <Label Content="{c:Binding A*0.5+(B/C - B%C) }" />
 ```
-## And more:
-
 ```xml
 <c:Binding 'A and B or C' />
 ```
-
-## And more:
-
+2. Use properties and methods of class **System.Math** in Path: (link)
+```xml
+<TextBox Text="{c:Binding 'Math.Sin(Math.Cos(A))'}"/>
+```
+3. Write one expression of two way binding - **inversed expression** will be calculated automatically if it's possible: (link)
+```xml
+<TextBox Text = "{c:Binding 'Math.Sin(A*2)-5'}">
+```
+4. Use binding to many **static properties** of different classes in Path simultaneously:
+```xml
+<TextBox Text="{c:Binding 'local:StaticClass.Prop1 + local:OtherStaticClass.PropB + PropC'}"
+```
+```xml
+<Button Background="{c:Binding '(A > B ? media:Brushes.LightBlue : media:Brushes.White)'}"/>
+```
+5. Use custom and system **Enum** types - like constants or source properties:
+```xml
+<TextBox Text="{c:Binding '(EnumValue == local:CustomEnum.Value1 ? 10 : 20)'}"/>
+```
+6. Write **bool** expression in Path even if you binds **to Visibility** target property - convertion will be added automatically
 ```xml 
 <Button Visibility="{c:Binding IsChecked}" /> 
 <Button Visibility="{c:Binding !IsChecked}" /> 
-```
-```xml 
 <Button Visibility="{c:Binding IsChecked, FalseToVisibility=Hidden}" />
 ```
-
-## Summary list of your capabilities with CalcBinding:
-
-1. Use in Path property of binding **one or many source properties pathes** with big list of available **operators** (link)
-2. Use properties and methods of class **System.Math** in Path (link)
-3. Write one expression of two way binding - **inversed expression** will be calculated automatically of it is possible (link)
-4. Use binding to many **static properties** of different classes in Path simultaniosly
-5. Use custom and system **Enum** types - like constants or source properties
-6. Write **bool** expression in Path even if you binds **to Visibility** target property - convertion will be added automatically
-
+7. Other features such as single\double quotes recognition, string and char constants support
 
 # Documentation
 
@@ -113,7 +119,7 @@ or just
 ```xml
 <TextBox Text="{c:Binding Math.Sin(A*Math.PI/180), StringFormat={}{0:n5}}"/>
 <TextBox Text="{c:Binding A*Math.PI}" />
-<TextBox Text="{c:Binding 'Math.Sin(Math.Cos(A))'}"/>
+
 ```
 
 ##Automatic inverse binding expression
