@@ -37,12 +37,12 @@ Following example shows xaml snippets with standart Binding and with CalcBinding
 ## Key features:
 
 1. One or many source properties in Path with many available operators: (link)
-```xml
-<Label Content="{c:Binding A*0.5+(B/C - B%C) }" />
-```
-```xml
-<c:Binding 'A and B or C' />
-```
+  ```xml
+  <Label Content="{c:Binding A*0.5+(B/C - B%C) }" />
+  ```
+  ```xml
+  <c:Binding 'A and B or C' />
+  ```
 2. Properties and methods of class **System.Math** in Path: (link)
 ```xml
 <TextBox Text="{c:Binding 'Math.Sin(Math.Cos(A))'}"/>
