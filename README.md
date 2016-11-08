@@ -54,7 +54,7 @@ Following example shows xaml snippets with standart Binding and with CalcBinding
   ```xml
   <TextBox Text = "{c:Binding 'Math.Sin(A*2)-5'}">
   ```
-  Expression "A = Math.ASin(Path + 5) / 2" will be created automatically
+  Expression "A = Math.Asin(Path + 5) / 2" will be created automatically
 
 4. One or **many static properties** in Path: [description](https://github.com/Alex141/CalcBinding#release-notes)
 
