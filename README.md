@@ -157,17 +157,21 @@ where:
   ```  
   
 ### Restrictions
-1. You shouldn't put any delimiter or operator between xmlNamespace and class declarion when wrting static propery path:
+1. As for non-static property pathes for static propery pathes following rule is applied: you should put any delimiter or operator between ':' operator of ternary operator and identifiers (namespace or property) that make up static property path:
 
-#### right
+#### right:
+```<xml>
+<TextBox Text="{c:Binding '(A == 2)?local:Class.Prop1 : local:Class.Prop2}"/> <!-- right -->
+<TextBox Text="{c:Binding '(A == 2)?local:OtherClass.IsChecked :!local.OtherClass.IsFull}"/> <!-- right -->
+<TextBox Text="{c:Binding '(A == 2) ? local:Class.A :4 + local:Class.B}"/> <!-- right -->
+```
 
-#### wrong
-
-2. As for non-static property pathes for static propery pathes following rule is applied: you should put any delimiter between ':' operator of ternary operator and identifiers (namespace or property) that make up static property path:
-
-#### right
-
-#### wrong
+#### wrong:
+```<xml>
+<TextBox Text="{c:Binding '(A == 2)?local:Class.Prop1: local:Class.Prop2}"/> <!-- wrong -->
+<TextBox Text="{c:Binding '(A == 2)?local:OtherClass.IsChecked:local.OtherClass.IsFull}"/> <!-- wrong -->
+<TextBox Text="{c:Binding '(A == 2) ? local:Class.A:4+local:Class.B}"/> <!-- wrong -->
+```
 
 ## 3. Math class members
 
