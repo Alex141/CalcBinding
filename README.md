@@ -69,8 +69,7 @@ Following example shows xaml snippets with standart Binding and with CalcBinding
   ```
 6. Automatic two way convertion of **bool** expression **to Visibility** and back if target property has such type: [description](https://github.com/Alex141/CalcBinding#release-notes)
 
-  ```xml 
-  <Button Visibility="{c:Binding IsChecked}" /> 
+  ```xml
   <Button Visibility="{c:Binding !IsChecked}" /> 
   <Button Visibility="{c:Binding IsChecked, FalseToVisibility=Hidden}" />
   ```
