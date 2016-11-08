@@ -128,10 +128,15 @@ That restricition is caused by path analyzer work that finds [static properties]
 
 ## 2. Static properties
 
-  Beginning with version 2.3 CalcBinding supports static properties in binding expression. You can write static properties pathes of any class and static source pathes of any properties number.
-  CalcBinding use following syntax of declaration static property path:
-  'xmlNamespace:StaticClass.Property1.NestedProperty etc.'
-  where xmlNamespace - usual xml namespace defined in a header of xaml file with other namespaces definitions.
+  Beginning with version 2.3 CalcBinding supports static properties in binding expression. You can write static properties pathes of any class and static source pathes of any properties number. CalcBinding uses following syntax of declaration static property path:
+  
+  **'xmlNamespace:Class.StaticProperty.NestedProperty'** etc.
+  
+where 
+  
+xmlNamespace - usual xml namespace that is mapped to normal namespace in a header of xaml file with other namespaces definitions.
+    
+Class - name of class that exists in namespace whereto xmlNamespace is mapped
   
 ### Examples:  
   ```xml
