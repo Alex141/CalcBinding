@@ -39,7 +39,7 @@ Following example shows xaml snippets with standart Binding and with CalcBinding
 1. One or **many** source properties in Path with many available operators: [description](https://github.com/Alex141/CalcBinding#Source properties and operators)
 
   ```xml
-  <Label Content="{c:Binding A*0.5+(B/C - B%C) }" />
+  <Label Content="{c:Binding A*0.5+(B.NestedProp1/C - B.NestedProp2 % C) }" />
   ```
   ```xml
   <c:Binding 'A and B or C' />
@@ -47,7 +47,7 @@ Following example shows xaml snippets with standart Binding and with CalcBinding
 2. One or **many static properties** in Path: [description](https://github.com/Alex141/CalcBinding#release-notes)
 
   ```xml
-  <TextBox Text="{c:Binding 'local:StaticClass.Prop1 + local:OtherStaticClass.PropB + PropC'}"/>
+  <TextBox Text="{c:Binding 'local:StaticClass.Prop1 + local:OtherStaticClass.NestedProp.PropB + PropC'}"/>
   ```
   ```xml
   <Button Background="{c:Binding '(A > B ? media:Brushes.LightBlue : media:Brushes.White)'}"/>
@@ -128,14 +128,20 @@ That restricition is caused by path analyzer work that finds [static properties]
 
 ## 2. Static properties
 
+  Beginning with version 2.3 CalcBinding supports static properties in binding expression. You can write static properties pathes of any class and static source pathes of any properties number.
+  CalcBinding use following syntax of declaration static property path:
+  'xmlNamespace:StaticClass.Property1.NestedProperty etc.'
+  where xmlNamespace - usual xml namespace defined in a header of xaml file with other namespaces definitions.
+  
+### Examples:  
   ```xml
-  <TextBox Text="{c:Binding 'local:StaticClass.Prop1 + local:OtherStaticClass.PropB + PropC'}"/>
+  <TextBox Text="{c:Binding 'local:Class.NestedProp.Prop1 + local:OtherStaticClass.PropB + PropC'}"/>
   ```
   ```xml
   <Button Background="{c:Binding '(A > B ? media:Brushes.LightBlue : media:Brushes.White)'}"/>
   ```
   
-  where *local* and *media* - xml namespaces defined in a header of xaml file with other namespaces definitions:
+  where *local* and *media* are defined in a header of xaml file:
   ```xml
   <<UserControl x:Class="WpfExample.FifthPage"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -145,7 +151,20 @@ That restricition is caused by path analyzer work that finds [static properties]
   </UserControl>
   ```  
   
-## 2. Math class members
+### Restrictions
+1. You shouldn't put any delimiter or operator between xmlNamespace and class declarion when wrting static propery path:
+
+#### right
+
+#### wrong
+
+2. As for non-static property pathes for static propery pathes following rule is applied: you should put any delimiter between ':' operator of ternary operator and identifiers (namespace or property) that make up static property path:
+
+#### right
+
+#### wrong
+
+## 3. Math class members
 
 You can use in path property any members of System.Math class in native form as if you are writing usual C# code:
 
@@ -171,7 +190,9 @@ You can use in path property any members of System.Math class in native form as 
 <TextBox Text="{c:Binding sys:Math.Sin(10)+20}" /> <!-- wrong -->
 ```
 
-##Visibility
+## 4. Enums
+
+## 5. Visibility
 bool to visibility two ways convertion runs automaticly:
 
 ```xml
@@ -188,9 +209,7 @@ or just
 <TextBox Text="{c:Binding (IsMan?\'Mr\':\'Ms\') + \' \' + Surname + \' \' + Name}"/>
 ```
 
-
-
-##Automatic inverse binding expression
+## 6. Automatic inverse binding expression
 
 ## Before (Automatic inverse example):
 
@@ -229,7 +248,11 @@ public class MyMathConverter : IValueConverter
 "+", "- (binary)", "*", "/", "Math.Sin", "Math.Cos", "Math.Tan", "Math.Asin", "Math.Acos", "Math.Atan","Math.Pow", "Math.Log", "!", "- (unary)"};
 ```
 
-##TemplateBinding
+## Other feautures
+
+### DifferQuotes mode
+
+### TemplateBinding
 Althouth CalcBinding hasn't yet analog for TemplateBinding, as temporary solution you can write as follow: 
 ```xml
 <Button Content="Button" Width="100">
@@ -242,7 +265,7 @@ Althouth CalcBinding hasn't yet analog for TemplateBinding, as temporary solutio
 ```
 Setting RelativeSource property to TemplatedParent value makes CalcBinding similar to TemplateBinding
 
-#What is inside?
+# What is inside?
 
 CalcBinding uses DynamicExpresso library to parse string expression to Linq Expression and compiled expression tree for binding.
 DynamicExpresso is in fact a fork of DynamicLinq library, with many advantages and bug fixes compared with DynamicLinq (e.x. floating point parsing depending on CurrentCulture damn bug). 
