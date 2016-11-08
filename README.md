@@ -91,7 +91,7 @@ Following example shows xaml snippets with standart Binding and with CalcBinding
 
 # Documentation
 
-## Source properties and operators
+## 1. Source properties and operators
 
 You can write any algebraic, logical and string expressions, that contain source property pathes, strings, digits, all members of class Math and following operators:
 
@@ -140,12 +140,32 @@ and ternary operator in form of 'bool_expression ? expression_1 : expression_2'
 
 That restricition is caused by path analyzer work that finds [static properties](https://github.com/Alex141/CalcBinding#Static properties)
 
-## Math Class
+## 2. Math class members
+
+You can use in path property any members of System.Math class in native form as if you are writing usual C# code:
+
 ```xml
 <TextBox Text="{c:Binding Math.Sin(A*Math.PI/180), StringFormat={}{0:n5}}"/>
 <TextBox Text="{c:Binding A*Math.PI}" />
-
 ```
+
+## Restrictions
+1. Although CalcBinding supports static properties, Math class is a standalone feature that was created and used before static properties were supported. For this reason you shouldn't use static property syntax with members of Math class. 
+
+#### right:
+```xml
+<TextBox Text="{c:Binding A*Math.PI}" /> <!-- right -->
+<TextBox Text="{c:Binding Math.Sin(10)+20}" /> <!-- right -->
+```
+
+#### wrong:
+```xml
+<xmlns:sys="clr-namespace:System;assembly=mscorlib">
+...
+<TextBox Text="{c:Binding A*sys:Math.PI}" /> <!-- wrong -->
+<TextBox Text="{c:Binding sys:Math.Sin(10)+20}" /> <!-- wrong -->
+```
+
 ##Visibility
 bool to visibility two ways convertion runs automaticly:
 
