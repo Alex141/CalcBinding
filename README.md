@@ -44,7 +44,7 @@ Following example shows xaml snippets with standart Binding and with CalcBinding
   ```xml
   <c:Binding 'A and B or C' />
   ```
-2. Properties and methods of class **System.Math** in Path: [description](https://github.com/Alex141/CalcBinding#release-notes)
+2. Properties and methods of class **System.Math** in Path: [description](https://github.com/Alex141/CalcBinding#Math)
 
   ```xml
   <TextBox Text="{c:Binding 'Math.Sin(Math.Cos(A))'}"/>
@@ -101,9 +101,9 @@ You can write any algebraic, logical and string expressions, that contain source
 ```
 and ternary operator in form of 'bool_expression ? expression_1 : expression_2'
 
-**Examples** of binding expressions using these elements:
+### Examples
 
-##Algebraic 
+#### Algebraic 
 ```xml
 <TextBox Text="{c:Binding A+B+C}"/>
 <TextBox Text="{c:Binding A-B-C}"/>
@@ -113,27 +113,27 @@ and ternary operator in form of 'bool_expression ? expression_1 : expression_2'
 <TextBox Text="{c:Binding A%B}"/>
 <TextBox Text="{c:Binding '(A == 1) ? 10 : 20'}"/> {ternary operator}
 ```
-##Logic
+#### Logic
 ```xml
 <CheckBox Content="!IsChecked" IsChecked="{c:Binding !IsChecked}"/>
 <TextBox Text="{c:Binding 'IsChecked and IsFull'}"/> {'and' is equvalent of '&&'}
 <TextBox Text="{c:Binding '!IsChecked or (A > B)'}"/> {'or' is equvalent of '||', but you can leave '||'}
-<TextBox Text="{c:Binding '(A == 1) and (B less= 5)'}"/> {'less=' is equvalent of '<=')
+<TextBox Text="{c:Binding '(A == 1) and (B less= 5)'}"/> {'less=' is equvalent of '<='}
 <TextBox Text="{c:Binding (IsChecked || !IsFull)}"/>
 ```
 
-**Restrictions:**
+### Restrictions:
 
 1. Identifiers that make up the source property path, should be separated from operator ':' by any operator or delimititer (single quote, space etc.) in ternary operator:
 
-right:
+#### right:
 ```<xml>
 <TextBox Text="{c:Binding '(A == 2)?IsChecked : IsFull}"/> <!-- right -->
 <TextBox Text="{c:Binding '(A == 2)?IsChecked :!IsFull}"/> <!-- right -->
 <TextBox Text="{c:Binding '(A == 2) ? IsChecked :4 + IsFull}"/> <!-- right -->
 ```
 
-wrong:
+#### wrong:
 ```<xml>
 <TextBox Text="{c:Binding '(A == 2)?IsChecked:IsFull}"/> <!-- wrong -->
 ```
