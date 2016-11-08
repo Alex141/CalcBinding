@@ -44,19 +44,7 @@ Following example shows xaml snippets with standart Binding and with CalcBinding
   ```xml
   <c:Binding 'A and B or C' />
   ```
-2. Properties and methods of class **System.Math** in Path: [description](https://github.com/Alex141/CalcBinding#Math)
-
-  ```xml
-  <TextBox Text="{c:Binding 'Math.Sin(Math.Cos(A))'}"/>
-  ```
-3. **Automatic inversion** of binding expression if it's possible: [description](https://github.com/Alex141/CalcBinding#release-notes)
-
-  ```xml
-  <TextBox Text = "{c:Binding 'Math.Sin(A*2)-5'}"/>
-  ```
-  Expression "A = Math.Asin(Path + 5) / 2" will be created automatically
-
-4. One or **many static properties** in Path: [description](https://github.com/Alex141/CalcBinding#release-notes)
+2. One or **many static properties** in Path: [description](https://github.com/Alex141/CalcBinding#release-notes)
 
   ```xml
   <TextBox Text="{c:Binding 'local:StaticClass.Prop1 + local:OtherStaticClass.PropB + PropC'}"/>
@@ -64,22 +52,23 @@ Following example shows xaml snippets with standart Binding and with CalcBinding
   ```xml
   <Button Background="{c:Binding '(A > B ? media:Brushes.LightBlue : media:Brushes.White)'}"/>
   ```
- 
-  where *local* and *media* - xml namespaces defined in a header of xaml file with other namespaces definitions:
+3. Properties and methods of class **System.Math** in Path: [description](https://github.com/Alex141/CalcBinding#Math)
+
   ```xml
-  <<UserControl x:Class="WpfExample.FifthPage"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:local="clr-namespace:WpfExample"
-             xmlns:media ="clr-namespace:System.Windows.Media;assembly=PresentationCore">
-     ...
-  </UserControl>
+  <TextBox Text="{c:Binding 'Math.Sin(Math.Cos(A))'}"/>
   ```
-5. **Enum** types like constants or source properties in Path: [description](https://github.com/Alex141/CalcBinding#release-notes)
+4. **Enum** types like constants or source properties in Path: [description](https://github.com/Alex141/CalcBinding#release-notes)
 
   ```xml
   <TextBox Text="{c:Binding '(EnumValue == local:CustomEnum.Value1 ? 10 : 20)'}"/>
   ```
-  where *local* - xml namespace (see previous point)
+5. **Automatic inversion** of binding expression if it's possible: [description](https://github.com/Alex141/CalcBinding#release-notes)
+
+  ```xml
+  <TextBox Text = "{c:Binding 'Math.Sin(A*2)-5'}"/>
+  ```
+  Expression "A = Math.Asin(Path + 5) / 2" will be created automatically
+
 6. Automatic two way convertion of **bool** expression **to Visibility** and back if target property has such type: [description](https://github.com/Alex141/CalcBinding#release-notes)
 
   ```xml 
@@ -140,6 +129,25 @@ and ternary operator in form of 'bool_expression ? expression_1 : expression_2'
 
 That restricition is caused by path analyzer work that finds [static properties](https://github.com/Alex141/CalcBinding#Static properties)
 
+## 2. Static properties
+
+  ```xml
+  <TextBox Text="{c:Binding 'local:StaticClass.Prop1 + local:OtherStaticClass.PropB + PropC'}"/>
+  ```
+  ```xml
+  <Button Background="{c:Binding '(A > B ? media:Brushes.LightBlue : media:Brushes.White)'}"/>
+  ```
+  
+  where *local* and *media* - xml namespaces defined in a header of xaml file with other namespaces definitions:
+  ```xml
+  <<UserControl x:Class="WpfExample.FifthPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:local="clr-namespace:WpfExample"
+             xmlns:media ="clr-namespace:System.Windows.Media;assembly=PresentationCore">
+     ...
+  </UserControl>
+  ```  
+  
 ## 2. Math class members
 
 You can use in path property any members of System.Math class in native form as if you are writing usual C# code:
