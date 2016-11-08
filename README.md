@@ -134,9 +134,9 @@ That restricition is caused by path analyzer work that finds [static properties]
   
 where 
   
-xmlNamespace - usual xml namespace that is mapped to normal namespace in a header of xaml file with other namespaces definitions.
+  **xmlNamespace** - usual xml namespace that is mapped to normal namespace in a header of xaml file with other namespaces definitions.
     
-Class - name of class that exists in namespace whereto xmlNamespace is mapped
+  **Class** - name of class that exists in namespace whereto xmlNamespace is mapped
   
 ### Examples:  
   ```xml
