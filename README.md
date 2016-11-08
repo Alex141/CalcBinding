@@ -65,10 +65,8 @@ Following example shows xaml snippets with standart Binding and with CalcBinding
 5. **Automatic inversion** of binding expression if it's possible: [description](https://github.com/Alex141/CalcBinding#release-notes)
 
   ```xml
-  <TextBox Text = "{c:Binding 'Math.Sin(A*2)-5'}"/>
+  <TextBox Text = "{c:Binding 'Math.Sin(A*2)-5'}"/> {two way binding will be created}
   ```
-  Expression "A = Math.Asin(Path + 5) / 2" will be created automatically
-
 6. Automatic two way convertion of **bool** expression **to Visibility** and back if target property has such type: [description](https://github.com/Alex141/CalcBinding#release-notes)
 
   ```xml 
