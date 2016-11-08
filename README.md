@@ -12,7 +12,7 @@ PM> Install-Package CalcBinding
 ## Overview
 Following example shows xaml snippets with standart Binding and with CalcBinding in very simple case:
 
-#### Before:
+### Before:
 
 ```xml
 <Label>
@@ -28,7 +28,7 @@ Following example shows xaml snippets with standart Binding and with CalcBinding
 
 (without MyCustomConveter declaration and referencing to it in xaml)
 
-#### After:
+### After:
 
 ```xml
 <Label Content="{c:Binding A+B+C }" />
