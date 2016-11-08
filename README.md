@@ -85,7 +85,7 @@ You can write any algebraic, logical and string expressions, that contain source
 "(", ")", "+", "-", "*", "/", "%", "^", "!", "&&","||",
 "&", "|", "?", ":", "<", ">", "<=", ">=", "==", "!="};
 ```
-and ternary operator in form of 'bool_expression ? expression_1 : expression_2'
+and ternary operator in form of **'bool_expression ? expression_1 : expression_2'**
 
 ### Examples
 
