@@ -93,12 +93,15 @@ Following example shows xaml snippets with standart Binding and with CalcBinding
 
 ## Source properties and operators
 
-You can write any mathematic, logical and string expressions, that contains pathes (as variables), strings, digits, all method of class Math (sin, cos, PI etc) and following operators:
+You can write any algebraic, logical and string expressions, that contain source property pathes, strings, digits, all members of class Math and following operators:
 
 ```
-"(", ")", "+", "-", "*", "/", "%", "^", "!", "&&","||", "&", "|", "?", ":", "<", ">", "<=", ">=", "==", "!="};
+"(", ")", "+", "-", "*", "/", "%", "^", "!", "&&","||",
+"&", "|", "?", ":", "<", ">", "<=", ">=", "==", "!="};
 ```
-Examples of supporting binding expressions:
+and ternary operator in form of 'bool_expression ? expression_1 : expression_2'
+
+**Examples** of binding expressions using these elements:
 
 ##Algebraic 
 ```xml
@@ -118,6 +121,24 @@ Examples of supporting binding expressions:
 <TextBox Text="{c:Binding '(A == 1) and (B less= 5)'}"/> {'less=' is equvalent of '<=')
 <TextBox Text="{c:Binding (IsChecked || !IsFull)}"/>
 ```
+
+**Restrictions:**
+
+1. Identifiers that make up the source property path, should be separated from operator ':' by any operator or delimititer (single quote, space etc.) in ternary operator:
+
+right:
+```<xml>
+<TextBox Text="{c:Binding '(A == 2)?IsChecked : IsFull}"/> <!-- right -->
+<TextBox Text="{c:Binding '(A == 2)?IsChecked :!IsFull}"/> <!-- right -->
+<TextBox Text="{c:Binding '(A == 2) ? IsChecked :4 + IsFull}"/> <!-- right -->
+```
+
+wrong:
+```<xml>
+<TextBox Text="{c:Binding '(A == 2)?IsChecked:IsFull}"/> <!-- wrong -->
+```
+
+That restricition is caused by path analyzer work that finds [static properties](https://github.com/Alex141/CalcBinding#Static properties)
 
 ## Math Class
 ```xml
