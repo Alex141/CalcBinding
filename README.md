@@ -134,8 +134,7 @@ That restricition is caused by path analyzer work that finds [static properties]
   
 where:
   
-  1. **xmlNamespace** - usual xml namespace that is mapped to normal namespace in a header of xaml file with other namespaces definitions.
-    
+  1. **xmlNamespace** - usual xml namespace that is mapped to normal namespace in a header of xaml file with other namespaces definitions.   
   2. **Class** - name of class that exists in namespace whereto xmlNamespace is mapped
   3. **StaticProperty** - static property of class **Class**
   4. **.NestedProperty etc** - chain of properties following behind **StaticProperty**
@@ -210,7 +209,6 @@ Beginning with version 2.3 CalcBinding supports Enums expressions in binding exp
 where:
   
   1. **xmlNamespace** - usual xml namespace that is mapped to normal namespace in a header of xaml file with other namespaces definitions.
-    
   2. **EnumClass** - name of enum class that exists in namespace whereto xmlNamespace is mapped
   
 ### Examples:  
@@ -292,17 +290,26 @@ public class MyMathConverter : IValueConverter
 ```
 
 ### Restrictions of creating inversed expression
-1.  Binding must include only one property (static or non-static) and only one entry of this property
-2. Binding can contains only following operators and methods:
+1.  Binding must include only one property path (static or non-static) and only one entry of it
+2. Binding can contain only following operators and methods:
 
   ```
   "+", "- (binary)", "*", "/", "Math.Sin", "Math.Cos", "Math.Tan", "Math.Asin", 
   "Math.Acos", "Math.Atan","Math.Pow", "Math.Log", "!", "- (unary)"};
   ```
 
-## 5. Visibility
-bool to visibility two ways convertion runs automaticly:
+## 6. Bool to Visibility automatic convertion
 
+CalcBinding recognizes if dependency property with Visibility type binds to bool expression. If it's true then bool expression is converted to Visibility automaticaly.
+
+Obsiously **true** expression result is converted to **Visibility.Visible**
+
+Property **FalseToVisibility** of CalcBinding specifies state in which **false** expression result is converted. Flag can have one of the following values:
+
+1. FalseToVisibility.Collapsed (default)
+2. FalseToFisibility.Hidden
+
+### Examples
 ```xml
 <Button Content="TargetButton" Visibility="{c:Binding HasPrivileges, FalseToVisibility=Collapsed}"/>
 or just
@@ -311,15 +318,21 @@ or just
 <Button Content="TargetButton" Visibility="{c:Binding !HasPrivileges, FalseToVisibility=Hidden}"/>
 ```
 
-##String
+Automatic inversion is distributed to this convertion too. If dependency property equals to Visibility.Visible, then it's converted to **true**, otherwise - to **false**.
+
+## 7. Other feautures
+
+### DifferQuotes mode
+
+
+#### String
+
 ```xml
 <TextBox Text="{c:Binding (Name + \' \' + Surname)}" />
 <TextBox Text="{c:Binding (IsMan?\'Mr\':\'Ms\') + \' \' + Surname + \' \' + Name}"/>
 ```
 
-## Other feautures
-
-### DifferQuotes mode
+#### Char support
 
 ### TemplateBinding
 Althouth CalcBinding hasn't yet analog for TemplateBinding, as temporary solution you can write as follow: 
