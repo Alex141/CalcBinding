@@ -135,8 +135,11 @@ That restricition is caused by path analyzer work that finds [static properties]
 where:
   
   1. **xmlNamespace** - usual xml namespace that is mapped to normal namespace in a header of xaml file with other namespaces definitions.   
+  
   2. **Class** - name of class that exists in namespace whereto xmlNamespace is mapped
+  
   3. **StaticProperty** - static property of class **Class**
+  
   4. **.NestedProperty etc** - chain of properties following behind **StaticProperty**
   
 ### Examples:  
@@ -209,6 +212,7 @@ Beginning with version 2.3 CalcBinding supports Enums expressions in binding exp
 where:
   
   1. **xmlNamespace** - usual xml namespace that is mapped to normal namespace in a header of xaml file with other namespaces definitions.
+  
   2. **EnumClass** - name of enum class that exists in namespace whereto xmlNamespace is mapped
   
 ### Examples:  
@@ -230,9 +234,13 @@ where:
       ...
     </UserControl>
     ```  
+    
   2. **StateEnum, MyEnum** - custom Enums
+  
   3. **StateEnum.Start, MyEnum.Value1** - values of custom Enums
+  
   4. **Brushes** - standart class with static Brush properties
+  
   5. **Brushes.Green, Brushes.Red** - static properties of class Brushes
   
 ### Restrictions
@@ -291,6 +299,7 @@ public class MyMathConverter : IValueConverter
 
 ### Restrictions of creating inversed expression
 1.  Binding must include only one property path (static or non-static) and only one entry of it
+
 2. Binding can contain only following operators and methods:
 
   ```
