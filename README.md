@@ -128,7 +128,7 @@ That restricition is caused by path analyzer work that finds [static properties]
 
 ## 2. Static properties
 
-  Beginning with version 2.3 CalcBinding supports static properties in binding expression. You can write static properties pathes of any class and static source pathes of any properties number. CalcBinding uses following syntax of declaration static property path:
+  Beginning with version 2.3 CalcBinding supports static properties in binding expression. You can write pathes that begin with static property of any class and have any number of properties following behind static property. CalcBinding uses following syntax of static property path declaration:
   
   **'xmlNamespace:Class.StaticProperty.NestedProperty'** etc.
   
@@ -137,6 +137,8 @@ where:
   1. **xmlNamespace** - usual xml namespace that is mapped to normal namespace in a header of xaml file with other namespaces definitions.
     
   2. **Class** - name of class that exists in namespace whereto xmlNamespace is mapped
+  3. **StaticProperty** - static property of class **Class**
+  4. **.NestedProperty etc** - chain of properties following behind **StaticProperty**
   
 ### Examples:  
   ```xml
@@ -146,7 +148,7 @@ where:
   <Button Background="{c:Binding '(A > B ? media:Brushes.LightBlue : media:Brushes.White)'}"/>
   ```
   
-  where *local* and *media* are defined in a header of xaml file:
+  where **local** and **media** are defined in a header of xaml file:
   ```xml
   <<UserControl x:Class="WpfExample.FifthPage"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -201,26 +203,72 @@ You can use in path property any members of System.Math class in native form as 
 
 ## 4. Enums
 
-## 5. Visibility
-bool to visibility two ways convertion runs automaticly:
+Beginning with version 2.3 CalcBinding supports Enums expressions in binding expression. You can write enum values or properties that have Enum type (static properties too). CalcBinding uses following syntax of declaration enum value:
+  
+  **'xmlNamespace:EnumClass.Value'**
+  
+where:
+  
+  1. **xmlNamespace** - usual xml namespace that is mapped to normal namespace in a header of xaml file with other namespaces definitions.
+    
+  2. **EnumClass** - name of enum class that exists in namespace whereto xmlNamespace is mapped
+  
+### Examples:  
+  ```xml
+  <CheckBox Content="Started" IsChecked="{c:Binding 'State==local:StateEnum.Start'}" />
+  ```
+  ```xml
+  <Button Background="{c:Binding 'EnumValue == local:MyEnum.Value1 ? media:Brushes.Green : media:Brushes.Red'}"/>
+  ```
+  
+  where 
+  
+  1. **local** and **media** are defined in a header of xaml file:
+    ```xml
+    <<UserControl x:Class="WpfExample.FifthPage"
+               xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+              xmlns:local="clr-namespace:WpfExample"
+              xmlns:media ="clr-namespace:System.Windows.Media;assembly=PresentationCore">
+      ...
+    </UserControl>
+    ```  
+  2. **StateEnum, MyEnum** - custom Enums
+  3. **StateEnum.Start, MyEnum.Value1** - values of custom Enums
+  4. **Brushes** - standart class with static Brush properties
+  5. **Brushes.Green, Brushes.Red** - static properties of class Brushes
+  
+### Restrictions
+1. As for static property pathes for Enum constants following rule is applied: you should put any delimiter or operator between ':' operator of ternary operator and identifiers (namespace or property) that make up Enum path:
 
-```xml
-<Button Content="TargetButton" Visibility="{c:Binding HasPrivileges, FalseToVisibility=Collapsed}"/>
-or just
-<Button Content="TargetButton" Visibility="{c:Binding !HasPrivileges}"/>
-
-<Button Content="TargetButton" Visibility="{c:Binding !HasPrivileges, FalseToVisibility=Hidden}"/>
+#### right:
+```<xml>
+<TextBox Text="{c:Binding '(A == 2)?sys:Visibility.Visible : sys:Visibility.Hidden}"/> <!-- right -->
+<TextBox Text="{c:Binding '(A == 2)?local:MyEnum.Value1 : local.MyEnum.Value2}"/> <!-- right -->
 ```
 
-##String
-```xml
-<TextBox Text="{c:Binding (Name + \' \' + Surname)}" />
-<TextBox Text="{c:Binding (IsMan?\'Mr\':\'Ms\') + \' \' + Surname + \' \' + Name}"/>
+#### wrong:
+
+```<xml>
+<TextBox Text="{c:Binding '(A == 2)?sys:Visibility.Visible:sys:Visibility.Hidden}"/> <!-- wrong -->
+<TextBox Text="{c:Binding '(A == 2)?local:MyEnum.Value1: local.MyEnum.Value2}"/> <!-- wrong -->
+<TextBox Text="{c:Binding '(A == 2)?local:MyEnum.Value1 :local.MyEnum.Value2}"/> <!-- wrong -->
 ```
 
-## 6. Automatic inverse binding expression
+## 5. Automatic inverse binding expression
 
-## Before (Automatic inverse example):
+  For examle, you have to create two way binding from viewModel with double property A and Content property of TextBox.
+  TextBox.Content depends on property 'A' by following formula:
+    'Math.Sin(A*2)-5'
+  
+  All you have to do is to write:
+  
+  ```xml
+  <TextBox Text = "{c:Binding 'Math.Sin(A*2)-5'}">
+  ```
+
+CalcBinding recognizes that this expression has inversed expression 'A = Math.Asin(TextBox.Content + 2) / 2' and will use this expression for convertion dependency property TextBox.Text to property A of ViewModel when Text of textBox changes.
+
+Previous expression eqvivalents to following usual code:
 
 ```xml
 <TextBox Text = "{Binding Path=A, Conveter={x:StaticResource MyMathConverter}">
@@ -243,18 +291,30 @@ public class MyMathConverter : IValueConverter
 }
 ```
 
-## After:
+### Restrictions of creating inversed expression
+1.  Binding must include only one property (static or non-static) and only one entry of this property
+2. Binding can contains only following operators and methods:
+
+  ```
+  "+", "- (binary)", "*", "/", "Math.Sin", "Math.Cos", "Math.Tan", "Math.Asin", 
+  "Math.Acos", "Math.Atan","Math.Pow", "Math.Log", "!", "- (unary)"};
+  ```
+
+## 5. Visibility
+bool to visibility two ways convertion runs automaticly:
+
 ```xml
-<TextBox Text = "{c:Binding 'Math.Sin(A*2)-5'}">
+<Button Content="TargetButton" Visibility="{c:Binding HasPrivileges, FalseToVisibility=Collapsed}"/>
+or just
+<Button Content="TargetButton" Visibility="{c:Binding !HasPrivileges}"/>
+
+<Button Content="TargetButton" Visibility="{c:Binding !HasPrivileges, FalseToVisibility=Hidden}"/>
 ```
 
- CalcBinding automaticaly inverse your expression (only for Binding not for MultiBinding) and create two way binding. If all of operators that consist your expression have inversed operators, your expression will be automaticaly inversed and binding will be two way: from source to dependency property and from dependency propery to source too.
-
- If you have binding with expression consisting only of operators that have inversed operators and youe BindingMode = BindingMode.TwoWay, calcBinding attempts to generate inversed expression and use it in ConvertBack method in converter. For example, if you have expression 'Path = (A + 5) / 3' inversed expression is 'source = Path * 3 - 5'.
- 
- CalcBinding supports inversing of many operators:
- ```
-"+", "- (binary)", "*", "/", "Math.Sin", "Math.Cos", "Math.Tan", "Math.Asin", "Math.Acos", "Math.Atan","Math.Pow", "Math.Log", "!", "- (unary)"};
+##String
+```xml
+<TextBox Text="{c:Binding (Name + \' \' + Surname)}" />
+<TextBox Text="{c:Binding (IsMan?\'Mr\':\'Ms\') + \' \' + Surname + \' \' + Name}"/>
 ```
 
 ## Other feautures
