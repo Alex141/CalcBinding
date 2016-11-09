@@ -266,7 +266,7 @@ where:
 
 CalcBinding recognizes that this expression has inversed expression 'A = Math.Asin(TextBox.Content + 2) / 2' and will use this expression for convertion dependency property TextBox.Text to property A of ViewModel when Text of textBox changes.
 
-Previous expression is eqvivalent to following usual code:
+Previous expression equivalents to following usual code:
 
 ```xml
 <TextBox Text = "{Binding Path=A, Conveter={x:StaticResource MyMathConverter}">
