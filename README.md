@@ -252,7 +252,7 @@ where:
 <TextBox Text="{c:Binding '(A == 2)?local:MyEnum.Value1 :local.MyEnum.Value2}"/> <!-- wrong -->
 ```
 
-## 5. Automatic inverse binding expression
+## 5. Automatic inversion of binding expression
 
   For examle, you have to create two way binding from viewModel with double property A and Content property of TextBox.
   TextBox.Content depends on property 'A' by following formula:
