@@ -366,56 +366,18 @@ Althouth CalcBinding hasn't yet analog for TemplateBinding, as temporary solutio
 ```
 Setting RelativeSource property to TemplatedParent value makes CalcBinding similar to TemplateBinding
 
-# What is inside?
+## What is inside?
 
 CalcBinding uses DynamicExpresso library to parse string expression to Linq Expression and compiled expression tree for binding.
 DynamicExpresso is in fact a fork of DynamicLinq library, with many advantages and bug fixes compared with DynamicLinq (e.x. floating point parsing depending on CurrentCulture damn bug). 
 
-String expression is parsed only one time, when binding is initialized. In init section string expression is parsed, property pathes are selected, variable is created for each property path. Further, expression is parsed into linq Expression which is compiled and finally represents a delegate that takes N parsed variables. When binding is triggered, created delegate is invoked with the new values of variables and result is returned.
+String expression is parsed only one time, when binding is initialized. In init section CalcBinding analyzer finds tokens in path expression: property path, static property path, Math expression and Enum expression. When binding is triggered first time, special binding converter replaces each property path and static propert path with variable of appropriate type and call DynamicExpresso to compile expression into delegate that takes new variables. 
 
 Working with the compiled expression increases speed of binding compared with parsing of string expression each time. On the development machine, these times are 0.03s for parsing each time and 0.001-0.003 s for working with the compiled expression
 
-The whole process can be divided into the following stages:
-
-Stage 1: Initialization
-
-1 String expression pre-process: deleting spacebars, replacing operators second names to original names:
-
-```C#
-Input:  exprStr = (IsChecked and !(Settings.Count > 0)) ? 'example str 1' : 'example str 2 '
-Output: exprStr = (IsChecked&&!(Settings.Count>0))?"example str 1":"example str 2 "
-```
-
-2 Expression templating: searching properties pathes and replacing pathes to appropriate variables numbers:
- 
-```C#
-Input: exprStr = (IsChecked&&!(Settings.Count>0))?"example str 1":"example str 2 "
-Output: exprStr = ({0}&&!({1}>0))?"example str 1":"example str 2 "
-        Pathes = IsChecked - 1, Settings.Count - 2
-```
-
-This expression template is transmitted to converter as Converter Parameter
-
-3 (In converter) Expression template parsing and creating of expression dependencing from the variables:
-
-```C#
-Input: exprStr = ({0}&&!({1}>0))?"example str 1":"example str 2 "
-Output: exprStr = (a&&!(b)>0))?"example str 1":"example str 2 "
-         varList = a:Boolean, b:Integer
-```
-
-4 (In converter) Compiling result string expression to delegate:
-```C#
-Lambda compiledExpression = new Interpreter().Parse(exprStr, varList);
-```
-
-Stage 2: Fires when binding Binding fires:
-
-1 (In Converter) Run created delegate with current source values
-
-```C#
-var result = compiledExpression.Invoke(values); where values - new binding source values
-```
+### Notes 
+  1. Enum constants are using in expression for Dynamic Expresso directly, with collection of types of known Enums.
+  2. Binding for collections (ListView, ListBox, DataGrid etc) are created as many times how many times it were declared in xaml. For examle, if you have ListView with 10000 elements, and each element have template consisting of 5 controls which are all binded then only 5 Binding instances would be created.
 
 #Q&A
 
