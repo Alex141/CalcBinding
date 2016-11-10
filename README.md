@@ -378,6 +378,7 @@ Working with the compiled expression increases speed of binding compared with pa
 ### Notes 
   1. Enum constants are using in expression for Dynamic Expresso directly, with collection of types of known Enums.
   2. Binding for collections (ListView, ListBox, DataGrid etc) are created as many times how many times it were declared in xaml. For examle, if you have ListView with 10000 elements, and each element have template consisting of 5 controls which are all binded then only 5 Binding instances would be created.
+  3. If one or more property pathes changes type of resulting property then compiling expression is recompilied.
 
 #Q&A
 
