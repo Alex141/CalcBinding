@@ -331,17 +331,27 @@ Automatic inversion is distributed to this convertion too. If dependency propert
 
 ## 7. Other feautures
 
-### DifferQuotes mode
+### String, Char and DifferQuotes mode
 
+Xaml is markup language based on xml language and xml doesn't support double-quotes signs in attribute values. Xaml doesn't support double-quotes too.Although you can use named-entity **& q u o t;** to write double-quotes but better solution is using escaped single-quote **\'** This expression means escaped quote, i.e. quote, which can be putted inside framing quotes in value of Path property. 
 
-#### String
+CalcBinding doesn't make difference between double and single quotes - all quotes are considered as double quotes by defaults . This is done in order to give an opportunity of writing compact and readable string constants in the Path. For example:
 
 ```xml
 <TextBox Text="{c:Binding (Name + \' \' + Surname)}" />
 <TextBox Text="{c:Binding (IsMan?\'Mr\':\'Ms\') + \' \' + Surname + \' \' + Name}"/>
 ```
 
-#### Char support
+However, in this case, we lose the ability of supporting Char constants. Therefore beginning with version 2.3 CalcBinding has new property - DifferQuotes. If property is true, then single and double quotes are used as is, so 'A' is Char symbol in that mode. If property is false, then single and double quotes are considered as double quotes, it is variant by defaults. 'A' is String constant in that mode. Example of char supporting:
+
+```xml
+<TextBox Text="{c:Binding 'Symbol==\'S\' ? 4 : 5}"/>
+<TextBox Text="{c:Binding 'Symbol==\'S\' ? &quot;Equals to S &quot; : &quot;Not equals to S &quot;}"/>
+```
+
+where Symbol - Char property.
+
+Note that if you need to use both Char and String constants in your expression (exotic but all of a sudden) then you should set DifferQuotes to true and use '\ for writing Char constants and &quot; for writing string constants.
 
 ### TemplateBinding
 Althouth CalcBinding hasn't yet analog for TemplateBinding, as temporary solution you can write as follow: 
