@@ -170,7 +170,7 @@ where:
   ```  
   
 ### Restrictions
-1. As for non-static property pathes for static propery pathes following rule is applied: you should put any delimiter or operator between ':' operator of ternary operator and identifiers (namespace or property) that make up static property path:
+1. As for non-static property pathes for static property pathes following rule is applied: you should put any delimiter or operator between ':' operator of ternary operator and identifiers (namespace or property) that make up static property path:
 
 #### right:
 ```<xml>
