@@ -87,6 +87,15 @@ You can write any algebraic, logical and string expressions, that contain source
 ```
 and ternary operator in form of **'bool_expression ? expression_1 : expression_2'**
 
+One should know, that xaml is generally xml format, and xml doesn't support using of following symbols when setting attribute value: **&, <**. Therefore, CalcBinding supports following aliases for operators that contain these symbols:
+
+| operator | alias | comment |
+| -------- |:-----:| :-----:|
+| && | and |  |
+| \|\|      | or      |   not nessesary, just for symmetry |
+| < | less      |     |
+| <= | less= |        |
+
 ### Examples
 
 #### Algebraic 
@@ -333,20 +342,20 @@ Automatic inversion is distributed to this convertion too. If dependency propert
 
 ### String, Char and DifferQuotes mode
 
-Xaml is markup language based on xml language and xml doesn't support double-quotes signs in attribute values. Xaml doesn't support double-quotes too.Although you can use named-entity **& q u o t;** to write double-quotes but better solution is using escaped single-quote **\'** This expression means escaped quote, i.e. quote, which can be putted inside framing quotes in value of Path property. 
+Xaml is markup language based on xml language and xml doesn't support double-quotes signs in attribute values. Xaml doesn't support double-quotes too.Although you can use named-entity **\&quot;** to write double-quotes but better solution is using escaped single-quote **\'** This expression means escaped quote, i.e. quote, which can be putted inside framing quotes in value of Path property. 
 
 CalcBinding doesn't make difference between double and single quotes - all quotes are considered as double quotes by defaults . This is done in order to give an opportunity of writing compact and readable string constants in the Path. For example:
 
 ```xml
 <TextBox Text="{c:Binding (Name + \' \' + Surname)}" />
-<TextBox Text="{c:Binding (IsMan?\'Mr\':\'Ms\') + \' \' + Surname + \' \' + Name}"/>
+<TextBox Text="{c:Binding '(IsMan?\'Mr\':\'Ms\') + \' \' + Surname + \' \' + Name'}"/>
 ```
 
-However, in this case, we lose the ability of supporting Char constants. Therefore beginning with version 2.3 CalcBinding has new property - DifferQuotes. If property is true, then single and double quotes are used as is, so 'A' is Char symbol in that mode. If property is false, then single and double quotes are considered as double quotes, it is variant by defaults. 'A' is String constant in that mode. Example of char supporting:
+However, in this case we loose the ability of supporting Char constants. Therefore beginning with version 2.3 CalcBinding has new property - DifferQuotes. If property is true, then single and double quotes are used as is, so 'A' is Char symbol in that mode. If property is false, then single and double quotes are considered as double quotes, it is variant by defaults. 'A' is String constant in that mode. Example of char supporting:
 
 ```xml
-<TextBox Text="{c:Binding 'Symbol==\'S\' ? 4 : 5}"/>
-<TextBox Text="{c:Binding 'Symbol==\'S\' ? &quot;Equals to S &quot; : &quot;Not equals to S &quot;}"/>
+<TextBox Text="{c:Binding Path='Symbol==\'S\' ? 4 : 5', DifferQuotes=True}"/>
+<TextBox Text="{c:Binding Path='Symbol==\'S\' ? &quot;Equals to S &quot; : &quot;Not equals to S &quot;', DifferQuotes=True}"/>
 ```
 
 where Symbol - Char property.
@@ -377,7 +386,7 @@ Working with the compiled expression increases speed of binding compared with pa
 
 ### Notes 
   1. Enum constants are using in expression for Dynamic Expresso directly, with collection of types of known Enums.
-  2. Binding for collections (ListView, ListBox, DataGrid etc) are created as many times how many times it were declared in xaml. For examle, if you have ListView with 10000 elements, and each element have template consisting of 5 controls which are all binded then only 5 Binding instances would be created.
+  2. Binding for collections (ListView, ListBox, DataGrid etc) are created as many times how many times it were declared in xaml. For example, if you have ListView with 10000 elements, and each element have template consisting of 5 controls which are all binded then only 5 Binding instances would be created.
   3. If one or more property pathes changes type of resulting property then compiling expression is recompilied.
 
 #Q&A
@@ -415,12 +424,19 @@ Yes, you can, but with setting RelativeSource property, see [example](https://gi
 
 1. Nullable value types doesn't supported in reverse binding (e.g. mode OneWayToSource)
 
-2. CalcBinding don't support your custom conveters at all now. I did not invent the case for which it would be required in CalcBinding.
+2. CalcBinding doesn't support your custom conveters at all now. If you need this feature, create new issue and put your using scenario in order to I can see that it is necessary
 
-3. In path expression you can't use any .Net classes except of Math class.
+3. In path expression you can't use any methods of .Net classes except of Math class.
 
 #Release notes
 
+## version 2.3.0.0
+
+* Add support of Static properties, enums, char constants. 
+
+Possible problems of switching to this version from older versions:
+
+It is important that names of properties, classes and namespaces that make up sources pathes, would be separated from operator ':' in ternary operator (at least one space or parenthesis) for this version. See section Restriction in  
 ## version 2.2.5.2
 
 * fix defect with exception in binding to readonly properties with BindingMode.Default (#41) (thanks to maurosampietro and earthengine!)
