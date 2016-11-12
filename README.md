@@ -36,7 +36,7 @@ Following example shows xaml snippets with standart Binding and with CalcBinding
 
 ### Key features:
 
-1. One or **many** source properties in Path with many available operators: [description](https://github.com/Alex141/CalcBinding#Source properties and operators)
+1. One or **many** source properties in Path with many available operators: [description](#source properties and operators)
 
   ```xml
   <Label Content="{c:Binding A*0.5+(B.NestedProp1/C - B.NestedProp2 % C) }" />
