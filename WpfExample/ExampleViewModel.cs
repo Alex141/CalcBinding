@@ -442,7 +442,7 @@ namespace WpfExample
             }
         }
 
-        private char symbol;
+        private char symbol = 'S';
         public char Symbol
         {
             get

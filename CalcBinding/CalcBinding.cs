@@ -33,17 +33,17 @@ namespace CalcBinding
         private FalseToVisibility falseToVisibility = FalseToVisibility.Collapsed;
 
         /// <summary>
-        /// If true then single quotes and double quotes are considered different, otherwise - both are considerent as double quotes
+        /// If true then single quotes and double quotes are considered as single quotes, otherwise - both are considerent as double quotes
         /// </summary>
         /// <remarks>
         /// Use this flag if you need to use char is path expresion
         /// </remarks>
-        public bool DifferQuotes 
+        public bool SingleQuotes 
         { 
-            get { return differQuotes; }
-            set { differQuotes = value; }
+            get { return singleQuotes; }
+            set { singleQuotes = value; }
         }
-        private bool differQuotes = false;
+        private bool singleQuotes = false;
 
         public Binding()
         {
@@ -339,8 +339,10 @@ namespace CalcBinding
                 {"not ",    "!"}
             };
 
-            if (!DifferQuotes)
+            if (!SingleQuotes)
                 replaceDict.Add("\'", "\"");
+            else
+                replaceDict.Add("\"", "\'");
 
             var normPath = path;
             foreach (var pair in replaceDict)

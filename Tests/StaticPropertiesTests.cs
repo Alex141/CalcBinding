@@ -84,6 +84,19 @@ namespace Tests
         }
 
         [TestMethod]
+        public void LogicStaticPropertyTest()
+        {
+            var exampleViewModel = new ExampleViewModel();
+            exampleViewModel.A = -5;
+
+            BoolBindingAssert("A >= 2 ? (1>2) : !local:StaticExampleClass.StaticBool", exampleViewModel,
+                () => { StaticExampleClass.StaticBool = true; }, false,
+                () => { StaticExampleClass.StaticBool = false; }, true,
+                new Dictionary<string, Type>() { { "local:StaticExampleClass", typeof(StaticExampleClass) } }
+            );
+        }
+
+        [TestMethod]
         public void ReadonlyPropertiesTest()
         {
             var exampleViewModel = new ExampleViewModel();
@@ -197,7 +210,7 @@ namespace Tests
         {
             // default - DifferQuotes = false
             var binding = new CalcBinding.Binding("A");
-            Assert.AreEqual(false, binding.DifferQuotes);
+            Assert.AreEqual(false, binding.SingleQuotes);
 
             var exampleViewModel = new ExampleViewModel();
 
@@ -213,61 +226,14 @@ namespace Tests
         }
 
         [TestMethod]
-        public void DifferQuotesSettedToTrueTest()
-        {
-            var binding = new CalcBinding.Binding("Name + \"DEF\"");
-            binding.DifferQuotes = true;
-
-            var exampleViewModel = new ExampleViewModel();
-            StringBindingAssert(binding, exampleViewModel,
-                () => exampleViewModel.Name = "ABC", "ABCDEF",
-                () => exampleViewModel.Name = "A", "ADEF"
-            );
-
-            //detect char
-            binding = new CalcBinding.Binding("Name + 'D'");
-            binding.DifferQuotes = true;
-
-            StringBindingAssert(binding, exampleViewModel,
-                () => exampleViewModel.Name = "ABC", "",
-                () => exampleViewModel.Name = "A", ""
-            );
-        }
-
-        [TestMethod]
-        public void SingleQuotesInStringTest()
-        {
-            //detect single quotes
-            var binding = new CalcBinding.Binding("l:StaticExampleClass2.Name + \"'D'EF\"");
-            binding.DifferQuotes = true;
-
-            StringBindingAssert(binding, null,
-                () => StaticExampleClass.Name = "ABC", "ABC'D'EF",
-                () => StaticExampleClass.Name = "A", "A'D'EF", new Dictionary<string, Type>
-                {
-                    {"l:StaticExampleClass2", typeof(StaticExampleClass)}
-                }
-            );
-
-            binding = new CalcBinding.Binding("Name + \"D'EF\"");
-            binding.DifferQuotes = true;
-
-            var exampleViewModel = new ExampleViewModel();
-            StringBindingAssert(binding, exampleViewModel,
-                () => exampleViewModel.Name = "ABC", "ABCD'EF",
-                () => exampleViewModel.Name = "A", "AD'EF"
-            );
-        }
-
-        [TestMethod]
         public void DoubleQuotesInCharTest()
         {
-            var binding = new CalcBinding.Binding("local:StaticExampleClass.StaticChar == 'A' ? '4' : '\"'");
-            binding.DifferQuotes = true;
+            var binding = new CalcBinding.Binding("local:StaticExampleClass.StaticChar == 'A' ? 4 : 5");
+            binding.SingleQuotes = true;
 
             StringAndObjectBindingAssert(binding, null,
-                () => StaticExampleClass.StaticChar = 'D', "\"", '"',
-                () => StaticExampleClass.StaticChar = 'A', "4", '4', new Dictionary<string, Type>
+                () => StaticExampleClass.StaticChar = 'D', "5", 5,
+                () => StaticExampleClass.StaticChar = 'A', "4", 4, new Dictionary<string, Type>
                 {
                     {"local:StaticExampleClass", typeof(StaticExampleClass)}
                 }
