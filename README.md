@@ -52,28 +52,28 @@ Following example shows xaml snippets with standart Binding and with CalcBinding
   ```xml
   <Button Background="{c:Binding '(A > B ? media:Brushes.LightBlue : media:Brushes.White)'}"/>
   ```
-3. Properties and methods of class **System.Math** in Path: [description](https://github.com/Alex141/CalcBinding#Math)
+3. Properties and methods of class **System.Math** in Path: [description](#3-math-class-members)
 
   ```xml
   <TextBox Text="{c:Binding 'Math.Sin(Math.Cos(A))'}"/>
   ```
-4. **Enum** types like constants or source properties in Path: [description](https://github.com/Alex141/CalcBinding#release-notes)
+4. **Enum** types like constants or source properties in Path: [description](#4-enums)
 
   ```xml
   <TextBox Text="{c:Binding '(EnumValue == local:CustomEnum.Value1 ? 10 : 20)'}"/>
   ```
-5. **Automatic inversion** of binding expression if it's possible: [description](https://github.com/Alex141/CalcBinding#release-notes)
+5. **Automatic inversion** of binding expression if it's possible: [description](#5-automatic-inversion-of-binding-expression)
 
   ```xml
   <TextBox Text = "{c:Binding 'Math.Sin(A*2)-5'}"/> {two way binding will be created}
   ```
-6. Automatic two way convertion of **bool** expression **to Visibility** and back if target property has such type: [description](https://github.com/Alex141/CalcBinding#release-notes)
+6. Automatic two way convertion of **bool** expression **to Visibility** and back if target property has such type: [description](#6-bool-to-visibility-automatic-convertion)
 
   ```xml
   <Button Visibility="{c:Binding !IsChecked}" /> 
   <Button Visibility="{c:Binding IsChecked, FalseToVisibility=Hidden}" />
   ```
-7. Other features such as **string and char constants support** and other: [description](https://github.com/Alex141/CalcBinding#release-notes)
+7. Other features such as **string and char constants support** and other: [description](#7-other-feautures)
 
 # Documentation
 
@@ -433,7 +433,8 @@ Yes, you can, but with setting RelativeSource property, see [example](https://gi
 
 Possible problems of switching to this version from older versions:
 
-It is important that names of properties, classes and namespaces that make up sources pathes, would be separated from operator ':' in ternary operator (at least one space or parenthesis) for this version. See section Restriction in  
+It is important that names of properties, classes and namespaces that make up sources pathes, would be separated from operator ':' in ternary operator (at least one space or parenthesis) for this version. See section [Restrictions](#restrictions)
+
 ## version 2.2.5.2
 
 * fix defect with exception in binding to readonly properties with BindingMode.Default (#41) (thanks to maurosampietro and earthengine!)
