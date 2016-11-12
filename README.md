@@ -133,7 +133,7 @@ One should know, that xaml is generally xml format, and xml doesn't support usin
 <TextBox Text="{c:Binding '(A == 2)?IsChecked:IsFull}"/> <!-- wrong -->
 ```
 
-That restricition is caused by path analyzer work that finds [static properties](https://github.com/Alex141/CalcBinding#Static properties)
+That restricition is caused by path analyzer work that finds [static properties](#2-static-properties)
 
 ## 2. Static properties
 
