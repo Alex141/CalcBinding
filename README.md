@@ -34,7 +34,7 @@ Following example shows xaml snippets with standart Binding and with CalcBinding
 <Label Content="{c:Binding A+B+C }" />
 ```
 
-### Key features:
+### Key features and restrictions:
 
 1. One or **many** source properties in Path with many available operators: [description](#1-source-properties-and-operators)
 
@@ -74,6 +74,8 @@ Following example shows xaml snippets with standart Binding and with CalcBinding
   <Button Visibility="{c:Binding IsChecked, FalseToVisibility=Hidden}" />
   ```
 7. Other features such as **string and char constants support** and other: [description](#7-other-feautures)
+
+8. General restrictions: [description](#8-general-restrictions)
 
 # Documentation
 
@@ -372,6 +374,14 @@ Althouth CalcBinding hasn't yet analog for TemplateBinding, as temporary solutio
 ```
 Setting RelativeSource property to TemplatedParent value makes CalcBinding similar to TemplateBinding
 
+## 8. General restrictions
+
+1. Nullable value types doesn't supported in reverse binding (e.g. mode OneWayToSource)
+
+2. CalcBinding doesn't support your custom conveters at all now. If you need this feature, create new issue and put your using scenario in order to I can see that it is necessary
+
+3. In path expression you can't use any methods of .Net classes except of Math class.
+
 ## What is inside?
 
 CalcBinding uses DynamicExpresso library to parse string expression to Linq Expression and compiled expression tree for binding.
@@ -399,14 +409,6 @@ In markup extension we can't use double quotes, so we can use single quotes and 
 3. Can I use CalcBinding instead of TemplateBinding?
 ```
 Yes, you can, but with setting RelativeSource property, see section [TemplateBinding](#templatebinding)
-
-##Restrictions
-
-1. Nullable value types doesn't supported in reverse binding (e.g. mode OneWayToSource)
-
-2. CalcBinding doesn't support your custom conveters at all now. If you need this feature, create new issue and put your using scenario in order to I can see that it is necessary
-
-3. In path expression you can't use any methods of .Net classes except of Math class.
 
 #Release notes
 
