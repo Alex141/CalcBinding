@@ -44,7 +44,7 @@ Following example shows xaml snippets with standart Binding and with CalcBinding
   ```xml
   <c:Binding 'A and B or C' />
   ```
-2. One or **many static properties** in Path: [description](https://github.com/Alex141/CalcBinding#release-notes)
+2. One or **many static properties** in Path: [description](#2-static-properties)
 
   ```xml
   <TextBox Text="{c:Binding 'local:StaticClass.Prop1 + local:OtherStaticClass.NestedProp.PropB + PropC'}"/>
