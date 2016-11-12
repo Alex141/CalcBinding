@@ -396,7 +396,7 @@ Working with the compiled expression increases speed of binding compared with pa
   2. Binding for collections (ListView, ListBox, DataGrid etc) are created as many times how many times it were declared in xaml. For example, if you have ListView with 10000 elements, and each element have template consisting of 5 controls which are all binded then only 5 Binding instances would be created.
   3. If one or more property pathes changes type of resulting property then compiling expression is recompilied.
 
-#Q&A
+# Q&A
 ```
 1. I wrote logical expression A && B, A < B, A <= B, but my xaml doesn't compile, what's wrong?
 ```
@@ -410,7 +410,7 @@ In markup extension we can't use double quotes, so we can use single quotes and 
 ```
 Yes, you can, but with setting RelativeSource property, see section [TemplateBinding](#templatebinding)
 
-#Release notes
+# Release notes
 
 ## version 2.3.0.0
 
