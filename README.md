@@ -387,35 +387,18 @@ Working with the compiled expression increases speed of binding compared with pa
   3. If one or more property pathes changes type of resulting property then compiling expression is recompilied.
 
 #Q&A
-
 ```
-1 I wrote logical expression A && B, A < B, A <= B, but my xaml doesn't compile, what's wrong?
+1. I wrote logical expression A && B, A < B, A <= B, but my xaml doesn't compile, what's wrong?
 ```
-As Xaml is generally xml format, some symbols are denied in markupExtension: &, &&, <. Therefore, these characters are replaced with the following:
-
+As Xaml is generally xml format, some symbols are denied and one should use it's aliases instead os its. See operators aliases table in section [Source properties and operators](#1-source-properties-and-operators)
 ```
-&& -> and
-|| -> or (not nessesary) 
-< -> less
-<= -> less=
+2. I wrote string expression A + " some text", but my xaml doesn't compile, what's wrong?
 ```
-
-See [logic](https://github.com/Alex141/CalcBinding#logic) section of examples
+In markup extension we can't use double quotes, so we can use single quotes and backslash for escaping \\' or xml escape symbol \&quot;. See section [String, Char and SingleQuotes mode](#string,-char-and-singleQuotes-mode)
 ```
-2 I wrote string expression A + " some text", but my xaml doesn't compile, what's wrong?
+3. Can I use CalcBinding instead of TemplateBinding?
 ```
-
-In markup extension we can't use double quotes, so we can use single quotes and backslash for escaping like this:
-
-```xml
-<c:Binding Path='A + \'some text\'' />
-```
-
-```
-3 Can I use CalcBinding instead of TemplateBinding?
-```
-
-Yes, you can, but with setting RelativeSource property, see [example](https://github.com/Alex141/CalcBinding#templatebinding) . It is temporary solution, support of TemplateBinding is [planned](https://github.com/Alex141/CalcBinding/issues/20) to the future
+Yes, you can, but with setting RelativeSource property, see section [TemplateBinding](#templateBinding)
 
 ##Restrictions
 
