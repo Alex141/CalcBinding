@@ -394,11 +394,11 @@ As Xaml is generally xml format, some symbols are denied and one should use it's
 ```
 2. I wrote string expression A + " some text", but my xaml doesn't compile, what's wrong?
 ```
-In markup extension we can't use double quotes, so we can use single quotes and backslash for escaping \\' or xml escape symbol \&quot;. See section [String, Char and SingleQuotes mode](#string,-char-and-singleQuotes-mode)
+In markup extension we can't use double quotes, so we can use single quotes and backslash for escaping \\' or xml escape symbol \&quot;. See section [String, Char and SingleQuotes mode](#string-char-and-singlequotes-mode)
 ```
 3. Can I use CalcBinding instead of TemplateBinding?
 ```
-Yes, you can, but with setting RelativeSource property, see section [TemplateBinding](#templateBinding)
+Yes, you can, but with setting RelativeSource property, see section [TemplateBinding](#templatebinding)
 
 ##Restrictions
 
