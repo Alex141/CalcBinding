@@ -1,6 +1,6 @@
 # CalcBinding
 
-CalcBinding is an advanced Binding markup extension that allows you to write binding expressions directly in xaml, without custom converters. CalcBinding can automaticaly perfom bool to visibility convertion, inverse your expression and more. CalcBinding makes binding expressions shorter and more user friendly. [Release notes](https://github.com/Alex141/CalcBinding#release-notes)
+CalcBinding is an advanced Binding markup extension that allows you to write calculated binding expressions in xaml, without custom converters. CalcBinding can automaticaly perfom bool to visibility convertion, inverse your expression and more. CalcBinding makes binding expressions shorter and more user-friendly. [Release notes](#release-notes)
 
 ## Install
 
@@ -10,9 +10,9 @@ PM> Install-Package CalcBinding
 ```
 
 ## Overview
-Following examples show xaml snippets with standart Binding and with CalcBinding:
+Following example shows xaml snippets with standart Binding and with CalcBinding in very simple case:
 
-## Before:
+### Before:
 
 ```xml
 <Label>
@@ -28,74 +28,265 @@ Following examples show xaml snippets with standart Binding and with CalcBinding
 
 (without MyCustomConveter declaration and referencing to it in xaml)
 
-## After:
+### After:
 
 ```xml
 <Label Content="{c:Binding A+B+C }" />
 ```
 
-## Before:
+### Key features and restrictions:
+
+1. One or **many** source properties in Path with many available operators: [description](#1-source-properties-and-operators)
+
+  ```xml
+  <Label Content="{c:Binding A*0.5+(B.NestedProp1/C - B.NestedProp2 % C) }" />
+  ```
+  ```xml
+  <c:Binding 'A and B or C' />
+  ```
+2. One or **many static properties** in Path: [description](#2-static-properties)
+
+  ```xml
+  <TextBox Text="{c:Binding 'local:StaticClass.Prop1 + local:OtherStaticClass.NestedProp.PropB + PropC'}"/>
+  ```
+  ```xml
+  <Button Background="{c:Binding '(A > B ? media:Brushes.LightBlue : media:Brushes.White)'}"/>
+  ```
+3. Properties and methods of class **System.Math** in Path: [description](#3-math-class-members)
+
+  ```xml
+  <TextBox Text="{c:Binding 'Math.Sin(Math.Cos(A))'}"/>
+  ```
+4. **Enum** types like constants or source properties in Path: [description](#4-enums)
+
+  ```xml
+  <TextBox Text="{c:Binding '(EnumValue == local:CustomEnum.Value1 ? 10 : 20)'}"/>
+  ```
+5. **Automatic inversion** of binding expression if it's possible: [description](#5-automatic-inversion-of-binding-expression)
+
+  ```xml
+  <TextBox Text = "{c:Binding 'Math.Sin(A*2)-5'}"/> {two way binding will be created}
+  ```
+6. Automatic two way convertion of **bool** expression **to Visibility** and back if target property has such type: [description](#6-bool-to-visibility-automatic-convertion)
+
+  ```xml
+  <Button Visibility="{c:Binding !IsChecked}" /> 
+  <Button Visibility="{c:Binding IsChecked, FalseToVisibility=Hidden}" />
+  ```
+7. Other features such as **string and char constants support** and other: [description](#7-other-feautures)
+
+8. General restrictions: [description](#8-general-restrictions)
+
+# Documentation
+
+## 1. Source properties and operators
+
+You can write any algebraic, logical and string expressions, that contain source property pathes, strings, digits, all members of class Math and following operators:
+
+```
+"(", ")", "+", "-", "*", "/", "%", "^", "!", "&&","||",
+"&", "|", "?", ":", "<", ">", "<=", ">=", "==", "!="};
+```
+and ternary operator in form of **'bool_expression ? expression_1 : expression_2'**
+
+One should know, that xaml is generally xml format, and xml doesn't support using of following symbols when setting attribute value: **&, <**. Therefore, CalcBinding supports following aliases for operators that contain these symbols:
+
+| operator | alias | comment |
+| -------- |:-----:| :-----:|
+| && | and |  |
+| \|\|      | or      |   not nessesary, just for symmetry |
+| < | less      |     |
+| <= | less= |        |
+
+### Examples
+
+#### Algebraic 
+```xml
+<TextBox Text="{c:Binding A+B+C}"/>
+<TextBox Text="{c:Binding A-B-C}"/>
+<TextBox Text="{c:Binding A*(B+C)}"/>
+<TextBox Text="{c:Binding 2*A-B*0.5}"/>
+<TextBox Text="{c:Binding A/B, StringFormat={}{0:n2} --StringFormat is used}"/> {with string format}
+<TextBox Text="{c:Binding A%B}"/>
+<TextBox Text="{c:Binding '(A == 1) ? 10 : 20'}"/> {ternary operator}
+```
+#### Logic
+```xml
+<CheckBox Content="!IsChecked" IsChecked="{c:Binding !IsChecked}"/>
+<TextBox Text="{c:Binding 'IsChecked and IsFull'}"/> {'and' is equvalent of '&&'}
+<TextBox Text="{c:Binding '!IsChecked or (A > B)'}"/> {'or' is equvalent of '||', but you can leave '||'}
+<TextBox Text="{c:Binding '(A == 1) and (B less= 5)'}"/> {'less=' is equvalent of '<='}
+<TextBox Text="{c:Binding (IsChecked || !IsFull)}"/>
+```
+
+### Restrictions:
+
+1. Identifiers that make up the source property path, should be separated from operator ':' by any operator or delimititer (single quote, space etc.) in ternary operator:
+
+#### right:
+```<xml>
+<TextBox Text="{c:Binding '(A == 2)?IsChecked : IsFull}"/> <!-- right -->
+<TextBox Text="{c:Binding '(A == 2)?IsChecked :!IsFull}"/> <!-- right -->
+<TextBox Text="{c:Binding '(A == 2) ? IsChecked :4 + IsFull}"/> <!-- right -->
+```
+
+#### wrong:
+```<xml>
+<TextBox Text="{c:Binding '(A == 2)?IsChecked:IsFull}"/> <!-- wrong -->
+```
+
+That restricition is caused by path analyzer work that finds [static properties](#2-static-properties)
+
+## 2. Static properties
+
+  Beginning with version 2.3 CalcBinding supports static properties in binding expression. You can write pathes that begin with static property of any class and have any number of properties following behind static property. CalcBinding uses following syntax of static property path declaration:
+  
+  **'xmlNamespace:Class.StaticProperty.NestedProperty'** etc.
+  
+where:
+  
+  1. **xmlNamespace** - usual xml namespace that is mapped to normal namespace in a header of xaml file with other namespaces definitions.   
+  
+  2. **Class** - name of class that exists in namespace whereto xmlNamespace is mapped
+  
+  3. **StaticProperty** - static property of class **Class**
+  
+  4. **.NestedProperty etc** - chain of properties following behind **StaticProperty**
+  
+### Examples:  
+  ```xml
+  <TextBox Text="{c:Binding 'local:Class.NestedProp.Prop1 + local:OtherStaticClass.PropB + PropC'}"/>
+  ```
+  ```xml
+  <Button Background="{c:Binding '(A > B ? media:Brushes.LightBlue : media:Brushes.White)'}"/>
+  ```
+  
+  where **local** and **media** are defined in a header of xaml file:
+  ```xml
+  <<UserControl x:Class="WpfExample.FifthPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:local="clr-namespace:WpfExample"
+             xmlns:media ="clr-namespace:System.Windows.Media;assembly=PresentationCore">
+     ...
+  </UserControl>
+  ```  
+  
+### Restrictions
+1. As for non-static property pathes for static property pathes following rule is applied: you should put any delimiter or operator between ':' operator of ternary operator and identifiers (namespace or property) that make up static property path:
+
+#### right:
+```<xml>
+<TextBox Text="{c:Binding '(A == 2)?local:Class.Prop1 : local:Class.Prop2}"/> <!-- right -->
+<TextBox Text="{c:Binding '(A == 2)?local:OtherClass.IsChecked :!local.OtherClass.IsFull}"/> <!-- right -->
+<TextBox Text="{c:Binding '(A == 2) ? local:Class.A :4 + local:Class.B}"/> <!-- right -->
+```
+
+#### wrong:
+```<xml>
+<TextBox Text="{c:Binding '(A == 2)?local:Class.Prop1: local:Class.Prop2}"/> <!-- wrong -->
+<TextBox Text="{c:Binding '(A == 2)?local:OtherClass.IsChecked:local.OtherClass.IsFull}"/> <!-- wrong -->
+<TextBox Text="{c:Binding '(A == 2) ? local:Class.A:4+local:Class.B}"/> <!-- wrong -->
+```
+
+## 3. Math class members
+
+You can use in path property any members of System.Math class in native form as if you are writing usual C# code:
 
 ```xml
-<Label>
-  <Label.Content>
-    <MultiBinding Conveter={x:StaticResource MyCustomConverter2}> 
-    <Binding A/> 
-    <Binding B/> 
-    <Binding C/> 
-    </MultiBinding> 
-  </Label.Content>
-</Label> 
+<TextBox Text="{c:Binding Math.Sin(A*Math.PI/180), StringFormat={}{0:n5}}"/>
+<TextBox Text="{c:Binding A*Math.PI}" />
 ```
 
-(without MyCustomConveter declaration and referencing to it in xaml)
+## Restrictions
+1. Although CalcBinding supports static properties, Math class is a standalone feature that was created and used before static properties were supported. For this reason you shouldn't use static property syntax with members of Math class. 
 
-## After:
-
+#### right:
 ```xml
-<Label Content="{c:Binding A*0.5+(B/C - B%C) }" />
+<TextBox Text="{c:Binding A*Math.PI}" /> <!-- right -->
+<TextBox Text="{c:Binding Math.Sin(10)+20}" /> <!-- right -->
 ```
-## Before:
 
+#### wrong:
 ```xml
-<MultiBinding Conveter={x:StaticResource MyCustomConverter3}> 
-    <Binding A/> 
-    <Binding B/> 
-    <Binding C/> 
-</MultiBinding> 
+<xmlns:sys="clr-namespace:System;assembly=mscorlib">
+...
+<TextBox Text="{c:Binding A*sys:Math.PI}" /> <!-- wrong -->
+<TextBox Text="{c:Binding sys:Math.Sin(10)+20}" /> <!-- wrong -->
 ```
 
-(without MyCustomConveter declaration and referencing to it in xaml)
+## 4. Enums
 
-## After:
+Beginning with version 2.3 CalcBinding supports Enums expressions in binding expression. You can write enum values or properties that have Enum type (static properties too). CalcBinding uses following syntax of declaration enum value:
+  
+  **'xmlNamespace:EnumClass.Value'**
+  
+where:
+  
+  1. **xmlNamespace** - usual xml namespace that is mapped to normal namespace in a header of xaml file with other namespaces definitions.
+  
+  2. **EnumClass** - name of enum class that exists in namespace whereto xmlNamespace is mapped
+  
+### Examples:  
+  ```xml
+  <CheckBox Content="Started" IsChecked="{c:Binding 'State==local:StateEnum.Start'}" />
+  ```
+  ```xml
+  <Button Background="{c:Binding 'EnumValue == local:MyEnum.Value1 ? media:Brushes.Green : media:Brushes.Red'}"/>
+  ```
+  
+  where 
+  
+  1. **local** and **media** are defined in a header of xaml file:
+    ```xml
+    <<UserControl x:Class="WpfExample.FifthPage"
+               xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+              xmlns:local="clr-namespace:WpfExample"
+              xmlns:media ="clr-namespace:System.Windows.Media;assembly=PresentationCore">
+      ...
+    </UserControl>
+    ```  
+    
+  2. **StateEnum, MyEnum** - custom Enums
+  
+  3. **StateEnum.Start, MyEnum.Value1** - values of custom Enums
+  
+  4. **Brushes** - standart class with static Brush properties
+  
+  5. **Brushes.Green, Brushes.Red** - static properties of class Brushes
+  
+### Restrictions
+1. As for static property pathes for Enum constants following rule is applied: you should put any delimiter or operator between ':' operator of ternary operator and identifiers (namespace or property) that make up Enum path:
 
-```xml
-<c:Binding 'A and B or C' />
+#### right:
+```<xml>
+<TextBox Text="{c:Binding '(A == 2)?sys:Visibility.Visible : sys:Visibility.Hidden}"/> <!-- right -->
+<TextBox Text="{c:Binding '(A == 2)?local:MyEnum.Value1 : local.MyEnum.Value2}"/> <!-- right -->
 ```
 
-## Before:
+#### wrong:
 
-```xml
-<Button Visibility="{Binding IsFull Converter={x:StaticResource BoolToVisibilityConveter}}" /> 
-<Button Visibility="{Binding IsFull Converter={x:StaticResource NegativeBoolToVisibilityConveter}}" />
+```<xml>
+<TextBox Text="{c:Binding '(A == 2)?sys:Visibility.Visible:sys:Visibility.Hidden}"/> <!-- wrong -->
+<TextBox Text="{c:Binding '(A == 2)?local:MyEnum.Value1: local.MyEnum.Value2}"/> <!-- wrong -->
+<TextBox Text="{c:Binding '(A == 2)?local:MyEnum.Value1 :local.MyEnum.Value2}"/> <!-- wrong -->
 ```
-or
-```xml 
-<Button Visibility="{Binding IsChecked Converter={x:StaticResource HiddenBoolToVisibilityConveter}}" />
-```
-## After: 
 
-```xml 
-<Button Visibility="{c:Binding IsChecked}" /> 
-<Button Visibility="{c:Binding !IsChecked}" /> 
-```
-or
-```xml 
-<Button Visibility="{c:Binding IsChecked, FalseToVisibility=Hidden}" />
-```
- CalcBinding determines Visibility target type and converts bool to visibility automaticaly for you
- 
-## Before (Automatic inverse example):
+## 5. Automatic inversion of binding expression
+
+  For examle, you have to create two way binding from viewModel with double property A and Content property of TextBox.
+  TextBox.Content depends on property 'A' by following formula:
+    'Math.Sin(A*2)-5'
+  
+  All you have to do is to write:
+  
+  ```xml
+  <TextBox Text = "{c:Binding 'Math.Sin(A*2)-5'}">
+  ```
+
+CalcBinding recognizes that this expression has inversed expression 'A = Math.Asin(TextBox.Content + 2) / 2' and will use this expression for convertion dependency property TextBox.Text to property A of ViewModel when Text of textBox changes.
+
+Previous expression equivalents to following usual code:
+
 ```xml
 <TextBox Text = "{Binding Path=A, Conveter={x:StaticResource MyMathConverter}">
 ```
@@ -117,46 +308,28 @@ public class MyMathConverter : IValueConverter
 }
 ```
 
-## After:
-```xml
-<TextBox Text = "{c:Binding 'Math.Sin(A*2)-5'}">
-```
+### Restrictions of creating inversed expression
+1.  Binding must include only one property path (static or non-static) and only one entry of it
 
- CalcBinding automaticaly inverse your expression (only for Binding not for MultiBinding) and create two way binding. If all of operators that consist your expression have inversed operators, your expression will be automaticaly inversed and binding will be two way: from source to dependency property and from dependency propery to source too.
+2. Binding can contain only following operators and methods:
 
+  ```
+  "+", "- (binary)", "*", "/", "Math.Sin", "Math.Cos", "Math.Tan", "Math.Asin", 
+  "Math.Acos", "Math.Atan","Math.Pow", "Math.Log", "!", "- (unary)"};
+  ```
 
+## 6. Bool to Visibility automatic convertion
 
-# Documentation
+CalcBinding recognizes if dependency property with Visibility type binds to bool expression. If it's true then bool expression is converted to Visibility automaticaly.
 
-You can write any mathematic, logical and string expressions, that contains pathes (as variables), strings, digits, all method of class Math (sin, cos, PI etc) and following operators:
+Obsiously **true** expression result is converted to **Visibility.Visible**
 
-```
-"(", ")", "+", "-", "*", "/", "%", "^", "!", "&&","||", "&", "|", "?", ":", "<", ">", "<=", ">=", "==", "!="};
-```
-Examples of supporting binding expressions:
+Property **FalseToVisibility** of CalcBinding specifies state in which **false** expression result is converted. Flag can have one of the following values:
 
-##Math 
-```xml
-<TextBox Text="{c:Binding A+B+C}"/>
-<TextBox Text="{c:Binding A-B-C}"/>
-<TextBox Text="{c:Binding A*(B+C)}"/>
-<TextBox Text="{c:Binding 2*A-B*0.5}"/>
-<TextBox Text="{c:Binding A/B, StringFormat={}{0:n2} --StringFormat is used}"/> {with string format}
-<TextBox Text="{c:Binding A%B}"/>
-<TextBox Text="{c:Binding '(A == 1) ? 10 : 20'}"/> {ternary operator}
-```
-##Logic
-```xml
-<CheckBox Content="!IsChecked" IsChecked="{c:Binding !IsChecked}"/>
-<TextBox Text="{c:Binding 'IsChecked and IsFull'}"/> {'and' is equvalent of '&&'}
-<TextBox Text="{c:Binding '!IsChecked or (A > B)'}"/> {'or' is equvalent of '||', but you can leave '||'}
-<TextBox Text="{c:Binding '(A == 1) and (B less= 5)'}"/> {'less=' is equvalent of '<=')
-<TextBox Text="{c:Binding (IsChecked || !IsFull)}"/>
-```
+1. FalseToVisibility.Collapsed (default)
+2. FalseToFisibility.Hidden
 
-##Visibility
-bool to visibility two ways convertion runs automaticly:
-
+### Examples
 ```xml
 <Button Content="TargetButton" Visibility="{c:Binding HasPrivileges, FalseToVisibility=Collapsed}"/>
 or just
@@ -165,29 +338,30 @@ or just
 <Button Content="TargetButton" Visibility="{c:Binding !HasPrivileges, FalseToVisibility=Hidden}"/>
 ```
 
-##String
+Automatic inversion is distributed to this convertion too. If dependency property equals to Visibility.Visible, then it's converted to **true**, otherwise - to **false**.
+
+## 7. Other feautures
+
+### String, Char and SingleQuotes mode
+
+Xaml is markup language based on xml language and xml doesn't support double-quotes signs in attribute values. Xaml doesn't support double-quotes too, futhermore it has problems with supporting single-quote character in Path value: in one expressions is works, in other - no. In order to give an opportunity of writing the most compact and readable string constants in the Path (\\', or \&apos; or \&quot;) CalcBinding doesn't make difference between double and single quotes - all quotes are considered as double quotes by defaults. For example:
+
 ```xml
 <TextBox Text="{c:Binding (Name + \' \' + Surname)}" />
 <TextBox Text="{c:Binding (IsMan?\'Mr\':\'Ms\') + \' \' + Surname + \' \' + Name}"/>
 ```
 
-##Math Class
+However, in this case we loose the ability of supporting Char constants. Therefore beginning with version 2.3 CalcBinding has new property - SingleQuotes. If property is true, CalcBinding considers that all quotes - double and single, are single quotes. So \\'A\\' and \&quot;A\&quot; are Char symbols in that mode. If property is false, then single and double quotes are considered as double quotes, it is variant by defaults. So \\'A\\' and \&quot;A\&quot; are String constants in that mode. Examples of Char supporting:
+
 ```xml
-<TextBox Text="{c:Binding Math.Sin(A*Math.PI/180), StringFormat={}{0:n5}}"/>
-<TextBox Text="{c:Binding A*Math.PI}" />
-<TextBox Text="{c:Binding 'Math.Sin(Math.Cos(A))'}"/>
+<TextBox Text="{c:Binding 'Symbol == &quot;S&quot;?4:5', SingleQuotes=True}"/> {can't use no \' nor &apos; symbols because of xaml compiler generates error when parses == operator}
 ```
+where Symbol - Char property.
 
-##Automatic inverse binding expression
+#### Restrictions:
+1. Simultaneous using of Char and String constants is not supported in this version.
 
- If you have binding with expression consisting only of operators that have inversed operators and youe BindingMode = BindingMode.TwoWay, calcBinding attempts to generate inversed expression and use it in ConvertBack method in converter. For example, if you have expression 'Path = (A + 5) / 3' inversed expression is 'source = Path * 3 - 5'.
- 
- CalcBinding supports inversing of many operators:
- ```
-"+", "- (binary)", "*", "/", "Math.Sin", "Math.Cos", "Math.Tan", "Math.Asin", "Math.Acos", "Math.Atan","Math.Pow", "Math.Log", "!", "- (unary)"};
-```
-
-##TemplateBinding
+### TemplateBinding
 Althouth CalcBinding hasn't yet analog for TemplateBinding, as temporary solution you can write as follow: 
 ```xml
 <Button Content="Button" Width="100">
@@ -200,97 +374,51 @@ Althouth CalcBinding hasn't yet analog for TemplateBinding, as temporary solutio
 ```
 Setting RelativeSource property to TemplatedParent value makes CalcBinding similar to TemplateBinding
 
-#What is inside?
+## 8. General restrictions
+
+1. Nullable value types doesn't supported in reverse binding (e.g. mode OneWayToSource)
+
+2. CalcBinding doesn't support your custom conveters at all now. If you need this feature, create new issue and put your using scenario in order to I can see that it is necessary
+
+3. In path expression you can't use any methods of .Net classes except of Math class.
+
+## What is inside?
 
 CalcBinding uses DynamicExpresso library to parse string expression to Linq Expression and compiled expression tree for binding.
 DynamicExpresso is in fact a fork of DynamicLinq library, with many advantages and bug fixes compared with DynamicLinq (e.x. floating point parsing depending on CurrentCulture damn bug). 
 
-String expression is parsed only one time, when binding is initialized. In init section string expression is parsed, property pathes are selected, variable is created for each property path. Further, expression is parsed into linq Expression which is compiled and finally represents a delegate that takes N parsed variables. When binding is triggered, created delegate is invoked with the new values of variables and result is returned.
+String expression is parsed only one time, when binding is initialized. In init section CalcBinding analyzer finds tokens in path expression: property path, static property path, Math expression and Enum expression. When binding is triggered first time, special binding converter replaces each property path and static propert path with variable of appropriate type and call DynamicExpresso to compile expression into delegate that takes new variables. 
 
 Working with the compiled expression increases speed of binding compared with parsing of string expression each time. On the development machine, these times are 0.03s for parsing each time and 0.001-0.003 s for working with the compiled expression
 
-The whole process can be divided into the following stages:
+### Notes 
+  1. Enum constants are using in expression for Dynamic Expresso directly, with collection of types of known Enums.
+  2. Binding for collections (ListView, ListBox, DataGrid etc) are created as many times how many times it were declared in xaml. For example, if you have ListView with 10000 elements, and each element have template consisting of 5 controls which are all binded then only 5 Binding instances would be created.
+  3. If one or more property pathes changes type of resulting property then compiling expression is recompilied.
 
-Stage 1: Initialization
-
-1 String expression pre-process: deleting spacebars, replacing operators second names to original names:
-
-```C#
-Input:  exprStr = (IsChecked and !(Settings.Count > 0)) ? 'example str 1' : 'example str 2 '
-Output: exprStr = (IsChecked&&!(Settings.Count>0))?"example str 1":"example str 2 "
+# Q&A
 ```
-
-2 Expression templating: searching properties pathes and replacing pathes to appropriate variables numbers:
- 
-```C#
-Input: exprStr = (IsChecked&&!(Settings.Count>0))?"example str 1":"example str 2 "
-Output: exprStr = ({0}&&!({1}>0))?"example str 1":"example str 2 "
-        Pathes = IsChecked - 1, Settings.Count - 2
+1. I wrote logical expression A && B, A < B, A <= B, but my xaml doesn't compile, what's wrong?
 ```
-
-This expression template is transmitted to converter as Converter Parameter
-
-3 (In converter) Expression template parsing and creating of expression dependencing from the variables:
-
-```C#
-Input: exprStr = ({0}&&!({1}>0))?"example str 1":"example str 2 "
-Output: exprStr = (a&&!(b)>0))?"example str 1":"example str 2 "
-         varList = a:Boolean, b:Integer
+As Xaml is generally xml format, some symbols are denied and one should use it's aliases instead os its. See operators aliases table in section [Source properties and operators](#1-source-properties-and-operators)
 ```
-
-4 (In converter) Compiling result string expression to delegate:
-```C#
-Lambda compiledExpression = new Interpreter().Parse(exprStr, varList);
+2. I wrote string expression A + " some text", but my xaml doesn't compile, what's wrong?
 ```
-
-Stage 2: Fires when binding Binding fires:
-
-1 (In Converter) Run created delegate with current source values
-
-```C#
-var result = compiledExpression.Invoke(values); where values - new binding source values
+In markup extension we can't use double quotes, so we can use single quotes and backslash for escaping \\' or xml escape symbol \&quot;. See section [String, Char and SingleQuotes mode](#string-char-and-singlequotes-mode)
 ```
-
-#Q&A
-
+3. Can I use CalcBinding instead of TemplateBinding?
 ```
-1 I wrote logical expression A && B, A < B, A <= B, but my xaml doesn't compile, what's wrong?
-```
-As Xaml is generally xml format, some symbols are denied in markupExtension: &, &&, <. Therefore, these characters are replaced with the following:
+Yes, you can, but with setting RelativeSource property, see section [TemplateBinding](#templatebinding)
 
-```
-&& -> and
-|| -> or (not nessesary) 
-< -> less
-<= -> less=
-```
+# Release notes
 
-See [logic](https://github.com/Alex141/CalcBinding#logic) section of examples
-```
-2 I wrote string expression A + " some text", but my xaml doesn't compile, what's wrong?
-```
+## version 2.3.0.0
 
-In markup extension we can't use double quotes, so we can use single quotes and backslash for escaping like this:
+* Add support of [Static properties](#2-static-properties), [Enums](#4-enums), [Char constants](#string-char-and-singlequotes-mode). 
 
-```xml
-<c:Binding Path='A + \'some text\'' />
-```
+Possible problems of switching to this version from older versions:
 
-```
-3 Can I use CalcBinding instead of TemplateBinding?
-```
-
-Yes, you can, but with setting RelativeSource property, see [example](https://github.com/Alex141/CalcBinding#templatebinding) . It is temporary solution, support of TemplateBinding is [planned](https://github.com/Alex141/CalcBinding/issues/20) to the future
-
-##Restrictions
-
-1. Nullable value types doesn't supported in reverse binding (e.g. mode OneWayToSource)
-
-2. CalcBinding don't support your custom conveters at all now. I did not invent the case for which it would be required in CalcBinding.
-
-3. In path expression you can't use any .Net classes except of Math class.
-
-#Release notes
+It is important that names of properties, classes and namespaces that make up sources pathes, would be separated from operator ':' in ternary operator (at least one space or parenthesis) for this version. See section [Restrictions](#restrictions)
 
 ## version 2.2.5.2
 
