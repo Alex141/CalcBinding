@@ -1,6 +1,12 @@
 # CalcBinding
 
-CalcBinding is an advanced Binding markup extension that allows you to write calculated binding expressions in xaml, without custom converters. CalcBinding can automaticaly perfom bool to visibility convertion, inverse your expression and more. CalcBinding makes binding expressions shorter and more user-friendly. [Release notes](#release-notes)
+||.net 4.0|.net 4.5|
+|---|-------|-------|
+|**master**|[![Build status](https://ci.appveyor.com/api/projects/status/gr7xp77jo7b9njcu/branch/master?svg=true)](https://ci.appveyor.com/project/Alex141/calcbinding-g58ra/branch/master)|[![Build status](https://ci.appveyor.com/api/projects/status/b6h26uay8ywmbey9/branch/master?svg=true)](https://ci.appveyor.com/project/Alex141/calcbinding/branch/master)|
+|**develop**|[![Build status](https://ci.appveyor.com/api/projects/status/86rqt8k9fy67445h/branch/develop?svg=true)](https://ci.appveyor.com/project/Alex141/calcbinding-l3oar/branch/develop)|[![Build status](https://ci.appveyor.com/api/projects/status/s2aggxnlppeoi0i6/branch/develop?svg=true)](https://ci.appveyor.com/project/Alex141/calcbinding-fw0dx/branch/develop)|
+#
+
+  **CalcBinding** is an advanced Binding markup extension that allows you to write calculated binding expressions in xaml, without custom converters. CalcBinding can automaticaly perfom bool to visibility convertion, inverse your expression and more. CalcBinding makes binding expressions shorter and more user-friendly. [Release notes](#release-notes)
 
 ## Install
 
