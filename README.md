@@ -493,7 +493,7 @@ If you like this project you are welcome to support it!
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![paypal](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=GH8PLP5ZFAJ8Y)
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;RUB:
 
