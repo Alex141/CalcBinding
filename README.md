@@ -489,7 +489,13 @@ In older version it creates BindingMode.TwoWay binding, in new version it create
 
 If you like this project you are welcome to support it!
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;USD: [![paypal](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=GH8PLP5ZFAJ8Y)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;USD:
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;RUB: [![paypal](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=WYDUQS5M7QNNQ)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![paypal](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=GH8PLP5ZFAJ8Y)
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;RUB:
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![paypal](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=WYDUQS5M7QNNQ)
 ```
