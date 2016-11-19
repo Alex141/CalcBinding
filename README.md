@@ -484,3 +484,9 @@ In older version it creates BindingMode.TwoWay binding, in new version it create
 * binding support
 * supported features: binding/multibinding, algebraic, logic, string and ternary operators
 * support of bool to visibility convertion (two way)
+
+# Donation
+
+If you like this project you are welcome to support it!
+
+[![paypal](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=GH8PLP5ZFAJ8Y)
