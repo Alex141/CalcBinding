@@ -451,35 +451,35 @@ In older version it creates BindingMode.TwoWay binding, in new version it create
 
 * add support of 'null' values: objects that can be null, nullable value types. For nullable value types there are resctrictions, see restrictions page
 
-##version 2.2.3.0
+## version 2.2.3.0
 
 * add 'not' alias for '!' operator
 
-##version 2.2.2.0
+## version 2.2.2.0
 
 * version for .net 4.0
 
-##version 2.1.2.0
+## version 2.1.2.0
 
 * RelativeSource in multibinding support
 
-##version 2.1.1.0
+## version 2.1.1.0
 
 * bug fixes
 
-##version 2.1.0.0
+## version 2.1.0.0
 
 * DataTrigger support
 * bug fixes
 
-##version 2.0.0.0
+## version 2.0.0.0
 
 * support of two way binding, support of automatic invert binding expression and realization inverted binding from dependency property to source
 * Math class support
 * support of nested properties (in nested view-models)
 * bug fixes
 
-##version 1.0.0.0
+## version 1.0.0.0
 
 * binding support
 * supported features: binding/multibinding, algebraic, logic, string and ternary operators
