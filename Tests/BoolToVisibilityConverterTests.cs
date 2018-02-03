@@ -1,11 +1,6 @@
 ﻿using CalcBinding;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace Tests
@@ -16,8 +11,6 @@ namespace Tests
         [TestMethod]
         public void ConvertBoolToVisibilityTest()
         {
-            var converter = new CalcConverter();
-
             Assert.AreEqual(Visibility.Visible, 
                 new BoolToVisibilityConverter()
                 .Convert(true, typeof(Visibility), null, CultureInfo.CurrentCulture));
@@ -45,6 +38,37 @@ namespace Tests
             Assert.AreEqual(false, 
                 new BoolToVisibilityConverter()
                 .ConvertBack(Visibility.Hidden, typeof(bool), null, CultureInfo.CurrentCulture));
-        }    
+        }
+
+        [TestMethod]
+        public void ConvertsCastableToBoolWhenValueHasImplicitConversion()
+        {
+            Assert.AreEqual(Visibility.Visible,
+                new BoolToVisibilityConverter()
+                .Convert(new CastableToBoolean(true), typeof(Visibility), null, CultureInfo.CurrentCulture));
+
+            Assert.AreEqual(Visibility.Collapsed,
+                new BoolToVisibilityConverter()
+                .Convert(new CastableToBoolean(false), typeof(Visibility), null, CultureInfo.CurrentCulture));
+
+            Assert.AreEqual(Visibility.Hidden,
+                new BoolToVisibilityConverter(FalseToVisibility.Hidden)
+                .Convert(new CastableToBoolean(false), typeof(Visibility), null, CultureInfo.CurrentCulture));
+        }
+
+        private sealed class CastableToBoolean
+        {
+            private bool value;
+
+            public CastableToBoolean(bool value = false)
+            {
+                this.value = value;
+            }
+
+            public static implicit operator bool(CastableToBoolean obj)
+            {
+                return obj.value;
+            }
+        }
     }
 }
