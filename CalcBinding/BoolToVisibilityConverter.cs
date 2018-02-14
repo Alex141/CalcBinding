@@ -22,7 +22,9 @@ namespace CalcBinding
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if ((bool)value)
+            var boolValue = value is bool ? (bool)value : (bool)(dynamic)value;
+
+            if (boolValue)
                 return Visibility.Visible;
 
             return (FalseToVisibility == FalseToVisibility.Collapsed) ? Visibility.Collapsed : Visibility.Hidden;
