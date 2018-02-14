@@ -4,15 +4,15 @@
     <id>$id$</id>
     <version>$version$</version>
     <title>$title$</title>
-    <authors>Alexandr Zinchenko</authors>
-    <owners>Alexandr Zinchenko</owners>
+    <authors>Alexander Zinchenko</authors>
+    <owners>Alexander Zinchenko</owners>
     <licenseUrl>https://github.com/Alex141/CalcBinding/blob/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/Alex141/CalcBinding</projectUrl>
 <!--    <iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl> -->
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>CalcBinding - small library providing Binding markup extension with path expressions directly in xaml</description>
     <releaseNotes>fix bug with exception in binding to readonly property with default mode. See Release Notes in github for important information about switching to this version </releaseNotes>
-    <copyright>Copyright 2014</copyright>
+    <copyright>Copyright 2014-2018</copyright>
     <tags>Xaml WPF Binding Expression</tags>
   </metadata>
   <files>
