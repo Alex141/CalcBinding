@@ -412,6 +412,14 @@ Yes, you can, but with setting RelativeSource property, see section [TemplateBin
 
 # Release notes
 
+## version 2.3.0.1
+
+* Add support of implicitly and explicitly castable to boolean types in BoolToVisibilityConverter 
+
+(bug [#53](https://github.com/Alex141/CalcBinding/issues/53). Thanks to rstroilov!)
+
+
+
 ## version 2.3.0.0
 
 * Add support of [Static properties](#2-static-properties), [Enums](#4-enums), [Char constants](#string-char-and-singlequotes-mode). 
