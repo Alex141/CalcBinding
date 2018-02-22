@@ -103,7 +103,7 @@ namespace Tests
                 this.value = value;
             }
 
-            public static implicit operator bool(ExplicitCastableToBoolean obj)
+            public static explicit operator bool(ExplicitCastableToBoolean obj)
             {
                 return obj.value;
             }
