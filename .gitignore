@@ -183,3 +183,6 @@ $RECYCLE.BIN/
 /packages/DynamicExpresso.Core.1.1.0.0/*.nuspec
 /packages/DynamicExpresso.Core.1.1.0.0/lib/net40/*.dll
 /packages
+/.vs
+/CalcBinding/nuget.exe
+*.nupkg

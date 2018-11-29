@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
+using CalcBinding;
+using CalcBinding.ExpressionParsers;
 using CalcBinding.Inversion;
 using DynamicExpresso;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -7,13 +9,13 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Tests
 {
     [TestClass]
-    public class InverseTest
+    public sealed class InverseTest : BaseUnitTests
     {
         [TestMethod]
         public void BasicExpressionsTest()
         {
             Action<string, string> basicTestInverse = 
-                (expr, exceptedResult) => testInverse<int, double>(expr, exceptedResult);
+                (expr, exceptedResult) => TestInverse<int, double>(expr, exceptedResult);
 
             basicTestInverse("a + 2", "((Path) - 2)");
             basicTestInverse("4 + a", "((Path) - 4)");
@@ -45,26 +47,26 @@ namespace Tests
         public void ConstantExpressionTest()
         {
             //constant complex
-            testInverse<int, double>("2 / 5 * 4 + 5 - (6 + 3) * 2 / 4", "");
+            TestInverse<int, double>("2 / 5 * 4 + 5 - (6 + 3) * 2 / 4", "");
         }
 
         [TestMethod]
         public void BadExpressionsTest()
         {
-            AssertException<InverseException>(() => testInverse<int, double>("a % 2", ""));
-            AssertException<InverseException>(() => testInverse<int, double>("(int)Math.Max(a, 4)", ""));
+            AssertException<InverseException>(() => TestInverse<int, double>("a % 2", ""));
+            AssertException<InverseException>(() => TestInverse<int, double>("(int)Math.Max(a, 4)", ""));
         }
 
         [TestMethod]
         public void MathExpressionsTest()
         {
-            testDoubleInverse<double, double>("Math.Sin(a)", "Math.Asin(Path)");
-            testDoubleInverse<double, double>("Math.Cos(a)", "Math.Acos(Path)");
-            testInverse<double, double>("Math.Tan(a)", "Math.Atan(Path)");
-            testDoubleInverse<double, double>("Math.Pow(4, a)", "Math.Log(Path, 4)");
-            testInverse<double, double>("Math.Pow(a, 2)", "Math.Pow((Path), 1.0/((Double)(2)))");
-            testInverse<double, double>("Math.Pow((a), 1.0/((Double)(2)))", "(Math.Pow((Path), 1.0/((1)/((Double)(2)))))");
-            testInverse<double, double>("Math.Sin((a+5)*Math.PI/4.0)", "((((Math.Asin(Path))*(4))/(Math.PI))-((Double)(5)))");
+            TestDoubleInverse<double, double>("Math.Sin(a)", "Math.Asin(Path)");
+            TestDoubleInverse<double, double>("Math.Cos(a)", "Math.Acos(Path)");
+            TestInverse<double, double>("Math.Tan(a)", "Math.Atan(Path)");
+            TestDoubleInverse<double, double>("Math.Pow(4, a)", "Math.Log(Path, 4)");
+            TestInverse<double, double>("Math.Pow(a, 2)", "Math.Pow((Path), 1.0/((Double)(2)))");
+            TestInverse<double, double>("Math.Pow((a), 1.0/((Double)(2)))", "(Math.Pow((Path), 1.0/((1)/((Double)(2)))))");
+            TestInverse<double, double>("Math.Sin((a+5)*Math.PI/4.0)", "((((Math.Asin(Path))*(4))/(Math.PI))-((Double)(5)))");
         }
 
         private void AssertException<T>(Action action) where T: Exception
@@ -80,22 +82,22 @@ namespace Tests
             Assert.Fail();
         }
 
-        private void testDoubleInverse<aType, PathType>(string expr, string exceptedResult)
+        private void TestDoubleInverse<aType, PathType>(string expr, string exceptedResult)
         {
-            testInverse<aType, PathType>(expr, exceptedResult);
-            testInverse<PathType, aType>(exceptedResult, expr, true);
+            TestInverse<aType, PathType>(expr, exceptedResult);
+            TestInverse<PathType, aType>(exceptedResult, expr, true);
         }
 
-        private void testInverse<aType, PathType>(string expr, string exceptedResult, bool reverse = false)
+        private void TestInverse<aType, PathType>(string expr, string exceptedResult, bool reverse = false)
         {
-            var inverse = new Inverter();
+            var inverse = new Inverter(CreateParser());
             var interpreter = new Interpreter();
 
             String argName = "a", resName = "Path";
 
             if (reverse)
             {
-                swap(ref argName, ref resName);
+                Swap(ref argName, ref resName);
                 //swap(ref expr, ref exceptedResult);
             }
 
@@ -108,7 +110,7 @@ namespace Tests
             Assert.AreEqual(expectedInverseExpr, realInverseExpr);
         }
 
-        private void swap<T>(ref T arg1, ref T arg2)
+        private void Swap<T>(ref T arg1, ref T arg2)
         {
             T temp = arg1;
 

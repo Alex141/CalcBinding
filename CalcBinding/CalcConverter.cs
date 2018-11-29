@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Data;
+using CalcBinding.ExpressionParsers;
 using CalcBinding.Inversion;
 using DynamicExpresso;
 using Expression = System.Linq.Expressions.Expression;
@@ -16,37 +17,19 @@ namespace CalcBinding
     /// </summary>
     public class CalcConverter : IValueConverter, IMultiValueConverter
     {
-        private IExpressionParser parser;
-        private Lambda compiledExpression;
-        private Lambda compiledInversedExpression;
-        private Type[] sourceValuesTypes;
-
         public bool StringFormatDefined { get; set; }
 
-        private FalseToVisibility falseToVisibility = FalseToVisibility.Collapsed;
-
-        public FalseToVisibility FalseToVisibility 
-        {
-            get { return falseToVisibility; }
-            set { falseToVisibility = value; }
-        }
+        public FalseToVisibility FalseToVisibility { get; set; } = FalseToVisibility.Collapsed;
 
         #region Init
 
-        public CalcConverter() : this(null, null) { }
+        //public CalcConverter(IExpressionParser parser) : this(parser, null) { }
 
-        public CalcConverter(IExpressionParser parser) : this(parser, null) { }
-
-        public CalcConverter(Dictionary<string, Type> enumParameters) : this(null, enumParameters) { }
+        //public CalcConverter(Dictionary<string, Type> enumParameters) : this(null, enumParameters) { }
 
         public CalcConverter(IExpressionParser parser, Dictionary<string, Type> enums)
         {
-            //todo: remake this questionable solution - to initialize null parameters, in view point if parser = null - is mistake in client code.
-            // solution was done because I didn't want to duplicate initization
-            if (parser == null)
-                parser = new InterpreterParser();
-
-            this.parser = parser;
+            _parser = parser;
 
             if (parser != null && enums != null && enums.Any())
             {
@@ -65,20 +48,20 @@ namespace CalcBinding
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (compiledExpression == null)
+            if (_compiledExpression == null)
             {
-                if ((compiledExpression = CompileExpression(null, (string)parameter, true, new List<Type>{targetType})) == null)
+                if ((_compiledExpression = CompileExpression(null, (string)parameter, true, new List<Type>{targetType})) == null)
                     return null;
             }
 
-            if (compiledInversedExpression == null)
+            if (_compiledInversedExpression == null)
             {
                 //try convert back expression
                 try
                 {
-                    var resType = compiledExpression.Expression.Type;
+                    var resType = _compiledExpression.Expression.Type;
                     var param = Expression.Parameter(resType, "Path");
-                    compiledInversedExpression = new Inverter(parser).InverseExpression(compiledExpression.Expression, param);
+                    _compiledInversedExpression = new Inverter(_parser).InverseExpression(_compiledExpression.Expression, param);
                 }
                 catch (Exception e)
                 {
@@ -86,7 +69,7 @@ namespace CalcBinding
                 }
             }
 
-            if (compiledInversedExpression != null)
+            if (_compiledInversedExpression != null)
             {
                 try
                 {
@@ -94,10 +77,10 @@ namespace CalcBinding
                         value = new BoolToVisibilityConverter(FalseToVisibility)
                             .ConvertBack(value, targetType, null, culture);
 
-                    if (value is string && compiledExpression.Expression.Type != value.GetType())
-                        value = ParseStringToObject((string)value, compiledExpression.Expression.Type);
+                    if (value is string && _compiledExpression.Expression.Type != value.GetType())
+                        value = ParseStringToObject((string)value, _compiledExpression.Expression.Type);
 
-                    var source = compiledInversedExpression.Invoke(value);
+                    var source = _compiledInversedExpression.Invoke(value);
                     return source;
                 }
                 catch (Exception e)
@@ -123,32 +106,32 @@ namespace CalcBinding
             if (values == null)
                 return null;
 
-            if (sourceValuesTypes == null)
+            if (_sourceValuesTypes == null)
             {
-                sourceValuesTypes = GetTypes(values);
+                _sourceValuesTypes = GetTypes(values);
             }
             else
             {
                 var currentValuesTypes = GetTypes(values);
 
-                if (!sourceValuesTypes.SequenceEqual(currentValuesTypes))
+                if (!_sourceValuesTypes.SequenceEqual(currentValuesTypes))
                 {
-                    sourceValuesTypes = currentValuesTypes;
+                    _sourceValuesTypes = currentValuesTypes;
 
-                    compiledExpression = null;
-                    compiledInversedExpression = null;
+                    _compiledExpression = null;
+                    _compiledInversedExpression = null;
                 }
             }
 
-            if (compiledExpression == null)
+            if (_compiledExpression == null)
             {
-                if ((compiledExpression = CompileExpression(values, (string)parameter)) == null)
+                if ((_compiledExpression = CompileExpression(values, (string)parameter)) == null)
                     return null;
             }
 
             try
             {
-                var result = compiledExpression.Invoke(values);
+                var result = _compiledExpression.Invoke(values);
 
                 if (!StringFormatDefined)
                 {
@@ -166,7 +149,7 @@ namespace CalcBinding
             }
             catch (Exception e)
             {
-                Trace.WriteLine("Binding error: calc converter can't invoke expression " + compiledExpression.ExpressionText + ": " + e.Message);
+                Trace.WriteLine("Binding error: calc converter can't invoke expression " + _compiledExpression.ExpressionText + ": " + e.Message);
                 return null;
             }
         }
@@ -199,7 +182,7 @@ namespace CalcBinding
 
                 if (needCompile)
                 {
-                    var argumentsTypes = convertBack ? targetTypes : sourceValuesTypes.Select(t => t ?? typeof(Object)).ToList();
+                    var argumentsTypes = convertBack ? targetTypes : _sourceValuesTypes.Select(t => t ?? typeof(Object)).ToList();
                     res = CompileExpression(argumentsTypes, expressionTemplate);
                 }
 
@@ -224,7 +207,7 @@ namespace CalcBinding
                 parametersDefinition.Add(new Parameter(paramName, argumentsTypes[i]));
             }
 
-            var compiledExpression = parser.Parse(expressionTemplate, parametersDefinition.ToArray());
+            var compiledExpression = _parser.Parse(expressionTemplate, parametersDefinition.ToArray());
 
             return compiledExpression;
         }
@@ -243,8 +226,13 @@ namespace CalcBinding
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
             throw new NotSupportedException();
-        } 
+        }
 
         #endregion
+
+        private IExpressionParser _parser;
+        private Lambda _compiledExpression;
+        private Lambda _compiledInversedExpression;
+        private Type[] _sourceValuesTypes;
     }
 }

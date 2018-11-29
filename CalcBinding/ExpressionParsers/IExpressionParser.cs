@@ -1,7 +1,7 @@
 ﻿using DynamicExpresso;
 using System.Collections.Generic;
 
-namespace CalcBinding
+namespace CalcBinding.ExpressionParsers
 {
     public interface IExpressionParser
     {

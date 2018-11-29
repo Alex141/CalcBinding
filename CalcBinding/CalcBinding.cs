@@ -1,4 +1,5 @@
-﻿using CalcBinding.PathAnalysis;
+﻿using CalcBinding.ExpressionParsers;
+using CalcBinding.PathAnalysis;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -15,7 +16,7 @@ namespace CalcBinding
     /// <summary>
     /// Binding with advantages
     /// </summary>
-    public class Binding : MarkupExtension
+    public sealed class Binding : MarkupExtension
     {
         // We cannot use PropertyPath instead of string (such as standart Binding) because transformation from xaml value string to Property path 
         // is doing automatically by PropertyPathConverter and result PropertyPath object could have form, that cannot retranslate to normal string.
@@ -25,12 +26,7 @@ namespace CalcBinding
         /// <summary>
         /// False to visibility. Default: False = Collapsed
         /// </summary>
-        public FalseToVisibility FalseToVisibility
-        {
-            get { return falseToVisibility; }
-            set { falseToVisibility = value; }
-        }
-        private FalseToVisibility falseToVisibility = FalseToVisibility.Collapsed;
+        public FalseToVisibility FalseToVisibility { get; set; } = FalseToVisibility.Collapsed;
 
         /// <summary>
         /// If true then single quotes and double quotes are considered as single quotes, otherwise - both are considerent as double quotes
@@ -38,12 +34,7 @@ namespace CalcBinding
         /// <remarks>
         /// Use this flag if you need to use char is path expresion
         /// </remarks>
-        public bool SingleQuotes 
-        { 
-            get { return singleQuotes; }
-            set { singleQuotes = value; }
-        }
-        private bool singleQuotes = false;
+        public bool SingleQuotes { get; set; } = false;
 
         public Binding()
         {
@@ -68,7 +59,7 @@ namespace CalcBinding
             Dictionary<string, Type> enumParameters;
             var expressionTemplate = GetExpressionTemplate(normalizedPath, pathes, out enumParameters);
 
-            var mathConverter = new CalcConverter(enumParameters)
+            var mathConverter = new CalcConverter(_parser.Value, enumParameters)
             {
                 FalseToVisibility = FalseToVisibility,
                 StringFormatDefined = StringFormat != null,
@@ -188,6 +179,15 @@ namespace CalcBinding
             }
 
             return resBinding.ProvideValue(serviceProvider);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static void ReplaceExpressionParser(IExpressionParser expressionParser)
+        {
+            if (expressionParser == null)
+                throw new ArgumentNullException(nameof(expressionParser));
+
+            _parser = new Lazy<IExpressionParser>(() => expressionParser);
         }
 
         private Type GetPropertyType(IServiceProvider serviceProvider)
@@ -536,6 +536,8 @@ namespace CalcBinding
         public string StringFormat { get; set; }
 
         #endregion
+
+        private static Lazy<IExpressionParser> _parser = new Lazy<IExpressionParser>(() => new ParserFactory().CreateCachedParser());
 
         class PathAppearances
         {

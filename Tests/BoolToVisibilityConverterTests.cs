@@ -11,12 +11,12 @@ using System.Windows;
 namespace Tests
 {
     [TestClass]
-    public class BoolToVisibilityConverterTests
+    public sealed class BoolToVisibilityConverterTests : BaseUnitTests
     {
         [TestMethod]
         public void ConvertBoolToVisibilityTest()
         {
-            var converter = new CalcConverter();
+            var converter = CreateConverter();
 
             Assert.AreEqual(Visibility.Visible,
                 new BoolToVisibilityConverter()

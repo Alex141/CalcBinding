@@ -13,7 +13,7 @@ using Tests.Mocks;
 
 namespace Tests
 {
-    public class BaseSystemTests
+    public class BaseSystemTests : BaseUnitTests
     {
         #region Convert
 

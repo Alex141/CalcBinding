@@ -1,39 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CalcBinding;
+﻿using System.Collections.Generic;
+using CalcBinding.ExpressionParsers;
 using DynamicExpresso;
 
 namespace Tests.Mocks
 {
-    public class CompileTimesMockInterpreterParser : IExpressionParser
+    public sealed class CompileTimesMockInterpreterParser : IExpressionParser
     {
-        Interpreter interpreter;
-
-        public Dictionary<string, int> ParseCalls { get; private set; }
-
-        public CompileTimesMockInterpreterParser()
-        {
-            interpreter = new Interpreter();
-            ParseCalls = new Dictionary<string, int>();
-        }
+        public Dictionary<string, int> ParseCallsByExpressions { get; } = new Dictionary<string, int>();
+        public int GlobalCalls { get; private set; }
+        public List<Lambda> CreatedLambdas { get; } = new List<Lambda>();
 
         public Lambda Parse(string expressionText, params Parameter[] parameters)
         {
-            if (ParseCalls.ContainsKey(expressionText))
-                ParseCalls[expressionText]++;
+            if (ParseCallsByExpressions.ContainsKey(expressionText))
+                ParseCallsByExpressions[expressionText]++;
             else
-                ParseCalls.Add(expressionText, 1);
+                ParseCallsByExpressions.Add(expressionText, 1);
 
-            return interpreter.Parse(expressionText, parameters);
+            GlobalCalls++;
+
+            var newLambda = _interpreter.Parse(expressionText, parameters);
+            CreatedLambdas.Add(newLambda);
+
+            return newLambda;
         }
-
 
         public void SetReference(IEnumerable<ReferenceType> referencedTypes)
         {
-            throw new NotImplementedException();
+            _interpreter.Reference(referencedTypes);
         }
+
+        private Interpreter _interpreter = new Interpreter();
     }
 }

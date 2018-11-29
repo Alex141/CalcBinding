@@ -81,7 +81,9 @@
   </Choose>
   <ItemGroup>
     <Compile Include="BaseSystemTests.cs" />
+    <Compile Include="BaseUnitTests.cs" />
     <Compile Include="BoolToVisibilityConverterTests.cs" />
+    <Compile Include="PerfOptimizationsTests.cs" />
     <Compile Include="StringTests.cs" />
     <Compile Include="TestPathComparer.cs" />
     <Compile Include="InverseTest.cs" />

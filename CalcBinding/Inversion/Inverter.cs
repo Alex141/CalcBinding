@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq.Expressions;
+using CalcBinding.ExpressionParsers;
 using DynamicExpresso;
 
 namespace CalcBinding.Inversion
@@ -11,10 +12,6 @@ namespace CalcBinding.Inversion
     /// </summary>
     public class Inverter
     {
-        private const string RES = "({0})";
-
-        private IExpressionParser interpreter;
-
         private static readonly ExpressionFuncsDictionary<ExpressionType> inversedFuncs = new ExpressionFuncsDictionary<ExpressionType> 
         {
             // res = a+c or c+a => a = res - c
@@ -59,12 +56,10 @@ namespace CalcBinding.Inversion
             {"Math.Log", ConstantPlace.Right, constant => "Math.Pow(" + constant + ", " + RES + ")"},
 
         };
-
-        public Inverter() : this(new InterpreterParser()) {}
-
+        
         public Inverter(IExpressionParser interpreter)
         {
-            this.interpreter = interpreter;
+            this._interpreter = interpreter;
         }
 
         /// <summary>
@@ -97,7 +92,7 @@ namespace CalcBinding.Inversion
 
             var invertedExp = String.Format(recInfo.InvertedExp, paramName);
 
-            var res = interpreter.Parse(invertedExp, new Parameter(parameter.Name, parameter.Type));                       
+            var res = _interpreter.Parse(invertedExp, new Parameter(parameter.Name, parameter.Type));                       
             Debug.WriteLine(res.ExpressionText);          
             return res;
         }
@@ -281,8 +276,12 @@ namespace CalcBinding.Inversion
             }
         }
 
+        private const string RES = "({0})";
+
+        private IExpressionParser _interpreter;
+
         #region Types for recursion func work
-		
+
         internal enum NodeType
         {
             Variable,
