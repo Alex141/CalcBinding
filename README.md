@@ -412,6 +412,12 @@ Yes, you can, but with setting RelativeSource property, see section [TemplateBin
 
 # Release notes
 
+## version 2.4.0.0
+
+* Fix performance issues: add parsed expressions cache 
+
+bug [#56](https://github.com/Alex141/CalcBinding/issues/56). Thanks to jtorjo!
+  
 ## version 2.3.0.1
 
 * Add support of implicitly and explicitly castable to boolean types in BoolToVisibilityConverter 
