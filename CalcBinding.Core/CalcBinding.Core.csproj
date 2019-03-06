@@ -18,6 +18,7 @@
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageProjectUrl>https://github.com/bigworld12/CalcBinding</PackageProjectUrl>
     <RepositoryUrl>https://github.com/bigworld12/CalcBinding</RepositoryUrl>
+    <PackageTags>CalcBinding calc CalcBinding.Core core</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
