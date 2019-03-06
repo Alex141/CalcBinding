@@ -36,7 +36,6 @@
 
   <ItemGroup>
     <Compile Remove="..\WpfExample\obj\**" />
-    
   </ItemGroup>
 
   <ItemGroup>

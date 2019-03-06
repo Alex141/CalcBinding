@@ -22,17 +22,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\CalcBinding\**\*.*">
+    <Compile Include="..\CalcBinding\**\*.cs">
       <Link>%(RecursiveDir)%(FileName)%(Extension)</Link>
     </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="..\CalcBinding\obj\**" />
-    <Compile Remove="obj\**" />
-    <EmbeddedResource Remove="obj\**" />
-    <None Remove="obj\**" />
-    <Page Remove="obj\**" />
   </ItemGroup>
 
   <ItemGroup>
