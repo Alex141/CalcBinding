@@ -16,8 +16,8 @@
     <Description>.net core 3 port of the CalcBinding Library</Description>
     <Copyright>Copyright © Alexander Zinchenko 2014-2018</Copyright>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <PackageProjectUrl>https://github.com/bigworld12/CalcBinding</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/bigworld12/CalcBinding</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/Alex141/CalcBinding</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Alex141/CalcBinding</RepositoryUrl>
     <PackageTags>CalcBinding calc CalcBinding.Core core</PackageTags>
   </PropertyGroup>
 
