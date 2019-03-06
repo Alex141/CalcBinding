@@ -1,0 +1,92 @@
+﻿<UserControl x:Class="WpfExample.FifthPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:local="clr-namespace:WpfExample"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             xmlns:c="clr-namespace:CalcBinding;assembly=CalcBinding"
+             xmlns:m="clr-namespace:System.Windows.Media;assembly=PresentationCore"
+             d:DesignHeight="320" d:DesignWidth="300">
+
+    <UserControl.Resources>
+        <Style TargetType="{x:Type TextBox}">
+            <Setter Property="Height" Value="23"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+        <SolidColorBrush x:Key="EditBackground"/>
+    </UserControl.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <GroupBox Header="Static properties" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Vertical">
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="StaticA = "/>
+                        <TextBox Text="{c:Binding 'local:StaticExampleClass.StaticA', UpdateSourceTrigger=PropertyChanged}" Width="56"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Grid.Row="1">
+                        <Label Content="StaticB = "/>
+                        <TextBox Text="{c:Binding 'local:StaticExampleClass.StaticB', UpdateSourceTrigger=PropertyChanged}" Width="56"/>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </GroupBox>
+
+        <GroupBox Header="algebraic &amp; math" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,10,0,0">
+            <StackPanel>
+                <DockPanel>
+                    <Label Content="StaticA+StaticB="/>
+                    <TextBox Text="{c:Binding 'local:StaticExampleClass.StaticA + local:StaticExampleClass.StaticB'}" IsReadOnly="True" IsEnabled="False"/>
+                </DockPanel>
+                <DockPanel>
+                    <Label Content="Sin(StaticA)="/>
+                    <TextBox Text="{c:Binding 'Math.Sin(local:StaticExampleClass.StaticA)'}" IsReadOnly="True" IsEnabled="False"/>
+                </DockPanel>
+            </StackPanel>
+        </GroupBox>
+        
+        <GroupBox Header="Using Brushes class" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,10,0,0">
+            <Button Background="{c:Binding '(local:StaticExampleClass.StaticA less local:StaticExampleClass.StaticB ? m:Brushes.LightBlue : m:Brushes.White)'}" 
+                    Content="{c:Binding 'local:StaticExampleClass.StaticA less local:StaticExampleClass.StaticB?&quot;LightBlue when StaticA less StaticB&quot;:&quot;White when StaticA >= StaticB)&quot;'}" 
+                    Height="20"/>
+        </GroupBox>
+
+        <GroupBox Header="Enum" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,10,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                
+                <StackPanel>
+                    <RadioButton Content="Set EnumValue as Value1" IsChecked="{Binding IsEnumEqualsValue1, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,0"/>
+                    <RadioButton Content="Set EnumValue as Value2" IsChecked="{Binding IsEnumEqualsValue2, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,0"/>
+                </StackPanel>
+                
+                <StackPanel Grid.Column="1">
+                    <CheckBox Content="EnumValue == Enum2.Value1" IsChecked="{c:Binding 'EnumValue==local:Enum2.Value1'}" IsEnabled="False"  Margin="0,4,0,0"/>
+                    <CheckBox Content="EnumValue == Enum2.Value2" IsChecked="{c:Binding 'EnumValue==local:Enum2.Value2'}" IsEnabled="False"  Margin="0,4,0,0"/>
+                    <Button Content="{c:Binding 'EnumValue==local:Enum2.Value1 ? &quot;EnumValue=Enum2.Value1&quot; : &quot;EnumValue=Enum2.Value2&quot;'}"
+                            Background="{c:Binding 'EnumValue==local:Enum2.Value1?m:Brushes.Green : m:Brushes.Red'}" Margin="0,2,0,0"/>
+                    <Button Content="Visible when EnumValue = Value2" Visibility="{c:Binding 'EnumValue==local:Enum2.Value2'}" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Grid>
+        </GroupBox>
+    </Grid>
+</UserControl>

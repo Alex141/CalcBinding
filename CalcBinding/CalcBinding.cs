@@ -56,8 +56,7 @@ namespace CalcBinding
             var normalizedPath = NormalizePath(Path);
             var pathes = GetSourcePathes(normalizedPath, typeResolver);
 
-            Dictionary<string, Type> enumParameters;
-            var expressionTemplate = GetExpressionTemplate(normalizedPath, pathes, out enumParameters);
+            var expressionTemplate = GetExpressionTemplate(normalizedPath, pathes, out Dictionary<string, Type> enumParameters);
 
             var mathConverter = new CalcConverter(_parser.Value, enumParameters)
             {

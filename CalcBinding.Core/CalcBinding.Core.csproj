@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFrameworks>netcoreapp3.0;net45;net46</TargetFrameworks>
+    <UseWPF>true</UseWPF>
+    <ApplicationIcon />
+    <StartupObject />
+    <AssemblyName>CalcBinding</AssemblyName>
+    <RootNamespace>CalcBinding</RootNamespace>
+    <PackageId>CalcBinding.Core</PackageId>
+    <Version>2.4.0</Version>
+    <Authors>Alexander Zinchenko</Authors>
+    <Company>Alexander Zinchenko</Company>
+    <Product>CalcBinding.Core</Product>
+    <Description>.net core 3 port of the CalcBinding Library</Description>
+    <Copyright>Copyright © Alexander Zinchenko 2014-2018</Copyright>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageProjectUrl>https://github.com/bigworld12/CalcBinding</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/bigworld12/CalcBinding</RepositoryUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DynamicExpresso.Core" Version="2.3.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>

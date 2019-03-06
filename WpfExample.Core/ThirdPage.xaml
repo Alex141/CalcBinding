@@ -1,0 +1,99 @@
+﻿<UserControl x:Class="WpfExample.ThirdPage"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:c="clr-namespace:CalcBinding;assembly=CalcBinding"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" 
+        d:Height="350" d:Width="425" >
+    <UserControl.Resources>
+        <Style TargetType="{x:Type TextBox}">
+            <Setter Property="Height" Value="23"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100"/>
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <GroupBox Header="Properties" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Vertical">
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="A="/>
+                        <TextBox Text="{c:Binding A, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:n2}}" Width="56"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="B="/>
+                        <TextBox Text="{c:Binding B, UpdateSourceTrigger=PropertyChanged}" Width="56"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="C="/>
+                        <TextBox Text="{c:Binding C, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:n2}}" Width="56"/>
+                    </StackPanel>
+                </StackPanel>
+                <!--<StackPanel Grid.Column="1" Grid.Row="0" Orientation="Vertical">
+                    <CheckBox Content="IsChecked" IsChecked="{c:Binding IsChecked}"/>
+                    <CheckBox Content="IsFull" IsChecked="{c:Binding IsFull}"/>
+                </StackPanel>-->
+            </Grid>
+        </GroupBox>
+        <GroupBox Header="Math (all inversed)" Grid.Row="1" Grid.Column="0">
+            <StackPanel>
+                <DockPanel>
+                    <Label Content="Math.Sin(A)="/>
+                    <TextBox Text="{c:Binding Math.Sin(A*Math.PI/180), UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:n5}}"/>
+                </DockPanel>
+                <DockPanel>
+                    <Label Content="Math.Cos(A)="/>
+                    <TextBox Text="{c:Binding Math.Cos(A*Math.PI/180), UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:n5}}"/>
+                </DockPanel>
+                <DockPanel>
+                    <Label Content="Math.Tan(A)="/>
+                    <TextBox Text="{c:Binding Math.Tan(A*Math.PI/180), UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:n5}}"/>
+                </DockPanel>
+                <DockPanel>
+                    <Label Content="Math.Pow(A, 3)"/>
+                    <TextBox Text="{c:Binding 'Math.Pow(A,3)', UpdateSourceTrigger=PropertyChanged}"/>
+                </DockPanel>
+                <DockPanel>
+                    <Label Content="Math.Log(A, 2)"/>
+                    <TextBox Text="{c:Binding 'Math.Log(A,2)', UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:n5}}"/>
+                </DockPanel>
+                <DockPanel>
+                    <Label Content="A*Math.PI"/>
+                    <TextBox Text="{c:Binding Path=A*Math.PI, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:n5}}"/>
+                </DockPanel>
+                <DockPanel>
+                    <Label Content="Math.Abs(A)"/>
+                    <TextBox Text="{c:Binding Math.Abs(A), UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:n2}}"/>
+                </DockPanel>
+            </StackPanel>
+        </GroupBox>
+        <GroupBox Header="Inversed expressions" Grid.Row="1" Grid.Column="1">
+            <StackPanel Orientation="Vertical">
+                <DockPanel>
+                    <Label Content="-A + 5"/>
+                    <TextBox Text="{c:Binding -A+5, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:n2}}"/>
+                </DockPanel>
+                <DockPanel>
+                    <Label Content="(A+5) * 3 / 4.0 - 32"/>
+                    <TextBox Text="{c:Binding '(A+5)*3 / 4.0 - 32', UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:n5}}"/>
+                </DockPanel>
+                <DockPanel>
+                    <Label Content="Math.Sin(Math.Cos(A))"/>
+                    <TextBox Text="{c:Binding 'Math.Sin(Math.Cos(A))', UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:n5}}"/>
+                </DockPanel>
+            </StackPanel>
+        </GroupBox>
+    </Grid>
+</UserControl>
