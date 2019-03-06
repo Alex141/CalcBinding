@@ -6,28 +6,46 @@
     <UseWPF>true</UseWPF>
     <AssemblyName>WpfExample</AssemblyName>
     <RootNamespace>WpfExample</RootNamespace>
+    <EnableDefaultCompileItems>False</EnableDefaultCompileItems>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\CalcBinding.Core\CalcBinding.Core.csproj" />
   </ItemGroup>
 
+  
+
   <ItemGroup>
-    <Page Update="FifthPage.xaml">
+    <ApplicationDefinition Include="..\WpfExample\App.xaml" Link="App.xaml">
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Update="FirstPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Update="FourthPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Update="SecondPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Update="ThirdPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
+    </ApplicationDefinition>
   </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\WpfExample\**\*.cs" />
+    <EmbeddedResource Include="..\WpfExample\**\*.resx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Include="..\WpfExample\**\*.xaml">
+      <Link>%(RecursiveDir)%(FileName)%(Extension)</Link>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Remove="..\WpfExample\App.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="..\WpfExample\obj\**" />
+    
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="..\WpfExample\Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+
+  
+
+  
+  
 
 </Project>
