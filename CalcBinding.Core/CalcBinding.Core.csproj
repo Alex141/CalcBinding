@@ -8,17 +8,17 @@
     <StartupObject />
     <AssemblyName>CalcBinding</AssemblyName>
     <RootNamespace>CalcBinding</RootNamespace>
-    <PackageId>CalcBinding.Core</PackageId>
+    <PackageId>CalcBinding</PackageId>
     <Version>2.4.0</Version>
     <Authors>Alexander Zinchenko</Authors>
     <Company>Alexander Zinchenko</Company>
-    <Product>CalcBinding.Core</Product>
-    <Description>.net core 3 port of the CalcBinding Library</Description>
+    <Product>CalcBinding</Product>
+    <Description>Advanced binding markup extension</Description>
     <Copyright>Copyright © Alexander Zinchenko 2014-2018</Copyright>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageProjectUrl>https://github.com/Alex141/CalcBinding</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Alex141/CalcBinding</RepositoryUrl>
-    <PackageTags>CalcBinding calc CalcBinding.Core core</PackageTags>
+    <PackageTags>CalcBinding calc CalcBinding.Core core CalcBindingCore</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
