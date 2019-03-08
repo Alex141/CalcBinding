@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.1" />
+    <PackageReference Include="Microsoft.WindowsDesktop.App" Version="3.0.0-preview3-27504-2" />
+    <PackageReference Include="MSTest.TestAdapter" Version="2.0.0-beta2" />
+    <PackageReference Include="MSTest.TestFramework" Version="2.0.0-beta2" />
+    <PackageReference Include="runtime.win-x64.Microsoft.NETCore.DotNetAppHost" Version="3.0.0-preview3-27503-5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CalcBinding\CalcBinding.csproj" />
+    <ProjectReference Include="..\WpfExample.Core\WpfExample.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Tests\**\*.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="..\Tests\Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+</Project>
