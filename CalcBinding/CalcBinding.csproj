@@ -1,102 +1,39 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{54EAD481-B6FC-41BB-ABBE-F0B33E123C61}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CalcBinding</RootNamespace>
+    <TargetFrameworks>netcoreapp3.0;net40;net45;net46</TargetFrameworks>
+    <UseWPF>true</UseWPF>
+    <ApplicationIcon />
+    <StartupObject />
     <AssemblyName>CalcBinding</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
-    <RestorePackages>true</RestorePackages>
+    <RootNamespace>CalcBinding</RootNamespace>
+    <PackageId>CalcBinding</PackageId>
+    <Version>2.4.0</Version>
+    <Authors>Alexander Zinchenko</Authors>
+    <Company>Alexander Zinchenko</Company>
+    <Product>CalcBinding</Product>
+    <Description>CalcBinding - small library providing Binding markup extension with path expressions directly in xaml</Description>
+    <Copyright>Copyright © Alexander Zinchenko 2014-2018</Copyright>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageProjectUrl>https://github.com/Alex141/CalcBinding</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Alex141/CalcBinding</RepositoryUrl>
+    <PackageTags>Xaml WPF Binding Expression CalcBinding calc CalcBinding.Core core CalcBindingCore</PackageTags>
+    <PackageReleaseNotes>add parsed expressions cache</PackageReleaseNotes>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;NET45</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;NET45</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug-net4.0|AnyCPU'">
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\Debug-net4.0\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;NET40</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release-net4.0|AnyCPU'">
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <OutputPath>bin\Release-net4.0\</OutputPath>
-    <DefineConstants>TRACE;NET40</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
+
+
   <ItemGroup>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-    <Reference Include="WindowsBase" />
+    <PackageReference Include="DynamicExpresso.Core" Version="2.3.1" Condition="'$(TargetFramework)' != 'net40'" />
+    <PackageReference Include="DynamicExpresso.Core" Version="1.3.0" Condition="'$(TargetFramework)' == 'net40'" />
+    <Reference Include="Microsoft.CSharp" Condition="'$(TargetFramework)' == 'net40'" />
+    <Reference Remove="System.Windows.Controls.Ribbon" Condition="'$(TargetFramework)' == 'net40'" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="CalcBinding.cs" />
-    <Compile Include="CalcConverter.cs" />
-    <Compile Include="BoolToVisibilityConverter.cs" />
-    <Compile Include="ExpressionParsers\ExpressionParser.cs" />
-    <Compile Include="ExpressionParsers\ParserFactory.cs" />
-    <Compile Include="FalseToVisibility.cs" />
-    <Compile Include="ExpressionParsers\IExpressionParser.cs" />
-    <Compile Include="ExpressionParsers\CachedExpressionParser.cs" />
-    <Compile Include="Inversion\InverseExceptions.cs" />
-    <Compile Include="Inversion\Inverter.cs" />
-    <Compile Include="PathAnalysis\PropertyPathAnalyzer.cs" />
-    <Compile Include="PathAnalysis\Tokens\Abstract\Help\PathTokenId.cs" />
-    <Compile Include="PathAnalysis\Tokens\Abstract\Help\PathTokenType.cs" />
-    <Compile Include="PathAnalysis\Tokens\Realization\EnumToken.cs" />
-    <Compile Include="PathAnalysis\Tokens\Realization\MathToken.cs" />
-    <Compile Include="PathAnalysis\Tokens\Abstract\PathToken.cs" />
-    <Compile Include="PathAnalysis\Tokens\Realization\PropertyPathToken.cs" />
-    <Compile Include="PathAnalysis\Tokens\Realization\StaticPropertyPathToken.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Inversion\TwoKeysDictionary.cs" />
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="DynamicExpresso.Core">
-      <Version>2.3.1</Version>
-    </PackageReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

@@ -9,10 +9,6 @@
     <EnableDefaultCompileItems>False</EnableDefaultCompileItems>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\CalcBinding.Core\CalcBinding.Core.csproj" />
-  </ItemGroup>
-
   
 
   <ItemGroup>
@@ -40,6 +36,10 @@
 
   <ItemGroup>
     <Compile Remove="..\WpfExample\Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CalcBinding\CalcBinding.csproj" />
   </ItemGroup>
 
   

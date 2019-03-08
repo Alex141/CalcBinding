@@ -3,13 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28621.142
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalcBinding", "CalcBinding\CalcBinding.csproj", "{54EAD481-B6FC-41BB-ABBE-F0B33E123C61}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CalcBinding", "CalcBinding\CalcBinding.csproj", "{54EAD481-B6FC-41BB-ABBE-F0B33E123C61}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfExample", "WpfExample\WpfExample.csproj", "{705D5657-B94D-4A9C-9377-37454281357D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "zTests", "Tests\zTests.csproj", "{7719DA11-D048-4D6C-AFEB-8F19D8627C8C}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CalcBinding.Core", "CalcBinding.Core\CalcBinding.Core.csproj", "{F4E13775-38CE-46D5-B47B-B5807022887A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WpfExample.Core", "WpfExample.Core\WpfExample.Core.csproj", "{1A4E3F36-1D65-45F4-8A56-2EF30D79C95D}"
 EndProject
@@ -23,12 +21,12 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{54EAD481-B6FC-41BB-ABBE-F0B33E123C61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{54EAD481-B6FC-41BB-ABBE-F0B33E123C61}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{54EAD481-B6FC-41BB-ABBE-F0B33E123C61}.Debug-net4.0|Any CPU.ActiveCfg = Debug-net4.0|Any CPU
-		{54EAD481-B6FC-41BB-ABBE-F0B33E123C61}.Debug-net4.0|Any CPU.Build.0 = Debug-net4.0|Any CPU
+		{54EAD481-B6FC-41BB-ABBE-F0B33E123C61}.Debug-net4.0|Any CPU.ActiveCfg = Debug|Any CPU
+		{54EAD481-B6FC-41BB-ABBE-F0B33E123C61}.Debug-net4.0|Any CPU.Build.0 = Debug|Any CPU
 		{54EAD481-B6FC-41BB-ABBE-F0B33E123C61}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{54EAD481-B6FC-41BB-ABBE-F0B33E123C61}.Release|Any CPU.Build.0 = Release|Any CPU
-		{54EAD481-B6FC-41BB-ABBE-F0B33E123C61}.Release-net4.0|Any CPU.ActiveCfg = Release-net4.0|Any CPU
-		{54EAD481-B6FC-41BB-ABBE-F0B33E123C61}.Release-net4.0|Any CPU.Build.0 = Release-net4.0|Any CPU
+		{54EAD481-B6FC-41BB-ABBE-F0B33E123C61}.Release-net4.0|Any CPU.ActiveCfg = Release|Any CPU
+		{54EAD481-B6FC-41BB-ABBE-F0B33E123C61}.Release-net4.0|Any CPU.Build.0 = Release|Any CPU
 		{705D5657-B94D-4A9C-9377-37454281357D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{705D5657-B94D-4A9C-9377-37454281357D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{705D5657-B94D-4A9C-9377-37454281357D}.Debug-net4.0|Any CPU.ActiveCfg = Debug-net4.0|Any CPU
@@ -45,14 +43,6 @@ Global
 		{7719DA11-D048-4D6C-AFEB-8F19D8627C8C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7719DA11-D048-4D6C-AFEB-8F19D8627C8C}.Release-net4.0|Any CPU.ActiveCfg = Release-net4.0|Any CPU
 		{7719DA11-D048-4D6C-AFEB-8F19D8627C8C}.Release-net4.0|Any CPU.Build.0 = Release-net4.0|Any CPU
-		{F4E13775-38CE-46D5-B47B-B5807022887A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F4E13775-38CE-46D5-B47B-B5807022887A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F4E13775-38CE-46D5-B47B-B5807022887A}.Debug-net4.0|Any CPU.ActiveCfg = Debug|Any CPU
-		{F4E13775-38CE-46D5-B47B-B5807022887A}.Debug-net4.0|Any CPU.Build.0 = Debug|Any CPU
-		{F4E13775-38CE-46D5-B47B-B5807022887A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F4E13775-38CE-46D5-B47B-B5807022887A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F4E13775-38CE-46D5-B47B-B5807022887A}.Release-net4.0|Any CPU.ActiveCfg = Release|Any CPU
-		{F4E13775-38CE-46D5-B47B-B5807022887A}.Release-net4.0|Any CPU.Build.0 = Release|Any CPU
 		{1A4E3F36-1D65-45F4-8A56-2EF30D79C95D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1A4E3F36-1D65-45F4-8A56-2EF30D79C95D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A4E3F36-1D65-45F4-8A56-2EF30D79C95D}.Debug-net4.0|Any CPU.ActiveCfg = Debug|Any CPU
