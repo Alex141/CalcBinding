@@ -11,7 +11,11 @@ using WpfExample;
 
 namespace Tests
 {
+#if NETCOREAPP3_0
+    [Microsoft.VisualStudio.TestTools.UnitTesting.STAExtensions.STATestClass]
+#else 
     [TestClass]
+#endif
     public class ReadOnlySourcePropertiesTests:BaseSystemTests
     {
         #region Binding Label.Content

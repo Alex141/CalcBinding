@@ -8,7 +8,11 @@ using System.Globalization;
 
 namespace Tests
 {
+#if NETCOREAPP3_0
+    [Microsoft.VisualStudio.TestTools.UnitTesting.STAExtensions.STATestClass]
+#else 
     [TestClass]
+#endif
     public class StaticPropertiesTests:BaseSystemTests
     {
         [TestMethod]

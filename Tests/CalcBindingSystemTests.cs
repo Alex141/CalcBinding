@@ -21,7 +21,12 @@ namespace Tests
     /// <summary>
     /// System tests
     /// </summary>
+
+#if NETCOREAPP3_0
+    [Microsoft.VisualStudio.TestTools.UnitTesting.STAExtensions.STATestClass]
+#else 
     [TestClass]
+#endif
     public class CalcBindingSystemTests : BaseSystemTests
     {
         //--------------------Convert-----------------------------------//
@@ -676,7 +681,7 @@ namespace Tests
         /// <summary>
         /// Defect https://github.com/Alex141/CalcBinding/issues/32
         /// </summary>
-        [TestMethod]
+        [TestMethod]        
         public void BindingToStringWithParenteses()
         {
             var test = new ExampleViewModel();
