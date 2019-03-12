@@ -173,7 +173,13 @@ namespace Tests
                 });
 
             StringAndObjectBindingAssert("Math.Round(Math.Cos(local:StaticExampleClass.StaticB *Math.PI / 2.0))", null,
-                () => { StaticExampleClass.StaticB = 3; }, "0", 0d,
+                () => { StaticExampleClass.StaticB = 3; },
+#if NETCOREAPP3_0
+                "-0", -0.0d,
+#else
+                "0", 0.0d,
+#endif
+
                 () => { StaticExampleClass.StaticB = 4; }, "1", 1d,
                 new Dictionary<string, Type>
                 {
