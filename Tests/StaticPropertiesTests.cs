@@ -13,15 +13,15 @@ namespace Tests
 #else 
     [TestClass]
 #endif
-    public class StaticPropertiesTests:BaseSystemTests
+    public class StaticPropertiesTests : BaseSystemTests
     {
         [TestMethod]
         public void SingleStaticPropertyWithBracketsTest()
-        {  
+        {
             StringAndObjectBindingAssert("(local:StaticExampleClass.StaticA)", null,
                 () => StaticExampleClass.StaticA = 10, "10", (double)10,
                 () => StaticExampleClass.StaticA = 20.34, "20.34", 20.34,
-                new Dictionary<string, Type>() { {"local:StaticExampleClass", typeof(StaticExampleClass) }}
+                new Dictionary<string, Type>() { { "local:StaticExampleClass", typeof(StaticExampleClass) } }
             );
 
             var binding = new CalcBinding.Binding();
@@ -74,14 +74,14 @@ namespace Tests
 
             StringAndObjectBindingAssert("local:StaticExampleClass.StaticA+local:StaticExampleClass.StaticB", null,
                 () => { StaticExampleClass.StaticA = 10.4; StaticExampleClass.StaticB = 2; }, "12.4", (double)12.4,
-                () => {StaticExampleClass.StaticA = 20.5; StaticExampleClass.StaticB = -20;}, "0.5", (double)0.5,
+                () => { StaticExampleClass.StaticA = 20.5; StaticExampleClass.StaticB = -20; }, "0.5", (double)0.5,
                 new Dictionary<string, Type>() { { "local:StaticExampleClass", typeof(StaticExampleClass) } }
             );
 
             var exampleViewModel = new ExampleViewModel();
-            
+
             StringAndObjectBindingAssert("local:StaticExampleClass.StaticA-A", exampleViewModel,
-                () => { StaticExampleClass.StaticA = 10;    exampleViewModel.A = -4; }, "14", (double)14,
+                () => { StaticExampleClass.StaticA = 10; exampleViewModel.A = -4; }, "14", (double)14,
                 () => { StaticExampleClass.StaticA = 20.34; exampleViewModel.A = 8; }, "12.34", 12.34,
                     new Dictionary<string, Type>() { { "local:StaticExampleClass", typeof(StaticExampleClass) } }
             );
@@ -106,7 +106,7 @@ namespace Tests
             var exampleViewModel = new ExampleViewModel();
 
             BrushBindingAssert("(A>B) ? m:Brushes.White : m:Brushes.Black", exampleViewModel,
-                () => { exampleViewModel.A = 10; exampleViewModel.B = 15;}, Brushes.Black,
+                () => { exampleViewModel.A = 10; exampleViewModel.B = 15; }, Brushes.Black,
                 () => { exampleViewModel.A = 20; exampleViewModel.B = -2; }, Brushes.White,
                 new Dictionary<string, Type>() { { "m:Brushes", typeof(Brushes) } }
             );
@@ -129,8 +129,8 @@ namespace Tests
             BrushBindingAssert("(local:StaticExampleClass.StaticA > 5?m:Brushes.White : m:Brushes.Black) ", null,
                 () => { StaticExampleClass.StaticA = 4; }, Brushes.Black,
                 () => { StaticExampleClass.StaticA = 10; }, Brushes.White,
-                new Dictionary<string, Type> 
-                { 
+                new Dictionary<string, Type>
+                {
                     {"local:StaticExampleClass", typeof(StaticExampleClass)},
                     {"m:Brushes", typeof(Brushes)}
                 }
@@ -143,8 +143,8 @@ namespace Tests
             VisibilityBindingAssert("local:StaticExampleClass.StaticA less 5", null,
                 () => { StaticExampleClass.StaticA = 4; }, Visibility.Visible,
                 () => { StaticExampleClass.StaticA = 10; }, Visibility.Collapsed,
-                new Dictionary<string, Type> 
-                { 
+                new Dictionary<string, Type>
+                {
                     {"local:StaticExampleClass", typeof(StaticExampleClass)},
                 }
             );
@@ -164,7 +164,7 @@ namespace Tests
         [TestMethod]
         public void MathWithStaticPropertyTest()
         {
-            StringAndObjectBindingAssert("Math.Round(Math.Sin(local:StaticExampleClass.StaticB *Math.PI / 2.0))", null, 
+            StringAndObjectBindingAssert("Math.Round(Math.Sin(local:StaticExampleClass.StaticB *Math.PI / 2.0))", null,
                 () => { StaticExampleClass.StaticB = 1; }, "1", 1d,
                 () => { StaticExampleClass.StaticB = 6; }, "0", 0d,
                 new Dictionary<string, Type>
@@ -202,8 +202,15 @@ namespace Tests
 
             var pi = Math.PI.ToString(CultureInfo.InvariantCulture);
             StringAndObjectBindingBackAssert("Math.Pow(Math.PI,local:StaticExampleClass.StaticA)", null, () => StaticExampleClass.StaticA,
-                pi, "1", Double.Parse(pi, CultureInfo.InvariantCulture), 1,
-                0.999999999999999, 0.0, new Dictionary<string, Type>
+                pi, "1", double.Parse(pi, CultureInfo.InvariantCulture), 1,
+#if NETCOREAPP3_0
+                 1d,
+#else
+                     0.999999999999999, 
+#endif
+
+
+                0.0, new Dictionary<string, Type>
                 {
                     {"local:StaticExampleClass", typeof(StaticExampleClass)}
                 });
@@ -252,7 +259,7 @@ namespace Tests
                 () => StaticExampleClass.StaticAWithPersonalEvent = 10, "10", (double)10,
                 () => StaticExampleClass.StaticAWithPersonalEvent = 20.34, "20.34", 20.34,
                 new Dictionary<string, Type>() { { "local:StaticExampleClass", typeof(StaticExampleClass) } }
-            );           
+            );
         }
 
         [TestMethod]
