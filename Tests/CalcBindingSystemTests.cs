@@ -1,20 +1,13 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Markup;
 using WpfExample;
 using Tests.Mocks;
 using CalcBinding;
-using System.Xaml;
 using System.Windows.Data;
 using System.Windows.Media;
+using System.Globalization;
 
 namespace Tests
 {
@@ -54,12 +47,8 @@ namespace Tests
             StringAndObjectBindingAssert("A*(B-C)", test,
                 () => { test.A = 10; test.B = 20; test.C = 5; }, "150", (double)150,
                 () => { test.A = 5.4; test.B = 3; test.C = -8; },
-#if NETCOREAPP3_0
-                 "59.400000000000006",
-#else
-                "59.4",
-#endif               
-                 (double)59.400000000000006
+                59.400000000000006.ToString(CultureInfo.InvariantCulture),
+                59.400000000000006
 
             );
 

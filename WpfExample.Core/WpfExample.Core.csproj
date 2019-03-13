@@ -9,8 +9,6 @@
     <EnableDefaultCompileItems>False</EnableDefaultCompileItems>
   </PropertyGroup>
 
-  
-
   <ItemGroup>
     <ApplicationDefinition Include="..\WpfExample\App.xaml" Link="App.xaml">
       <Generator>MSBuild:Compile</Generator>
