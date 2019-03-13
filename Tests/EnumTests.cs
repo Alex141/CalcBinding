@@ -6,7 +6,11 @@ using System.Windows;
 
 namespace Tests
 {
+#if NETCOREAPP3_0
+    [Microsoft.VisualStudio.TestTools.UnitTesting.STAExtensions.STATestClass]
+#else 
     [TestClass]
+#endif
     public class EnumTests:CalcBindingSystemTests
     {
         [TestMethod]

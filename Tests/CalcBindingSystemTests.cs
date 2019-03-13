@@ -21,7 +21,12 @@ namespace Tests
     /// <summary>
     /// System tests
     /// </summary>
+
+#if NETCOREAPP3_0
+    [Microsoft.VisualStudio.TestTools.UnitTesting.STAExtensions.STATestClass]
+#else 
     [TestClass]
+#endif
     public class CalcBindingSystemTests : BaseSystemTests
     {
         //--------------------Convert-----------------------------------//
@@ -48,7 +53,14 @@ namespace Tests
 
             StringAndObjectBindingAssert("A*(B-C)", test,
                 () => { test.A = 10; test.B = 20; test.C = 5; }, "150", (double)150,
-                () => { test.A = 5.4; test.B = 3; test.C = -8; }, "59.4", (double)59.400000000000006
+                () => { test.A = 5.4; test.B = 3; test.C = -8; },
+#if NETCOREAPP3_0
+                 "59.400000000000006",
+#else
+                "59.4",
+#endif               
+                 (double)59.400000000000006
+
             );
 
             StringAndObjectBindingAssert("2*A-B*0.5", test,
@@ -95,7 +107,7 @@ namespace Tests
             );
         }
 
-        [TestMethod] 
+        [TestMethod]
         public void StringTest()
         {
             var test = new ExampleViewModel();
@@ -118,7 +130,7 @@ namespace Tests
 
             StringAndObjectBindingAssert("(A == B) ? 10 : 20", test,
                 () => { test.A = 4; test.B = 4; }, "10", 10,
-                () => { test.A = 5;             }, "20", 20
+                () => { test.A = 5; }, "20", 20
             );
 
             BoolBindingAssert("!IsChecked", test,
@@ -130,7 +142,7 @@ namespace Tests
                 () => test.IsChecked = true, false,
                 () => test.IsChecked = false, true
             );
-            
+
             BoolBindingAssert("!IsChecked and IsFull", test,
                 () => { test.IsChecked = false; test.IsFull = false; }, false,
                 () => { test.IsChecked = false; test.IsFull = true; }, true
@@ -308,7 +320,7 @@ namespace Tests
         {
             var test = new ExampleViewModel();
 
-            StringAndObjectBindingBackAssert("A+5", test, () => test.A, 
+            StringAndObjectBindingBackAssert("A+5", test, () => test.A,
                 "10.2", "-5", 10.2, -5,
                 5.1999999999999993, (double)-10);
 
@@ -322,11 +334,11 @@ namespace Tests
 
             StringAndObjectBindingBackAssert("((A+5)*3)/4-32", test, () => test.A,
                 "10.2", "-5", 10.2, -5,
-                51.266666666666673, (double)31);  
+                51.266666666666673, (double)31);
 
             // Math
 
-            Console.WriteLine(Math.Sin(31/100.0));
+            Console.WriteLine(Math.Sin(31 / 100.0));
             StringAndObjectBindingBackAssert("Math.Sin(B/100.0)", test, () => test.B,
                 "0.5", "-0.9", 0.5, -0.9,
                 52, -111);
@@ -384,11 +396,11 @@ namespace Tests
 
             BoolBindingBackAssert("!IsChecked", test, () => test.IsChecked,
                 true, false,
-                false, true); 
+                false, true);
 
             StringAndObjectBindingBackAssert("!IsChecked", test, () => test.IsChecked,
                 "True", "False", true, false,
-                false, true); 
+                false, true);
         }
 
         [TestMethod]
@@ -510,7 +522,7 @@ namespace Tests
             ObjectBindingAssert("Fairless==5", test,
                 () => { test.Fairless = 5; }, true,
                 () => { test.Fairless = 4; }, false
-            );        
+            );
         }
 
         [TestMethod]
@@ -659,7 +671,7 @@ namespace Tests
             StringAndObjectBindingAssert("M + Math.Abs(M)", test,
                 () => test.M = 10, "20", (double)20,
                 () => test.M = -10, "0", (double)0
-            );         
+            );
         }
 
         [TestMethod]

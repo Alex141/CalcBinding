@@ -8,7 +8,11 @@ using WpfExample;
 
 namespace Tests
 {
+#if NETCOREAPP3_0
+    [Microsoft.VisualStudio.TestTools.UnitTesting.STAExtensions.STATestClass]
+#else 
     [TestClass]
+#endif
     public class StringTests:BaseSystemTests
     {
         #region SingleQuotes disabled

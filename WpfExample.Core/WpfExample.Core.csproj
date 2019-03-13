@@ -1,0 +1,50 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>WpfExample</AssemblyName>
+    <RootNamespace>WpfExample</RootNamespace>
+    <EnableDefaultCompileItems>False</EnableDefaultCompileItems>
+  </PropertyGroup>
+
+  
+
+  <ItemGroup>
+    <ApplicationDefinition Include="..\WpfExample\App.xaml" Link="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </ApplicationDefinition>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\WpfExample\**\*.cs" />
+    <EmbeddedResource Include="..\WpfExample\**\*.resx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Include="..\WpfExample\**\*.xaml">
+      <Link>%(RecursiveDir)%(FileName)%(Extension)</Link>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Remove="..\WpfExample\App.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="..\WpfExample\obj\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="..\WpfExample\Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CalcBinding\CalcBinding.csproj" />
+  </ItemGroup>
+
+  
+
+  
+  
+
+</Project>

@@ -13,7 +13,11 @@ using Tests.Mocks;
 
 namespace Tests
 {
+#if NETCOREAPP3_0
+    [Microsoft.VisualStudio.TestTools.UnitTesting.STAExtensions.STATestClass]
+#else 
     [TestClass]
+#endif
     public class PropertyPathAnalyzerTests
     {
         [TestMethod]

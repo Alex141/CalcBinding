@@ -186,3 +186,4 @@ $RECYCLE.BIN/
 /.vs
 /CalcBinding/nuget.exe
 *.nupkg
+/MigrationBackup

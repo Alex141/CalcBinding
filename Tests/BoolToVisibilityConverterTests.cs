@@ -9,8 +9,12 @@ using System.Threading.Tasks;
 using System.Windows;
 
 namespace Tests
-{
+{    
+#if NETCOREAPP3_0
+    [Microsoft.VisualStudio.TestTools.UnitTesting.STAExtensions.STATestClass]
+#else 
     [TestClass]
+#endif
     public sealed class BoolToVisibilityConverterTests : BaseUnitTests
     {
         [TestMethod]
