@@ -209,7 +209,11 @@ namespace Tests
             var pi = Math.PI.ToString(CultureInfo.InvariantCulture);
             StringAndObjectBindingBackAssert("Math.Pow(Math.PI,local:StaticExampleClass.StaticA)", null, () => StaticExampleClass.StaticA,
                 pi, "1", double.Parse(pi, CultureInfo.InvariantCulture), 1,
-                0.999999999999999,
+#if NETCOREAPP3_0
+                1d,
+#else
+                0.999999999999999, 
+#endif
                 0.0, new Dictionary<string, Type>
                 {
                     {"local:StaticExampleClass", typeof(StaticExampleClass)}
