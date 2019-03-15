@@ -1,6 +1,6 @@
 # CalcBinding
 
-CalcBinding is an advanced Binding markup extension that allows you to write calculated binding expressions in xaml, without custom converters. CalcBinding can automaticaly perfom bool to visibility convertion, inverse your expression and more. CalcBinding makes binding expressions shorter and more user-friendly. [Release notes](#release-notes)
+CalcBinding is an advanced Binding markup extension that allows you to write calculated binding expressions in xaml, without custom converters. CalcBinding can automaticaly perfom bool to visibility convertion, different algebraic operations, inverse your expression and more. CalcBinding makes binding expressions shorter and more user-friendly. [Release notes](#release-notes)
 
 ## Install
 
@@ -412,6 +412,12 @@ Yes, you can, but with setting RelativeSource property, see section [TemplateBin
 
 # Release notes
 
+## version 2.5.1.0
+  
+* Support <b>.net core 3.0! </b>
+  
+PR [#57](https://github.com/Alex141/CalcBinding/pull/57). Thanks to [bigworld12](https://github.com/bigworld12) !
+  
 ## version 2.4.0.0
 
 * Fix performance issues: add parsed expressions cache 
@@ -465,35 +471,35 @@ In older version it creates BindingMode.TwoWay binding, in new version it create
 
 * add support of 'null' values: objects that can be null, nullable value types. For nullable value types there are resctrictions, see restrictions page
 
-##version 2.2.3.0
+## version 2.2.3.0
 
 * add 'not' alias for '!' operator
 
-##version 2.2.2.0
+## version 2.2.2.0
 
 * version for .net 4.0
 
-##version 2.1.2.0
+## version 2.1.2.0
 
 * RelativeSource in multibinding support
 
-##version 2.1.1.0
+## version 2.1.1.0
 
 * bug fixes
 
-##version 2.1.0.0
+## version 2.1.0.0
 
 * DataTrigger support
 * bug fixes
 
-##version 2.0.0.0
+## version 2.0.0.0
 
 * support of two way binding, support of automatic invert binding expression and realization inverted binding from dependency property to source
 * Math class support
 * support of nested properties (in nested view-models)
 * bug fixes
 
-##version 1.0.0.0
+## version 1.0.0.0
 
 * binding support
 * supported features: binding/multibinding, algebraic, logic, string and ternary operators
