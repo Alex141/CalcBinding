@@ -9,7 +9,7 @@
     <AssemblyName>CalcBinding</AssemblyName>
     <RootNamespace>CalcBinding</RootNamespace>
     <PackageId>CalcBinding</PackageId>
-    <Version>2.5.0</Version>
+    <Version>2.5.1</Version>
     <Authors>Alexander Zinchenko</Authors>
     <Company>Alexander Zinchenko</Company>
     <Product>CalcBinding</Product>
@@ -19,7 +19,7 @@
     <PackageProjectUrl>https://github.com/Alex141/CalcBinding</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Alex141/CalcBinding</RepositoryUrl>
     <PackageTags>Xaml WPF Binding Expression CalcBinding calc CalcBinding.Core core CalcBindingCore</PackageTags>
-    <PackageReleaseNotes>add parsed expressions cache</PackageReleaseNotes>
+    <PackageReleaseNotes>.net core 3.0 support</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
