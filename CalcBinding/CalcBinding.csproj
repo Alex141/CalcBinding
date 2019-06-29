@@ -9,17 +9,17 @@
     <AssemblyName>CalcBinding</AssemblyName>
     <RootNamespace>CalcBinding</RootNamespace>
     <PackageId>CalcBinding</PackageId>
-    <Version>2.5.1</Version>
+    <Version>2.5.2</Version>
     <Authors>Alexander Zinchenko</Authors>
     <Company>Alexander Zinchenko</Company>
     <Product>CalcBinding</Product>
     <Description>CalcBinding - small library providing Binding markup extension with path expressions directly in xaml</Description>
-    <Copyright>Copyright © Alexander Zinchenko 2014-2018</Copyright>
+    <Copyright>Copyright © Alexander Zinchenko 2014-2019</Copyright>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageProjectUrl>https://github.com/Alex141/CalcBinding</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Alex141/CalcBinding</RepositoryUrl>
     <PackageTags>Xaml WPF Binding Expression CalcBinding calc CalcBinding.Core core CalcBindingCore</PackageTags>
-    <PackageReleaseNotes>.net core 3.0 support</PackageReleaseNotes>
+    <PackageReleaseNotes>add FallbackValue, disable traces by defaut, add trace configuration</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
