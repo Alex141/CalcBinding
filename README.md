@@ -440,7 +440,7 @@ Yes, you can, but with setting RelativeSource property, see section [TemplateBin
 ## version 2.5.2.0
 
 * Add FallbackValue [#37](https://github.com/Alex141/CalcBinding/issues/37), 
-* Disable traces by default, add traces configuration [#44](https://github.com/Alex141/CalcBinding/issues/44)
+* Disable traces by default, add traces configuration [#44](https://github.com/Alex141/CalcBinding/issues/44). Documentation: [Tracing](#8-tracing)
   
 Thanks to [metal450](https://github.com/metal450) for waiting 2 years!!
 
