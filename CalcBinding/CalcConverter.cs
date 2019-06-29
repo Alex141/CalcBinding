@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Data;
 using CalcBinding.ExpressionParsers;
 using CalcBinding.Inversion;
+using CalcBinding.Trace;
 using DynamicExpresso;
 using Expression = System.Linq.Expressions.Expression;
 
@@ -23,13 +24,10 @@ namespace CalcBinding
 
         #region Init
 
-        //public CalcConverter(IExpressionParser parser) : this(parser, null) { }
-
-        //public CalcConverter(Dictionary<string, Type> enumParameters) : this(null, enumParameters) { }
-
-        public CalcConverter(IExpressionParser parser, Dictionary<string, Type> enums)
+        public CalcConverter(IExpressionParser parser, object fallbackValue, Dictionary<string, Type> enums)
         {
             _parser = parser;
+            _fallbackValue = fallbackValue;
 
             if (parser != null && enums != null && enums.Any())
             {
@@ -65,7 +63,7 @@ namespace CalcBinding
                 }
                 catch (Exception e)
                 {
-                    Trace.WriteLine("Binding error: calc converter can't convert back expression " + parameter + ": " + e.Message);
+                    Tracer.TraceError("Can't convert back expression " + parameter + ": " + e.Message);
                 }
             }
 
@@ -85,7 +83,7 @@ namespace CalcBinding
                 }
                 catch (Exception e)
                 {
-                    Trace.WriteLine("Binding error: calc converter can't invoke back expression " + parameter + ": " + e.Message);
+                    Tracer.TraceError("Can't invoke back expression " + parameter + ": " + e.Message);
                 }
             }
             return null;
@@ -126,7 +124,7 @@ namespace CalcBinding
             if (_compiledExpression == null)
             {
                 if ((_compiledExpression = CompileExpression(values, (string)parameter)) == null)
-                    return null;
+                    return _fallbackValue;
             }
 
             try
@@ -149,7 +147,7 @@ namespace CalcBinding
             }
             catch (Exception e)
             {
-                Trace.WriteLine("Binding error: calc converter can't invoke expression " + _compiledExpression.ExpressionText + ": " + e.Message);
+                Tracer.TraceError("Can't invoke expression " + _compiledExpression.ExpressionText + ": " + e.Message);
                 return null;
             }
         }
@@ -173,7 +171,7 @@ namespace CalcBinding
                 else
                     if (values.Contains(DependencyProperty.UnsetValue))
                     {
-                        Trace.WriteLine("Binding error: one of source fields is Unset, return null");
+                        Tracer.TraceError("One of source fields is Unset");
                     }
                     else
                     {
@@ -190,7 +188,7 @@ namespace CalcBinding
             }
             catch (Exception e)
             {
-                Trace.WriteLine("Binding error: calc converter can't convert expression" + expressionTemplate + ": " + e.Message);
+                Tracer.TraceError("Can't convert expression " + expressionTemplate + ": " + e.Message);
                 return null;
             }
         }
@@ -231,8 +229,10 @@ namespace CalcBinding
         #endregion
 
         private IExpressionParser _parser;
+        private readonly object _fallbackValue;
         private Lambda _compiledExpression;
         private Lambda _compiledInversedExpression;
         private Type[] _sourceValuesTypes;
+        private static readonly Tracer Tracer = new Tracer(TraceComponent.CalcConverter);
     }
 }

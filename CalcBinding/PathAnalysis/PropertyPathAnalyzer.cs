@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CalcBinding.Trace;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -37,6 +38,7 @@ namespace CalcBinding.PathAnalysis
 
         private static char[] delimiters;
         private IXamlTypeResolver _typeResolver;
+        private static readonly Tracer Tracer = new Tracer(TraceComponent.Parser);
 
         #endregion
 
@@ -57,7 +59,7 @@ namespace CalcBinding.PathAnalysis
         {
             _typeResolver = typeResolver;
 
-            Debug.WriteLine(string.Format("PropertyPathAnalyzer.GetPathes: start read {0} ", normPath));
+            Tracer.TraceDebug(string.Format("Start read {0} ", normPath));
 
             var chunks = GetChunks(normPath);
             var pathes = GetPathes(chunks);
@@ -282,7 +284,7 @@ namespace CalcBinding.PathAnalysis
 
         private void TracePath(PathToken path)
         {
-            Debug.WriteLine(string.Format("PropertyPathAnalyzer: read {0} ({1}) ({2}-{3})", path.Id.Value, path.Id.PathType, path.Start, path.End));
+            Tracer.TraceDebug(string.Format("Read {0} ({1}) ({2}-{3})", path.Id.Value, path.Id.PathType, path.Start, path.End));
         }
 
         #endregion

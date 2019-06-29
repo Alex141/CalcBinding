@@ -13,7 +13,7 @@ namespace Tests
 
         protected CalcConverter CreateConverter(IExpressionParser innerParser = null)
         {
-            return new CalcConverter(CreateParser(innerParser), null);
+            return new CalcConverter(CreateParser(innerParser), null, null);
         }
     }
 }

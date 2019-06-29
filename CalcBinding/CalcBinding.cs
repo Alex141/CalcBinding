@@ -36,6 +36,13 @@ namespace CalcBinding
         /// </remarks>
         public bool SingleQuotes { get; set; } = false;
 
+        /// <summary> Value to use when source cannot provide a value </summary>
+        /// <remarks>
+        ///     Initialized to DependencyProperty.UnsetValue; if FallbackValue is not set, BindingExpression
+        ///     will return target property's default when Binding cannot get a real value.
+        /// </remarks>
+        public object FallbackValue { get; set; } = DependencyProperty.UnsetValue;
+
         public Binding()
         {
             Mode = BindingMode.Default;
@@ -58,7 +65,7 @@ namespace CalcBinding
 
             var expressionTemplate = GetExpressionTemplate(normalizedPath, pathes, out Dictionary<string, Type> enumParameters);
 
-            var mathConverter = new CalcConverter(_parser.Value, enumParameters)
+            var mathConverter = new CalcConverter(_parser.Value, FallbackValue, enumParameters)
             {
                 FalseToVisibility = FalseToVisibility,
                 StringFormatDefined = StringFormat != null,
@@ -83,10 +90,11 @@ namespace CalcBinding
                     UpdateSourceTrigger = UpdateSourceTrigger,
                     ValidatesOnDataErrors = ValidatesOnDataErrors,
                     ValidatesOnExceptions = ValidatesOnExceptions,
+                    FallbackValue = FallbackValue,
 #if NET45
                     ValidatesOnNotifyDataErrors = ValidatesOnNotifyDataErrors,
 #endif
-                };
+            };
 
                 var pathId = bindingPathes.Single().PathId;
                 // we need to use convert from string for support of static properties
@@ -138,6 +146,7 @@ namespace CalcBinding
                     UpdateSourceTrigger = UpdateSourceTrigger,
                     ValidatesOnDataErrors = ValidatesOnDataErrors,
                     ValidatesOnExceptions = ValidatesOnExceptions,
+                    FallbackValue = FallbackValue,
 #if NET45
                     ValidatesOnNotifyDataErrors = ValidatesOnNotifyDataErrors,
 #endif

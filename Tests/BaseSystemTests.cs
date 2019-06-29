@@ -58,10 +58,11 @@ namespace Tests
         public void StringBindingAssert(string path, INotifyPropertyChanged source,
             Action sourcePropertySetter1, string targetValue1,
             Action sourcePropertySetter2, string targetValue2,
-            Dictionary<string, Type> resolvedTypes = null)
+            Dictionary<string, Type> resolvedTypes = null,
+            object fallbackValue = null)
         {
             var textBox = new TextBox();
-            BindingAssert(path, source, textBox, TextBox.TextProperty, () => textBox.Text, sourcePropertySetter1, targetValue1, sourcePropertySetter2, targetValue2, resolvedTypes);
+            BindingAssert(path, source, textBox, TextBox.TextProperty, () => textBox.Text, sourcePropertySetter1, targetValue1, sourcePropertySetter2, targetValue2, resolvedTypes, fallbackValue);
         }
 
         public void ObjectBindingAssert(string path, INotifyPropertyChanged source,
@@ -148,10 +149,15 @@ namespace Tests
             Func<TTargetProperty> targetPropertyGetter,
             Action sourcePropertySetter1, TTargetProperty targetValue1,
             Action sourcePropertySetter2, TTargetProperty targetValue2,
-            Dictionary<string, Type> resolvedTypes = null
+            Dictionary<string, Type> resolvedTypes = null,
+            object fallbackValue = null
             )
         {
             var calcBinding = new CalcBinding.Binding(path);
+            if (fallbackValue != null)
+            {
+                calcBinding.FallbackValue = fallbackValue;
+            }
 
             BindingAssert(calcBinding, source, targetObject, targetProperty, targetPropertyGetter,
                 sourcePropertySetter1, targetValue1,

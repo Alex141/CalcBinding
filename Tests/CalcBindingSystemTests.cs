@@ -687,5 +687,40 @@ namespace Tests
                 () => test.Name = "ViewModel", "Name = ViewModel"
             );
         }
+
+        [TestMethod]
+        public void FallbackValueNoConverterTest()
+        {
+            var test = new ExampleViewModel();
+
+            StringBindingAssert("NestedViewModel.A", test,
+                () => { test.NestedViewModel.A = 30; }, "30",
+                () => { test.NestedViewModel = null; }, "no value",
+                fallbackValue: "no value"
+            );
+        }
+
+        [TestMethod]
+        public void FallbackValueValueConverterTest()
+        {
+            var test = new ExampleViewModel();
+
+            StringBindingAssert("!NestedViewModel.IsChecked", test,
+                () => { test.NestedViewModel.IsChecked = true; }, "False",
+                () => { test.NestedViewModel = null; }, "no value",
+                fallbackValue: "no value"
+            );
+        }
+
+        [TestMethod]
+        public void FallbackValueInMultiValueConverter()
+        {
+            var test = new ExampleViewModel();
+
+            StringBindingAssert("NestedViewModel.A+NestedViewModel.B", test,
+                () => { test.NestedViewModel.A = 10; test.NestedViewModel.B = 5; }, "15",
+                () => { test.NestedViewModel = null; }, "no value",
+                fallbackValue: "no value");
+        }
     }
 }
