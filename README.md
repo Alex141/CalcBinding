@@ -374,7 +374,32 @@ Althouth CalcBinding hasn't yet analog for TemplateBinding, as temporary solutio
 ```
 Setting RelativeSource property to TemplatedParent value makes CalcBinding similar to TemplateBinding
 
-## 8. General restrictions
+## 8. Tracing
+  
+  All calcbinding traces are disabled by default due to huge amount of trace messages in some scenarios (see [bug 44](https://github.com/Alex141/CalcBinding/issues/44)).
+  
+  To enable traces, you need to specify minimal tracing level. Add this code to your app.config file to see all Information or higher priority logs:
+
+```xml
+  <system.diagnostics>
+    <switches>
+      <add name="CalcBindingTraceLevel" value="Information"/>
+    </switches>
+  </system.diagnostics>
+```
+  
+  Other available tracing levels:
+  * All,
+  * Off,
+  * Critical,
+  * Error,
+  * Warning,
+  * Information,
+  * Verbose,
+  
+  For more information, go to msdn: [SourceSwitch](https://docs.microsoft.com/ru-ru/dotnet/api/system.diagnostics.sourceswitch?view=netframework-4.8)
+  
+## 9. General restrictions
 
 1. Nullable value types doesn't supported in reverse binding (e.g. mode OneWayToSource)
 
@@ -411,6 +436,13 @@ In markup extension we can't use double quotes, so we can use single quotes and 
 Yes, you can, but with setting RelativeSource property, see section [TemplateBinding](#templatebinding)
 
 # Release notes
+
+## version 2.5.2.0
+
+* Add FallbackValue [#37](https://github.com/Alex141/CalcBinding/issues/37), 
+* Disable traces by default, add traces configuration [#44](https://github.com/Alex141/CalcBinding/issues/44)
+  
+Thanks to [metal450](https://github.com/metal450) for waiting 2 years!!
 
 ## version 2.5.1.0
   
@@ -458,7 +490,7 @@ In older version it creates BindingMode.TwoWay binding, in new version it create
 ```xml
 <Button Content="TargetButton" Visibility="{c:Binding !HasPrivileges, Mode=TwoWay}"/>
 ```
-
+  
 ## version 2.2.5.1
 
 * fix defect with special characters in const strings in path expression (thanks to xmedeko!)
