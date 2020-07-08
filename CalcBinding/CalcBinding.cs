@@ -16,7 +16,7 @@ namespace CalcBinding
     /// <summary>
     /// Binding with advantages
     /// </summary>
-    public sealed class Binding : MarkupExtension
+    public sealed class Binding : DynamicResourceExtension
     {
         // We cannot use PropertyPath instead of string (such as standart Binding) because transformation from xaml value string to Property path 
         // is doing automatically by PropertyPathConverter and result PropertyPath object could have form, that cannot retranslate to normal string.
