@@ -407,6 +407,54 @@ Setting RelativeSource property to TemplatedParent value makes CalcBinding simil
 
 3. In path expression you can't use any methods of .Net classes except of Math class.
 
+## 10. Shortcut of use RelativeSource in binding
+Using RelativeSource property is easy in path, just use by like below:
+`PreviousData` , `FindAncestor` , `Self`, `TemplatedParent`
+
+ 1. all example
+```
+zzzzz@PreviousData           // means {Binding Path=zzzzz, RelativeSource={RelativeSource PreviousData}}
+yyyyy@TemplatedParent        // means {Binding Path=yyyyy, RelativeSource={RelativeSource TemplatedParent}}
+Parent.Name@Self             // means {Binding Path=Parent.Name, RelativeSource={RelativeSource Self}}
+xxxx@FindAncestor.Grid       // means {Binding Path=xxxx, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}}
+xxxx@FindAncestor[2].Grid    // means {Binding Path=xxxx, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}, AncestorLevel=2}}
+xxxx@Grid                    // means {Binding Path=xxxx, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}}
+Title@Window                 // means {Binding Path=Title, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}
+```
+
+2. set width by 50% width and 50% height of parent
+```xml
+<Canvas Width="1200" Height="200">
+    <Button  Width="{c:Binding '(0.5 * Parent.ActualWidth@Self)'}" Height="{c:Binding '(0.5 * Parent.ActualHeight@Self)'}">button</Button>
+</Canvas>
+```
+
+3. use DataContext for window by FindAncestor
+```C#
+  this.DataContext = new TaskBox() {
+     TaskList = new string[]{"task  a", "task  b", "task c"},
+     PageIndex = "task  a",
+  };
+```
+```xml
+<Window   ....>
+      <!-- .... -->
+      <ListBox ItemsSource="{Binding TaskList}" >
+          <ListBox.ItemTemplate>
+              <DataTemplate>
+                  <RadioButton  Content="{c:Binding .}"
+                                IsChecked="{c:Binding 'DataContext.PageIndex@Window==.'}"
+                                Command="{c:Binding 'DataContext.ChangePageIndexCommad@Window'}"
+                                CommandParameter="{c:Binding .}"
+                   />
+
+              </DataTemplate>
+          </ListBox.ItemTemplate>
+    </ListBox>
+</Window>
+```
+
+
 ## What is inside?
 
 CalcBinding uses DynamicExpresso library to parse string expression to Linq Expression and compiled expression tree for binding.

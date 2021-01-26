@@ -154,6 +154,28 @@ namespace CalcBinding.PathAnalysis
                 return false;
             }
 
+            // error check
+            var spiltByTypeDefArray = str.Split(new char[] {'@' });
+            string relativeSourceDef = null;
+            if (spiltByTypeDefArray.Length == 1)
+            {
+
+            }
+            else if (spiltByTypeDefArray.Length == 2)
+            {
+                if (spiltByTypeDefArray[0].Length == 0 || spiltByTypeDefArray[1].Length == 0)
+                    throw new Exception($"Wrong grammar on '{str}'");
+
+                str = spiltByTypeDefArray[0];
+                relativeSourceDef = spiltByTypeDefArray[1];
+            }
+            else if (spiltByTypeDefArray.Length > 2)
+            {
+                throw new Exception($"Wrong grammar on '{str}'");
+            }
+            // no error 
+
+
             var colonPos = str.IndexOf(':');
 
             if (colonPos > 0)
@@ -178,7 +200,7 @@ namespace CalcBinding.PathAnalysis
                 List<string> propChain;
                 if (GetPropChain(str, out propChain))
                 {
-                    pathToken = GetPropPathOrMath(chunk, propChain);
+                    pathToken = GetPropPathOrMath(chunk, propChain, relativeSourceDef);
                     return true;
                 }
             }
@@ -189,6 +211,12 @@ namespace CalcBinding.PathAnalysis
 
         private bool GetPropChain(string str, out List<string> propChain)
         {
+            if (str.Trim() == ".")
+            {
+                propChain = new List<string>() { "." };
+                return true;
+            }
+
             var properties = str.Split(new[] { '.' }, StringSplitOptions.None);
 
             if (properties.All(IsIdentifier) && properties.Any())
@@ -218,7 +246,7 @@ namespace CalcBinding.PathAnalysis
             return true;
         }
 
-        private PathToken GetPropPathOrMath(Chunk chunk, List<string> propChain)
+        private PathToken GetPropPathOrMath(Chunk chunk, List<string> propChain, string relativeSourceDef)
         {
             PathToken pathToken = null;
 
@@ -230,7 +258,7 @@ namespace CalcBinding.PathAnalysis
             {
                 pathToken = new PropertyPathToken(chunk.Start, chunk.End, propChain);
             }
-
+            pathToken.Id.RelativeSourceDef = relativeSourceDef;
             return pathToken;
         }
 

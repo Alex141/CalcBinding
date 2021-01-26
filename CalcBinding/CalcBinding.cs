@@ -54,6 +54,57 @@ namespace CalcBinding
             Path = path;
         }
 
+        static Regex RelativeSourceDefRegex = new Regex(@"(PreviousData|TemplatedParent|Self)|((FindAncestor\.)?(\[(\d+)\]\.)?(.+))", RegexOptions.Compiled);
+        void AdjustRelativeSourceDef(IServiceProvider serviceProvider, System.Windows.Data.Binding binding, string relativeSourceDef)
+        {
+            if (relativeSourceDef != null)
+            {
+                var m = RelativeSourceDefRegex.Match(relativeSourceDef);
+                if (!m.Success)
+                    throw new Exception(@"not exception input of RelativeSource define, it must be 
+zzzzz@PreviousData           // means {Binding Path=zzzzz, RelativeSource={RelativeSource PreviousData}}
+yyyyy@TemplatedParent        // means {Binding Path=yyyyy, RelativeSource={RelativeSource TemplatedParent}}
+Parent.Name@Self             // means {Binding Path=Parent.Name, RelativeSource={RelativeSource Self}}
+xxxx@FindAncestor.Grid       // means {Binding Path=xxxx, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}}
+xxxx@FindAncestor[2].Grid    // means {Binding Path=xxxx, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}, AncestorLevel=2}}
+xxxx@Grid                    // means {Binding Path=xxxx, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}}
+Title@Window                 // means {Binding Path=Title, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}
+");
+
+                if (m.Groups[1].Success)
+                {
+                    if (Enum.TryParse<RelativeSourceMode>(relativeSourceDef, out RelativeSourceMode modeObj))
+                    {
+                        binding.RelativeSource = new RelativeSource()
+                        {
+                            Mode = modeObj,
+                        };
+                    }
+                }
+                else if (m.Groups[2].Success)
+                {
+                    binding.RelativeSource = new RelativeSource()
+                    {
+                        Mode = RelativeSourceMode.FindAncestor,
+                        AncestorLevel = m.Groups[5].Success ? int.Parse(m.Groups[5].Value) : 1,
+                        AncestorType = new TypeExtension(m.Groups[6].Value).ProvideValue(serviceProvider) as Type,
+                    };
+                }
+                else
+                {
+                    throw new Exception($"Wrong grammar on '{relativeSourceDef}'");
+                }
+
+            }
+            else
+            {
+                if (RelativeSource != null)
+                {
+                    binding.RelativeSource = RelativeSource;
+                }
+            }
+        }
+
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
             var targetPropertyType = GetPropertyType(serviceProvider);
@@ -77,6 +128,8 @@ namespace CalcBinding
 
             BindingBase resBinding;
 
+
+
             if (bindingPathes.Count == 1)
             {
                 // todo: can enums be binded ? What if one value is Enum? bug..
@@ -99,6 +152,7 @@ namespace CalcBinding
                 var pathId = bindingPathes.Single().PathId;
                 // we need to use convert from string for support of static properties
                 var pathValue = pathId.Value;
+                AdjustRelativeSourceDef(serviceProvider, binding, pathId.RelativeSourceDef);
 
                 if (pathId.PathType == PathTokenType.StaticProperty)
                 {
@@ -113,8 +167,8 @@ namespace CalcBinding
                 if (ElementName != null)
                     binding.ElementName = ElementName;
 
-                if (RelativeSource != null)
-                    binding.RelativeSource = RelativeSource;
+                //if (RelativeSource != null)
+                //    binding.RelativeSource = RelativeSource;
 
                 if (StringFormat != null)
                     binding.StringFormat = StringFormat;
@@ -162,6 +216,8 @@ namespace CalcBinding
                     // we need to use convert from string for support of static properties
                     var pathValue = path.PathId.Value;
 
+                    AdjustRelativeSourceDef(serviceProvider, binding, path.PathId.RelativeSourceDef);
+
                     if (path.PathId.PathType == PathTokenType.StaticProperty)
                     {
                         pathValue = string.Format("({0})", pathValue);  // need to use brackets for Static property recognition in standart binding
@@ -177,8 +233,8 @@ namespace CalcBinding
                     if (ElementName != null)
                         binding.ElementName = ElementName;
 
-                    if (RelativeSource != null)
-                        binding.RelativeSource = RelativeSource;
+                    //if (RelativeSource != null)
+                    //    binding.RelativeSource = RelativeSource;
 
                     mBinding.Bindings.Add(binding);
                 }
@@ -239,7 +295,7 @@ namespace CalcBinding
 
                     if (targetProp != null)
                     {
-                        var propPath = propId.Value;
+                        var propPath = propId.RelativeSourceDef == null ? propId.Value : $"{propId.Value}@{propId.RelativeSourceDef}";
 
                         if (propId.PathType == PathTokenType.Property || propId.PathType == PathTokenType.StaticProperty)
                         {
@@ -512,6 +568,7 @@ namespace CalcBinding
         //     of the binding source to use. The default is null.
         [DefaultValue("")]
         public RelativeSource RelativeSource { get; set; }
+
         //
         // Summary:
         //     Gets or sets the object to use as the binding source.
