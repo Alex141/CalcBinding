@@ -10,6 +10,7 @@ namespace CalcBinding.PathAnalysis
     {
         public PathTokenType PathType { get; private set; }
         public string Value { get; private set; }
+        public string RelativeSourceDef{ get; set; }
 
         public PathTokenId(PathTokenType pathType, string value)
         {
