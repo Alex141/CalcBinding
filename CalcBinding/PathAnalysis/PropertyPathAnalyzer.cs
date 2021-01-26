@@ -189,6 +189,12 @@ namespace CalcBinding.PathAnalysis
 
         private bool GetPropChain(string str, out List<string> propChain)
         {
+            if (str.Trim() == ".")
+            {
+                propChain = new List<string>() { "." };
+                return true;
+            }
+
             var properties = str.Split(new[] { '.' }, StringSplitOptions.None);
 
             if (properties.All(IsIdentifier) && properties.Any())
