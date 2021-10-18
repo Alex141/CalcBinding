@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WpfExample;
 using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace Tests
 {
@@ -135,6 +136,36 @@ namespace Tests
                     {"local:StaticExampleClass", typeof(StaticExampleClass)},
                 }
             );
+        }
+
+        [TestMethod]
+        public void MultipleEnumBindingsTest()
+        {
+            var exampleViewModel = new ExampleViewModel();
+            var chb1 = new CheckBox();
+            var chb2 = new CheckBox();
+
+            var inputs = new List<BindingTestInput>() 
+            {
+                new BindingTestInput("EnumValue == local:Enum2.Value1", chb1, CheckBox.IsCheckedProperty),
+                new BindingTestInput("Enum3Value == local:Enum3.Value11", chb2, CheckBox.IsCheckedProperty),
+            };
+
+            var outputs = new List<BindingTestCase<bool?>>()
+            {
+                new BindingTestCase<bool?>(() => exampleViewModel.EnumValue = Enum2.Value1, () => chb1.IsChecked, true),
+                new BindingTestCase<bool?>(() => exampleViewModel.EnumValue = Enum2.Value2, () => chb1.IsChecked, false),
+                new BindingTestCase<bool?>(() => exampleViewModel.Enum3Value = Enum3.Value11, () => chb2.IsChecked, true),
+                new BindingTestCase<bool?>(() => exampleViewModel.Enum3Value = Enum3.Value22, () => chb2.IsChecked, false),
+            };
+
+            var resolvedTypes = new Dictionary<string, Type>()
+            {
+                { "local:Enum2", typeof(Enum2) },
+                { "local:Enum3", typeof(Enum3) }
+            };
+
+            MulitpleBindingAssert(inputs, exampleViewModel, outputs, resolvedTypes);
         }
     }
 }
