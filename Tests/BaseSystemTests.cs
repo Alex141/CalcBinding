@@ -194,6 +194,37 @@ namespace Tests
             Assert.AreEqual(targetValue2, realValue2);
         }
 
+        public void MulitpleBindingAssert<TTargetProperty>(List<BindingTestInput> bindingInputs,
+           INotifyPropertyChanged source,
+           List<BindingTestCase<TTargetProperty>> testCases,
+           Dictionary<string, Type> resolvedTypes = null
+           )
+        {
+            // the two loops on the bindingInputs are used to replicate the order things happen in a WPF view.  The ProvideValue
+            // should be called for all bindings before the SetValue is called on the TargetObject.  This allows issue #66 to
+            // be reproduced in a unit test.
+
+            foreach (var input in bindingInputs)
+            {
+                input.TargetObject.DataContext = source;
+                var binding = new CalcBinding.Binding(input.Path);
+                input.BindingExpression = binding.ProvideValue(new ServiceProviderMock(input.TargetObject, input.TargetProperty, resolvedTypes));               
+            }
+            
+            foreach (var input in bindingInputs)
+            {
+                input.TargetObject.SetValue(input.TargetProperty, input.BindingExpression);
+            }
+
+            foreach (var testCase in testCases)
+            {
+                testCase.SourcePropertySetter();
+                var realValue = testCase.TargetPropertyGetter();
+                Assert.AreEqual(testCase.TargetValue, realValue);
+            }
+        }
+
+
         #endregion
 
 
@@ -317,5 +348,37 @@ namespace Tests
         }
 
         #endregion
+    }
+
+    public class BindingTestCase<TTargetProperty>
+    {
+        public BindingTestCase(Action sourcePropertySetter, 
+                                 Func<TTargetProperty> targetPropertyGetter, 
+                                 TTargetProperty targetValue)
+        {
+            SourcePropertySetter = sourcePropertySetter;
+            TargetPropertyGetter = targetPropertyGetter;
+            TargetValue = targetValue;
+        }
+
+        public Action SourcePropertySetter { get; set; }
+        public Func<TTargetProperty> TargetPropertyGetter { get; set; }
+        public TTargetProperty TargetValue { get; set; }
+    }
+
+    public class BindingTestInput
+    {
+        public BindingTestInput(string path, FrameworkElement targetObject, DependencyProperty targetProperty)
+        {
+            Path = path;
+            TargetObject = targetObject;
+            TargetProperty = targetProperty;
+        }
+
+        public string Path { get; set; }
+        public FrameworkElement TargetObject {get; set;}
+        public DependencyProperty TargetProperty {get; set;}
+        public object BindingExpression { get; set; }
+
     }
 }

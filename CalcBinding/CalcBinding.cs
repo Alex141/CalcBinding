@@ -295,10 +295,12 @@ namespace CalcBinding
             return result;
         }
 
+        private static int _enumCounter = 0;
+
         private string GetEnumName(int i)
         {
             // Enum1, Enum2, etc
-            return string.Format("Enum{0}", ++i);
+            return string.Format("Enum{0}", ++_enumCounter);
         }
 
         /// <summary>

@@ -470,6 +470,20 @@ namespace WpfExample
             }
         }
 
+        private Enum3 enum3Value;
+        public Enum3 Enum3Value
+        {
+            get
+            {
+                return enum3Value;
+            }
+            set
+            {
+                enum3Value = value;
+                RaisePropertyChanged(() => Enum3Value);
+            }
+        }
+
         private Visibility visibility;
         public Visibility Visibility
         {
@@ -607,7 +621,7 @@ namespace WpfExample
                 enumValue = value;
                 RaiseStaticPropertyChanged(() => EnumValue);
             }
-        }
+        }        
 
         private static Visibility visibility;
         public static Visibility Visibility
@@ -727,5 +741,11 @@ namespace WpfExample
     {
         Value1,
         Value2
+    }
+
+    public enum Enum3
+    {
+        Value11,
+        Value22
     }
 }
