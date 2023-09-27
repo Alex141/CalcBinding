@@ -18,7 +18,7 @@ namespace CalcBinding
     /// </summary>
     public sealed class Binding : MarkupExtension
     {
-        // We cannot use PropertyPath instead of string (such as standart Binding) because transformation from xaml value string to Property path 
+        // We cannot use PropertyPath instead of string (such as standard Binding) because transformation from xaml value string to Property path 
         // is doing automatically by PropertyPathConverter and result PropertyPath object could have form, that cannot retranslate to normal string.
         // e.g.: (local:MyStaticVM.Prop) -> PropertyPath.Path = (0), Converted to string = MyStaticVM.Prop (but we need to analyze static class with xaml namespace prefix)
         public string Path { get; set; }
@@ -29,10 +29,10 @@ namespace CalcBinding
         public FalseToVisibility FalseToVisibility { get; set; } = FalseToVisibility.Collapsed;
 
         /// <summary>
-        /// If true then single quotes and double quotes are considered as single quotes, otherwise - both are considerent as double quotes
+        /// If true then single quotes and double quotes are considered as single quotes, otherwise - both are considerate as double quotes
         /// </summary>
         /// <remarks>
-        /// Use this flag if you need to use char is path expresion
+        /// Use this flag if you need to use char is path expression
         /// </remarks>
         public bool SingleQuotes { get; set; } = false;
 
@@ -61,9 +61,9 @@ namespace CalcBinding
             var typeDescriptor = serviceProvider as ITypeDescriptorContext;
 
             var normalizedPath = NormalizePath(Path);
-            var pathes = GetSourcePathes(normalizedPath, typeResolver);
+            var paths = GetSourcePaths(normalizedPath, typeResolver);
 
-            var expressionTemplate = GetExpressionTemplate(normalizedPath, pathes, out Dictionary<string, Type> enumParameters);
+            var expressionTemplate = GetExpressionTemplate(normalizedPath, paths, out Dictionary<string, Type> enumParameters);
 
             var mathConverter = new CalcConverter(_parser.Value, FallbackValue, enumParameters)
             {
@@ -71,13 +71,13 @@ namespace CalcBinding
                 StringFormatDefined = StringFormat != null,
             };
 
-            var bindingPathes = pathes
+            var bindingPaths = paths
                 .Where(p => p.PathId.PathType == PathTokenType.Property || 
                             p.PathId.PathType == PathTokenType.StaticProperty).ToList();
 
             BindingBase resBinding;
 
-            if (bindingPathes.Count == 1)
+            if (bindingPaths.Count == 1)
             {
                 // todo: can enums be binded ? What if one value is Enum? bug..
                 var binding = new System.Windows.Data.Binding()
@@ -96,13 +96,13 @@ namespace CalcBinding
 #endif
             };
 
-                var pathId = bindingPathes.Single().PathId;
+                var pathId = bindingPaths.Single().PathId;
                 // we need to use convert from string for support of static properties
                 var pathValue = pathId.Value;
 
                 if (pathId.PathType == PathTokenType.StaticProperty)
                 {
-                    pathValue = string.Format("({0})", pathValue);  // need to use brackets for Static property recognition in standart binding
+                    pathValue = string.Format("({0})", pathValue);  // need to use brackets for Static property recognition in standard binding
                 }
                 var resPath = (PropertyPath)new PropertyPathConverter().ConvertFromString(typeDescriptor, pathValue);
                 binding.Path = resPath;
@@ -119,7 +119,7 @@ namespace CalcBinding
                 if (StringFormat != null)
                     binding.StringFormat = StringFormat;
 
-                // we don't use converter if binding is trivial - {0}, except type convertion from bool to visibility
+                // we don't use converter if binding is trivial - {0}, except type conversion from bool to visibility
 
                 //todo: use more smart recognition for template (with analysing brackets ({1}) any count )
                 // trivial binding, CalcBinding converter is not needed
@@ -155,7 +155,7 @@ namespace CalcBinding
                 if (StringFormat != null)
                     mBinding.StringFormat = StringFormat;
 
-                foreach (var path in bindingPathes)
+                foreach (var path in bindingPaths)
                 {
                     var binding = new System.Windows.Data.Binding();
 
@@ -164,7 +164,7 @@ namespace CalcBinding
 
                     if (path.PathId.PathType == PathTokenType.StaticProperty)
                     {
-                        pathValue = string.Format("({0})", pathValue);  // need to use brackets for Static property recognition in standart binding
+                        pathValue = string.Format("({0})", pathValue);  // need to use brackets for Static property recognition in standard binding
                     }
 
                     var resPath = (PropertyPath)new PropertyPathConverter().ConvertFromString(typeDescriptor, pathValue);
@@ -213,10 +213,10 @@ namespace CalcBinding
         }
 
         /// <summary>
-        /// Replace source properties pathes by its numbers
+        /// Replace source properties paths by its numbers
         /// </summary>
         /// <param name="path"></param>
-        /// <param name="pathes"></param>
+        /// <param name="paths"></param>
         /// <returns></returns>
         private string GetExpressionTemplate(string path, List<PathAppearances> properties, out Dictionary<string, Type> enumParameters)
         {
@@ -235,7 +235,7 @@ namespace CalcBinding
                 {
                     var propGroup = properties[index];
                     var propId = propGroup.PathId;
-                    var targetProp = propGroup.Pathes.FirstOrDefault(token => token.Start == sourceIndex);
+                    var targetProp = propGroup.paths.FirstOrDefault(token => token.Start == sourceIndex);
 
                     if (targetProp != null)
                     {
@@ -260,7 +260,7 @@ namespace CalcBinding
                         }
                         else if (propId.PathType == PathTokenType.Enum)
                         {
-                            var enumPath = propGroup.Pathes.First() as EnumToken;
+                            var enumPath = propGroup.paths.First() as EnumToken;
 
                             string enumTypeName = null;
                             if (enumNames.ContainsKey(propId))
@@ -302,17 +302,17 @@ namespace CalcBinding
         }
 
         /// <summary>
-        /// Find all sourceProperties pathes in Path string
+        /// Find all sourceProperties paths in Path string
         /// </summary>
         /// <param name="normPath"></param>
-        /// <returns>List of pathes and its start positions</returns>
-        private List<PathAppearances> GetSourcePathes(string normPath, IXamlTypeResolver typeResolver)
+        /// <returns>List of paths and its start positions</returns>
+        private List<PathAppearances> GetSourcePaths(string normPath, IXamlTypeResolver typeResolver)
         {
             var propertyPathAnalyzer = new PropertyPathAnalyzer();
 
-            var pathes = propertyPathAnalyzer.GetPathes(normPath, typeResolver);
+            var paths = propertyPathAnalyzer.GetPaths(normPath, typeResolver);
 
-            var propertiesGroups = pathes.GroupBy(p => p.Id).Select(p => new PathAppearances(p.Key, p.ToList())).ToList();
+            var propertiesGroups = paths.GroupBy(p => p.Id).Select(p => new PathAppearances(p.Key, p.ToList())).ToList();
 
             return propertiesGroups;
         }
@@ -551,12 +551,12 @@ namespace CalcBinding
         {
             public PathTokenId PathId { get; private set; }
 
-            public IEnumerable<PathToken> Pathes { get; private set; }
+            public IEnumerable<PathToken> Paths { get; private set; }
 
-            public PathAppearances(PathTokenId id, List<PathToken> pathes)
+            public PathAppearances(PathTokenId id, List<PathToken> paths)
             {
                 PathId = id;
-                Pathes = pathes;
+                Paths = paths;
             }
         }
     }

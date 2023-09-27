@@ -10,8 +10,8 @@ using System.Windows.Markup;
 namespace CalcBinding.PathAnalysis
 {
     /// <summary>
-    /// Idea of parser: to detect right all entries of property pathes, static property pathes etc. without parsing language structures
-    /// For full validation of expression there need to write own analizer of C# lanquage whick could determine xaml names too...
+    /// Idea of parser: to detect right all entries of property paths, static property paths etc. without parsing language structures
+    /// For full validation of expression there need to write own analyzer of C# language which could determine xaml names too...
     /// </summary>
     public class PropertyPathAnalyzer
     {
@@ -55,16 +55,16 @@ namespace CalcBinding.PathAnalysis
 
         #region Parser cycle
 
-        public List<PathToken> GetPathes(string normPath, IXamlTypeResolver typeResolver)
+        public List<PathToken> GetPaths(string normPath, IXamlTypeResolver typeResolver)
         {
             _typeResolver = typeResolver;
 
             Tracer.TraceDebug(string.Format("Start read {0} ", normPath));
 
             var chunks = GetChunks(normPath);
-            var pathes = GetPathes(chunks);
+            var paths = GetPaths(chunks);
 
-            return pathes;
+            return paths;
         }
 
         private List<Chunk> GetChunks(string str)
@@ -126,7 +126,7 @@ namespace CalcBinding.PathAnalysis
             } while (true);
         }
 
-        private List<PathToken> GetPathes(List<Chunk> chunks)
+        private List<PathToken> GetPaths(List<Chunk> chunks)
         {
             List<PathToken> tokens = new List<PathToken>();
 

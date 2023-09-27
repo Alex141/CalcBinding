@@ -124,7 +124,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void TwoStaticPropertyPathesTest()
+        public void TwoStaticPropertyPathsTest()
         {
             BrushBindingAssert("(local:StaticExampleClass.StaticA > 5?m:Brushes.White : m:Brushes.Black) ", null,
                 () => { StaticExampleClass.StaticA = 4; }, Brushes.Black,
